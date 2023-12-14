@@ -6,10 +6,10 @@
     email:   gears1763@tutanota.com
     github:  gears1763-2
 
-## Copyright 2023 (C) - [ESC] Interactive
+**Copyright 2023 (C) - [ESC] Interactive**
 
-## Creative Commons BY-NC-SA 4.0 
-### <https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US>
+***Creative Commons BY-NC-SA 4.0***
+<https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US>
 
 --------
 

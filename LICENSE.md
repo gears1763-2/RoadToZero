@@ -6,8 +6,10 @@
     email:   gears1763@tutanota.com
     github:  gears1763-2
 
-    Copyright 2023 (C) - [ESC] Interactive
-    Creative Commons BY-NC-SA 4.0 (see: <https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US>)
+## Copyright 2023 (C) - [ESC] Interactive
+
+## Creative Commons BY-NC-SA 4.0 
+### <https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US>
 
 --------
 
@@ -22,17 +24,17 @@ Under this license, you are free to
 
 under the following terms:
 
-#### Attribution
+#### Attribution (BY)
 
 You must give appropriate credit, provide a link to the license, and indicate if changes
 were made. You may do so in any reasonable manner, but not in any way that suggests the
 licensor endorses you or your use.
 
-#### NonCommercial
+#### NonCommercial (NC)
 
 You may not use the material for commercial purposes.
 
-#### ShareAlike
+#### ShareAlike (SA)
 
 If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
 

@@ -6,7 +6,7 @@
     email:   gears1763@tutanota.com
     github:  gears1763-2
 
-***See license terms***
+***SEE LICENSE TERMS***
 
 
 This is a 3X game that aims to teach players about integrating renewable energy

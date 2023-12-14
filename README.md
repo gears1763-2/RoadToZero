@@ -47,8 +47,7 @@ production and storage assets into a microgrid over the long term.
 Documentation for this project is auto-generated using Doxygen
 (see <https://www.doxygen.nl/>). HTML documentation can be found in
 `docs/RoadToZero_html.7z`, and LaTeX documentation can be found in
-`docs/RoadToZero_LaTeX.pdf`. Additionally, shareable references are included in
-`docs/refs/`, and all references are listed in `docs/refs.bib`.
+`docs/RoadToZero_LaTeX.pdf`. All references are listed in `docs/refs.bib`.
 
 If you do make changes to the code, you can easily generate updated documentation by way
 of

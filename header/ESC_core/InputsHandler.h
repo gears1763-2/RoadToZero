@@ -40,10 +40,10 @@ class InputsHandler {
     
     public:
         //  1. attributes
-        std::vector<bool> key_pressed_once_vec;
-        std::vector<bool> key_press_vec;
+        std::vector<bool> key_pressed_once_vec; ///< A vector (bool) which indicates which keys have been pressed once. Useful for discrete inputs.
+        std::vector<bool> key_press_vec; ///< A vector <bool> which indicates which keys are currently pressed. Useful for smooth movement.
         
-        std::map<sf::Keyboard::Key, std::string> key_code_map;
+        std::map<sf::Keyboard::Key, std::string> key_code_map; ///< A map from key codes to corresponding string representations
         
         
         //  2. methods

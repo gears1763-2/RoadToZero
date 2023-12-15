@@ -31,16 +31,16 @@
 class AssetsManager {
     private:
         //  1. attributes
-        std::map<std::string, sf::Font*> font_map;
-        std::map<std::string, sf::Texture*> texture_map;
-        std::map<std::string, sf::SoundBuffer*> soundbuffer_map;
-        std::map<std::string, sf::Sound*> sound_map;
-        std::map<std::string, sf::Music*>::iterator current_track;
-        std::map<std::string, sf::Music*> track_map;
+        std::map<std::string, sf::Font*> font_map; ///< A map of pointers to loaded fonts.
+        std::map<std::string, sf::Texture*> texture_map; ///< A map of pointers to loaded textures.
+        std::map<std::string, sf::SoundBuffer*> soundbuffer_map; ///< A map of pointers to sound buffers.
+        std::map<std::string, sf::Sound*> sound_map; ///< A map of pointers to loaded sounds.
+        std::map<std::string, sf::Music*>::iterator current_track; ///< A map iterator which corresponds to the current track (i.e., the track currently being played).
+        std::map<std::string, sf::Music*> track_map; ///< A map of pointers to opened tracks (i.e. sf::Music).
         
         
         //  2. methods
-        //...
+        void __loadSoundBuffer(std::string, std::string);
     
     
     public:
@@ -53,9 +53,22 @@ class AssetsManager {
         
         void loadFont(std::string, std::string);
         void loadTexture(std::string, std::string);
-        void loadSoundBuffer(std::string, std::string);
         void loadSound(std::string, std::string);
         void loadTrack(std::string, std::string);
+        
+        sf::Font* getFont(std::string);
+        sf::Texture* getTexture(std::string);
+        sf::SoundBuffer* getSoundBuffer(std::string);
+        sf::Sound* getSound(std::string);
+        
+        void playTrack(void);
+        void pauseTrack(void);
+        void stopTrack(void);
+        void nextTrack(void);
+        void previousTrack(void);
+        
+        std::string getCurrentTrackKey(void);
+        sf::SoundSource::Status getTrackStatus(void);
         
         void clear(void);
         

@@ -46,6 +46,7 @@ int main(int argc, char** argv)
     
     
     try {
+        //  1. construct and spot check attributes
         InputsHandler inputs_handler;
         
         testFloatEquals(
@@ -69,6 +70,8 @@ int main(int argc, char** argv)
             __LINE__
         );
         
+        
+        //  2. test game loop
         sf::Clock clock;
         sf::Event event;
         sf::RenderWindow window(sf::VideoMode(800, 600), "Testing InputsHandler");
@@ -94,7 +97,7 @@ int main(int argc, char** argv)
                 window.clear();
                 window.display();
                 
-                //inputs_handler.printKeysPressed();
+                inputs_handler.printKeysPressed();
                 if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Enter]) {
                     std::cout << "Enter" << std::endl;
                 }

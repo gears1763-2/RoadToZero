@@ -39,7 +39,7 @@ int main(int argc, char** argv)
     #endif  /* _WIN32 */
     
     printGold("\tTesting InputsHandler");
-    std::cout << std::flush;
+    std::cout << std::endl;
     
     srand(time(NULL));
     int n_dots = 8;
@@ -99,9 +99,9 @@ int main(int argc, char** argv)
                     std::cout << "Enter" << std::endl;
                 }
                 
-                std::cout << frame << " : " << time_since_run_s << "\r" << std::flush;
-                
                 inputs_handler.reset();
+                
+                std::cout << frame << " : " << time_since_run_s << "\r" << std::flush;
                 frame++;
             }
         }

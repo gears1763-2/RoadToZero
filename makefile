@@ -93,6 +93,29 @@ $(OBJ_TESTING_UTILS) -o $(OUT_TEST_INPUTSHANDLER) $(SFML)
 #### ==== END InputsHandler ==== ####
 
 
+
+#### ==== AssetsManager ==== ####
+
+SRC_ASSETSMANAGER = source/ESC_core/AssetsManager.cpp
+OBJ_ASSETSMANAGER = bin/ESC_core/AssetsManager.o
+
+.PHONY: AssetsManager
+AssetsManager: $(SRC_ASSETSMANAGER)
+	$(CXX) $(CXXFLAGS) -c $(SRC_ASSETSMANAGER) -o $(OBJ_ASSETSMANAGER)
+
+
+SRC_TEST_ASSETSMANAGER = test/ESC_core/test_AssetsManager.cpp
+OUT_TEST_ASSETSMANAGER = test/bin/test_AssetsManager.out
+
+.PHONY: TEST_AssetsManager
+TEST_AssetsManager: AssetsManager
+	$(CXX) $(CXXFLAGS) $(SRC_TEST_ASSETSMANAGER) $(OBJ_ASSETSMANAGER) \
+$(OBJ_TESTING_UTILS) -o $(OUT_TEST_ASSETSMANAGER) $(SFML)
+
+
+#### ==== END AssetsManager ==== ####
+
+
 ## ======== END BUILD =============================================================== ##
 
 
@@ -106,6 +129,12 @@ clean:
 	rm -frv object
 	rm -frv profiling_results
 	rm -frv test/bin
+
+
+.PHONY: compress
+compress:
+	rm -frv assets.7z
+	7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on assets.7z assets
 
 
 .PHONY: dirs
@@ -141,5 +170,13 @@ test_InputsHandler:
 	make testing_utils
 	make TEST_InputsHandler
 	$(OUT_TEST_INPUTSHANDLER)
+
+
+.PHONY: test_AssetsManager
+test_AssetsManager:
+	make dirs
+	make testing_utils
+	make TEST_AssetsManager
+	$(OUT_TEST_ASSETSMANAGER)
 
 ## ======== END TARGETS ============================================================= ##

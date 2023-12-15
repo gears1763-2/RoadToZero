@@ -58,6 +58,12 @@ assuming you are set up to do so (i.e., `doxygen` installed, etc.).
 
 --------
 
+## SFML Version
+
+Road to Zero was developed using SFML 2.5.1.
+
+--------
+
 
 ## Testing
 

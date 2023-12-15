@@ -108,9 +108,9 @@ SRC_TEST_ASSETSMANAGER = test/ESC_core/test_AssetsManager.cpp
 OUT_TEST_ASSETSMANAGER = test/bin/test_AssetsManager.out
 
 .PHONY: TEST_AssetsManager
-TEST_AssetsManager: AssetsManager
+TEST_AssetsManager: AssetsManager InputsHandler
 	$(CXX) $(CXXFLAGS) $(SRC_TEST_ASSETSMANAGER) $(OBJ_ASSETSMANAGER) \
-$(OBJ_TESTING_UTILS) -o $(OUT_TEST_ASSETSMANAGER) $(SFML)
+$(OBJ_INPUTSHANDLER) $(OBJ_TESTING_UTILS) -o $(OUT_TEST_ASSETSMANAGER) $(SFML)
 
 
 #### ==== END AssetsManager ==== ####

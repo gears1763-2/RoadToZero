@@ -19,6 +19,7 @@
 
 #include "../../header/ESC_core/constants.h"
 #include "../../header/ESC_core/testing_utils.h"
+#include "../../header/ESC_core/InputsHandler.h"
 #include "../../header/ESC_core/AssetsManager.h"
 
 
@@ -46,7 +47,8 @@ int main(int argc, char** argv)
     
     
     try {
-        //...
+        InputsHandler inputs_handler;
+        AssetsManager assets_manager;
         
         sf::Clock clock;
         sf::Event event;

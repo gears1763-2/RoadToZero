@@ -57,6 +57,8 @@ class AssetsManager {
         void loadSound(std::string, std::string);
         void loadTrack(std::string, std::string);
         
+        void clear(void);
+        
         ~AssetsManager(void);
     
 };  /* AssetsManager */

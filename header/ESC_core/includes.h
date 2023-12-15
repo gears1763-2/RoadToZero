@@ -39,7 +39,7 @@
 #ifdef _WIN32
     #include <iso646.h>
     #include <windows.h>
-#endif
+#endif  /* _WIN32 */
 
 
 //  2. SFML includes

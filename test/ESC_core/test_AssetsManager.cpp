@@ -19,8 +19,8 @@
 
 #include "../../header/ESC_core/constants.h"
 #include "../../header/ESC_core/testing_utils.h"
-#include "../../header/ESC_core/InputsHandler.h"
 #include "../../header/ESC_core/AssetsManager.h"
+#include "../../header/ESC_core/InputsHandler.h"
 
 
 // ---------------------------------------------------------------------------------- //
@@ -97,8 +97,8 @@ int main(int argc, char** argv)
         double sprite_width = ESC_key.getLocalBounds().width;
         double sprite_height = ESC_key.getLocalBounds().height;
         
-        double sprite_velocity_x = 400 * (2 * ((double)rand() / RAND_MAX) - 1);
-        double sprite_velocity_y = 400 * (2 * ((double)rand() / RAND_MAX) - 1);
+        double sprite_velocity_x = 256 * (2 * ((double)rand() / RAND_MAX) - 1);
+        double sprite_velocity_y = 256 * (2 * ((double)rand() / RAND_MAX) - 1);
         
         ESC_key.setOrigin(sprite_width / 2, sprite_height / 2);
         ESC_key.setPosition(

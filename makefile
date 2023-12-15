@@ -61,7 +61,7 @@ SFML_STATIC = -DSFML_STATIC\
 #### ==== Testing Utilities ==== ####
 
 SRC_TESTING_UTILS = source/ESC_core/testing_utils.cpp
-OBJ_TESTING_UTILS = bin/ESC_core/testing_utils.o
+OBJ_TESTING_UTILS = object/ESC_core/testing_utils.o
 
 .PHONY: testing_utils
 testing_utils: $(SRC_TESTING_UTILS)
@@ -74,7 +74,7 @@ testing_utils: $(SRC_TESTING_UTILS)
 #### ==== InputsHandler ==== ####
 
 SRC_INPUTSHANDLER = source/ESC_core/InputsHandler.cpp
-OBJ_INPUTSHANDLER = bin/ESC_core/InputsHandler.o
+OBJ_INPUTSHANDLER = object/ESC_core/InputsHandler.o
 
 .PHONY: InputsHandler
 InputsHandler: $(SRC_INPUTSHANDLER)
@@ -85,10 +85,9 @@ SRC_TEST_INPUTSHANDLER = test/ESC_core/test_InputsHandler.cpp
 OUT_TEST_INPUTSHANDLER = test/bin/test_InputsHandler.out
 
 .PHONY: TEST_InputsHandler
-TEST_InputsHandler: InputsHandler
+TEST_InputsHandler: InputsHandler testing_utils
 	$(CXX) $(CXXFLAGS) $(SRC_TEST_INPUTSHANDLER) $(OBJ_INPUTSHANDLER) \
 $(OBJ_TESTING_UTILS) -o $(OUT_TEST_INPUTSHANDLER) $(SFML)
-
 
 #### ==== END InputsHandler ==== ####
 
@@ -97,7 +96,7 @@ $(OBJ_TESTING_UTILS) -o $(OUT_TEST_INPUTSHANDLER) $(SFML)
 #### ==== AssetsManager ==== ####
 
 SRC_ASSETSMANAGER = source/ESC_core/AssetsManager.cpp
-OBJ_ASSETSMANAGER = bin/ESC_core/AssetsManager.o
+OBJ_ASSETSMANAGER = object/ESC_core/AssetsManager.o
 
 .PHONY: AssetsManager
 AssetsManager: $(SRC_ASSETSMANAGER)
@@ -108,13 +107,42 @@ SRC_TEST_ASSETSMANAGER = test/ESC_core/test_AssetsManager.cpp
 OUT_TEST_ASSETSMANAGER = test/bin/test_AssetsManager.out
 
 .PHONY: TEST_AssetsManager
-TEST_AssetsManager: AssetsManager InputsHandler
+TEST_AssetsManager: AssetsManager InputsHandler testing_utils
 	$(CXX) $(CXXFLAGS) $(SRC_TEST_ASSETSMANAGER) $(OBJ_ASSETSMANAGER) \
 $(OBJ_INPUTSHANDLER) $(OBJ_TESTING_UTILS) -o $(OUT_TEST_ASSETSMANAGER) $(SFML)
 
-
 #### ==== END AssetsManager ==== ####
 
+
+
+#### ==== HexMap ==== ####
+
+SRC_HEXTILE = source/HexMap/HexTile.cpp
+OBJ_HEXTILE = object/HexMap/HexTile.o
+
+.PHONY: HexTile
+HexTile: $(SRC_HEXTILE)
+	$(CXX) $(CXXFLAGS) -c $(SRC_HEXTILE) -o $(OBJ_HEXTILE)
+
+
+SRC_HEXMAP = source/HexMap/HexMap.cpp
+OBJ_HEXMAP = object/HexMap/HexMap.o
+
+.PHONY: HexMap
+HexMap: $(SRC_HEXMAP)
+	$(CXX) $(CXXFLAGS) -c $(SRC_HEXMAP) -o $(OBJ_HEXMAP)
+
+
+SRC_TEST_HEXMAP = test/HexMap/test_HexMap.cpp
+OUT_TEST_HEXMAP = test/bin/test_HexMap.out
+
+.PHONY: TEST_HexMap
+TEST_HexMap: HexMap HexTile AssetsManager InputsHandler testing_utils
+	$(CXX) $(CXXFLAGS) $(SRC_TEST_HEXMAP) $(OBJ_HEXMAP) $(OBJ_HEXTILE) \
+$(OBJ_ASSETSMANAGER) $(OBJ_INPUTSHANDLER) $(OBJ_TESTING_UTILS) -o $(OUT_TEST_HEXMAP) \
+$(SFML)
+
+#### ==== END HexMap ==== ####
 
 ## ======== END BUILD =============================================================== ##
 
@@ -129,6 +157,8 @@ clean:
 	rm -frv object
 	rm -frv profiling_results
 	rm -frv test/bin
+	make docs
+	make compress
 
 
 .PHONY: compress
@@ -140,8 +170,9 @@ compress:
 .PHONY: dirs
 dirs:
 	mkdir -pv bin
-	mkdir -pv bin/ESC_core
 	mkdir -pv object
+	mkdir -pv object/ESC_core
+	mkdir -pv object/HexMap
 	mkdir -pv test/bin
 
 
@@ -167,7 +198,6 @@ docs:
 .PHONY: test_InputsHandler
 test_InputsHandler:
 	make dirs
-	make testing_utils
 	make TEST_InputsHandler
 	$(OUT_TEST_INPUTSHANDLER)
 
@@ -175,8 +205,14 @@ test_InputsHandler:
 .PHONY: test_AssetsManager
 test_AssetsManager:
 	make dirs
-	make testing_utils
 	make TEST_AssetsManager
 	$(OUT_TEST_ASSETSMANAGER)
+
+
+.PHONY: test_HexMap
+test_HexMap:
+	make dirs
+	make TEST_HexMap
+	$(OUT_TEST_HEXMAP)
 
 ## ======== END TARGETS ============================================================= ##

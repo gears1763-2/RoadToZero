@@ -19,9 +19,9 @@
 #define CONSTANTS_H
 
 
-const int FRAMES_PER_SECOND = 60;
+const int FRAMES_PER_SECOND = 60; ///< Target frames per second.
 
-const double SECONDS_PER_FRAME = 1.0 / 60;
+const double SECONDS_PER_FRAME = 1.0 / 60; ///< Target seconds per frame (just reciprocal of target frames per second).
 
 
 #endif  /* CONSTANTS_H */

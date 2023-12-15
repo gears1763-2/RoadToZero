@@ -3,23 +3,25 @@
  *
  *  [ESC] Interactive
  *
- *  Suite of tests for the InputsHandler class.
+ *  Suite of tests for the HexMap class.
  *
  */
 
 
 ///
-/// \file test_InputsHandler.cpp
+/// \file test_HexMap.cpp
 ///
-/// \brief Suite of tests for the InputsHandler class.
+/// \brief Suite of tests for the HexMap class.
 ///
-/// A suite of tests for the InputsHandler class.
+/// A suite of tests for the HexMap class.
 ///
 
 
 #include "../../header/ESC_core/constants.h"
 #include "../../header/ESC_core/testing_utils.h"
+#include "../../header/ESC_core/AssetsManager.h"
 #include "../../header/ESC_core/InputsHandler.h"
+#include "../../header/HexMap/HexMap.h"
 
 
 // ---------------------------------------------------------------------------------- //
@@ -38,7 +40,7 @@ int main(int argc, char** argv)
         activateVirtualTerminal();
     #endif  /* _WIN32 */
     
-    printGold("\tTesting InputsHandler");
+    printGold("\tTesting HexMap");
     std::cout << std::endl;
     
     srand(time(NULL));
@@ -46,55 +48,40 @@ int main(int argc, char** argv)
     
     
     try {
-        //  1. construct and spot check attributes
+        //  1. construct
         InputsHandler inputs_handler;
+        AssetsManager assets_manager;
+        HexMap hex_map(6);
         
-        testFloatEquals(
-            int(sf::Keyboard::KeyCount),
-            101,
-            __FILE__,
-            __LINE__
-        );
-        
-        testFloatEquals(
-            inputs_handler.key_press_vec.size(),
-            int(sf::Keyboard::KeyCount),
-            __FILE__,
-            __LINE__
-        );
-        
-        testFloatEquals(
-            inputs_handler.key_pressed_once_vec.size(),
-            int(sf::Keyboard::KeyCount),
-            __FILE__,
-            __LINE__
-        );
+        //  2. ...
         
         
-        //  2. test game loop
+        //  3. test game loop
         sf::Clock clock;
         sf::Event event;
-        sf::RenderWindow window(sf::VideoMode(800, 600), "Testing InputsHandler");
+        sf::RenderWindow window(sf::VideoMode(1200, 800), "Testing AssetsManager");
         
         double screen_width = window.getSize().x;
         double screen_height = window.getSize().y;
         
         testFloatEquals(
             screen_width,
-            800,
+            1200,
             __FILE__,
             __LINE__
         );
         
         testFloatEquals(
             screen_height,
-            600,
+            800,
             __FILE__,
             __LINE__
         );
         
         unsigned long long int frame = 0;
         double time_since_run_s = 0;
+        
+        //...
         
         while (window.isOpen()) {
             time_since_run_s = clock.getElapsedTime().asSeconds();
@@ -104,22 +91,20 @@ int main(int argc, char** argv)
             ) {
                 while (window.pollEvent(event))
                 {
-                    inputs_handler.process(&event);
+                    //...
                     
                     if (event.type == sf::Event::Closed) {
                         window.close();
                     }
                 }
                 
+                //...
+                
                 window.clear();
+                
+                hex_map.draw(&window);
+                
                 window.display();
-                
-                inputs_handler.printKeysPressed();
-                if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Enter]) {
-                    std::cout << "Enter" << std::endl;
-                }
-                
-                inputs_handler.reset();
                 
                 std::cout << frame << " : " << time_since_run_s << "\r" << std::flush;
                 frame++;

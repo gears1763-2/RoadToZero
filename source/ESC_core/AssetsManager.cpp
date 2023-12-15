@@ -696,6 +696,7 @@ void AssetsManager :: clear(void)
         sound_iter != this->sound_map.end();
         sound_iter++
     ) {
+        sound_iter->second->stop();
         delete sound_iter->second;
         
         std::cout << "Sound " << sound_iter->first << " deleted from sound map" <<
@@ -705,13 +706,13 @@ void AssetsManager :: clear(void)
     
     
     //  5. clear tracks
-    this->stopTrack();
     std::map<std::string, sf::Music*>::iterator track_iter;
     for (
         track_iter = this->track_map.begin();
         track_iter != this->track_map.end();
         track_iter++
     ) {
+        track_iter->second->stop();
         delete track_iter->second;
         
         std::cout << "Track " << track_iter->first << " deleted from track map" <<

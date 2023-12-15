@@ -23,15 +23,8 @@
 
 #include "includes.h"
 
-#ifndef FLOAT_TOLERANCE
-    ///
-    /// \def FLOAT_TOLERANCE
-    ///
-    /// \brief A tolerance for application to floating point equality tests.
-    ///
-    
-    #define FLOAT_TOLERANCE 1e-6
-#endif  /* FLOAT_TOLERANCE */
+
+const double FLOAT_TOLERANCE = 1e-6; ///< Tolerance for floating point equality tests.
 
 
 #ifdef _WIN32

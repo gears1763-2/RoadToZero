@@ -31,12 +31,7 @@
 class AssetsManager {
     private:
         //  1. attributes
-        std::map<std::string, sf::Font*> font_map; ///< A map of pointers to loaded fonts.
-        std::map<std::string, sf::Texture*> texture_map; ///< A map of pointers to loaded textures.
-        std::map<std::string, sf::SoundBuffer*> soundbuffer_map; ///< A map of pointers to sound buffers.
-        std::map<std::string, sf::Sound*> sound_map; ///< A map of pointers to loaded sounds.
-        std::map<std::string, sf::Music*>::iterator current_track; ///< A map iterator which corresponds to the current track (i.e., the track currently being played).
-        std::map<std::string, sf::Music*> track_map; ///< A map of pointers to opened tracks (i.e. sf::Music).
+        //...
         
         
         //  2. methods
@@ -45,7 +40,12 @@ class AssetsManager {
     
     public:
         //  1. attributes
-        //...
+        std::map<std::string, sf::Font*> font_map; ///< A map of pointers to loaded fonts.
+        std::map<std::string, sf::Texture*> texture_map; ///< A map of pointers to loaded textures.
+        std::map<std::string, sf::SoundBuffer*> soundbuffer_map; ///< A map of pointers to sound buffers.
+        std::map<std::string, sf::Sound*> sound_map; ///< A map of pointers to loaded sounds.
+        std::map<std::string, sf::Music*>::iterator current_track; ///< A map iterator which corresponds to the current track (i.e., the track currently being played).
+        std::map<std::string, sf::Music*> track_map; ///< A map of pointers to opened tracks (i.e. sf::Music).
         
         
         //  2. methods

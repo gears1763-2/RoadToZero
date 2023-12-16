@@ -19,8 +19,6 @@
 #define HEXMAP_H
 
 
-#include "../ESC_core/AssetsManager.h"
-#include "../ESC_core/InputsHandler.h"
 #include "HexTile.h"
 
 
@@ -33,7 +31,9 @@
 class HexMap {
     private:
         //  1. attributes
-        //...
+        AssetsManager* assets_manager_ptr; ///< A pointer to the assets manager.
+        InputsHandler* inputs_handler_ptr; ///< A pointer to the inputs handler.
+        MessagesHandler* messages_handler_ptr; ///< A pointer to the messages handler.
         
         
         //  2. methods
@@ -43,15 +43,16 @@ class HexMap {
     public:
         //  1. attributes
         int n_layers; ///< The number of layers in the hex map.
+        int frame; ///< The current frame of this object.
         
         double position_x; ///< The x position of the hex map's origin (i.e. central) tile.
         double position_y; ///< The y position of the hex map's origin (i.e. central) tile.
         
-        std::vector<HexTile*> hex_vec; ///< A vector of pointers to the tiles in the hex map.
+        std::map<double, std::map<double, HexTile*>>  hex_map; ///< A position-indexed, nested map of hex tiles.
         
         
         //  2. methods
-        HexMap(int);
+        HexMap(int, AssetsManager*, InputsHandler*, MessagesHandler*);
         
         void draw(sf::RenderWindow*);
         void clear(void);

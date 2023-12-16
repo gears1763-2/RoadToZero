@@ -115,6 +115,28 @@ $(OBJ_INPUTSHANDLER) $(OBJ_TESTING_UTILS) -o $(OUT_TEST_ASSETSMANAGER) $(SFML)
 
 
 
+#### ==== MessagesHandler ==== ####
+
+SRC_MESSAGESHANDLER = source/ESC_core/MessagesHandler.cpp
+OBJ_MESSAGESHANDLER = object/ESC_core/MessagesHandler.o
+
+.PHONY: MessagesHandler
+MessagesHandler: $(SRC_MESSAGESHANDLER)
+	$(CXX) $(CXXFLAGS) -c $(SRC_MESSAGESHANDLER) -o $(OBJ_MESSAGESHANDLER)
+
+
+SRC_TEST_MESSAGESHANDLER = test/ESC_core/test_MessagesHandler.cpp
+OUT_TEST_MESSAGESHANDLER = test/bin/test_MessagesHandler.out
+
+.PHONY: TEST_MessagesHandler
+TEST_MessagesHandler: MessagesHandler testing_utils
+	$(CXX) $(CXXFLAGS) $(SRC_TEST_MESSAGESHANDLER) $(OBJ_MESSAGESHANDLER) \
+$(OBJ_TESTING_UTILS) -o $(OUT_TEST_MESSAGESHANDLER) $(SFML)
+
+#### ==== END MessagesHandler ==== ####
+
+
+
 #### ==== HexMap ==== ####
 
 SRC_HEXTILE = source/HexMap/HexTile.cpp
@@ -137,10 +159,10 @@ SRC_TEST_HEXMAP = test/HexMap/test_HexMap.cpp
 OUT_TEST_HEXMAP = test/bin/test_HexMap.out
 
 .PHONY: TEST_HexMap
-TEST_HexMap: HexMap HexTile AssetsManager InputsHandler testing_utils
+TEST_HexMap: HexMap HexTile AssetsManager InputsHandler MessagesHandler testing_utils
 	$(CXX) $(CXXFLAGS) $(SRC_TEST_HEXMAP) $(OBJ_HEXMAP) $(OBJ_HEXTILE) \
-$(OBJ_ASSETSMANAGER) $(OBJ_INPUTSHANDLER) $(OBJ_TESTING_UTILS) -o $(OUT_TEST_HEXMAP) \
-$(SFML)
+$(OBJ_ASSETSMANAGER) $(OBJ_INPUTSHANDLER) $(OBJ_MESSAGESHANDLER) $(OBJ_TESTING_UTILS) \
+-o $(OUT_TEST_HEXMAP) $(SFML)
 
 #### ==== END HexMap ==== ####
 
@@ -207,6 +229,13 @@ test_AssetsManager:
 	make dirs
 	make TEST_AssetsManager
 	$(OUT_TEST_ASSETSMANAGER)
+
+
+.PHONY: test_MessagesHandler
+test_MessagesHandler:
+	make dirs
+	make TEST_MessagesHandler
+	$(OUT_TEST_MESSAGESHANDLER)
 
 
 .PHONY: test_HexMap

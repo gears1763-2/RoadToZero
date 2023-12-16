@@ -91,7 +91,13 @@ void HexTile :: __setUpTileSprite(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn HexTile :: HexTile(void)
+/// \fn HexTile :: HexTile(
+///         double position_x,
+///         double position_y,
+///         AssetsManager* assets_manager_ptr,
+///         InputsHandler* inputs_handler_ptr,
+///         MessagesHandler* messages_handler_ptr
+///     )
 ///
 /// \brief Constructor for the HexTile class.
 ///
@@ -101,11 +107,29 @@ void HexTile :: __setUpTileSprite(void)
 ///
 /// \param position_y The y position of the tile.
 ///
+/// \param assets_manager_ptr Pointer to the assets manager.
+///
+/// \param inputs_handler_ptr Pointer to the inputs handler.
+///
+/// \param messages_handler_ptr Pointer to the messages handler.
+///
 
-HexTile :: HexTile(double position_x, double position_y)
+HexTile :: HexTile(
+    double position_x,
+    double position_y,
+    AssetsManager* assets_manager_ptr,
+    InputsHandler* inputs_handler_ptr,
+    MessagesHandler* messages_handler_ptr
+)
 {
     //  1. set attributes
+    this->assets_manager_ptr = assets_manager_ptr;
+    this->inputs_handler_ptr = inputs_handler_ptr;
+    this->messages_handler_ptr = messages_handler_ptr;
+    
     this->show_node = false;
+    
+    this->frame = 0;
     
     this->position_x = position_x;
     this->position_y = position_y;
@@ -119,10 +143,70 @@ HexTile :: HexTile(double position_x, double position_y)
     //  3. set up and position the tile sprite
     this->__setUpTileSprite();
     
+    //  4. set tile type (default to forest)
+    this->setTileType(TileType :: FOREST);
+    
     std::cout << "HexTile constructed at " << this << std::endl;
     
     return;
 }   /* HexTile() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: setTileType(TileType tile_type)
+///
+/// \brief Method to set the tile type (by enum value).
+///
+/// \param tile_type The type (TileType) to set the tile to.
+
+void HexTile :: setTileType(TileType tile_type)
+{
+    this->tile_type = tile_type;
+    
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            this->tile_sprite.setFillColor(FOREST_GREEN);
+            
+            break;
+        }
+        
+        case (TileType :: LAKE): {
+            this->tile_sprite.setFillColor(LAKE_BLUE);
+            
+            break;
+        }
+        
+        case (TileType :: MOUNTAINS): {
+            this->tile_sprite.setFillColor(MOUNTAINS_GREY);
+            
+            break;
+        }
+        
+        case (TileType :: OCEAN): {
+            this->tile_sprite.setFillColor(OCEAN_BLUE);
+            
+            break;
+        }
+        
+        case (TileType :: PLAINS): {
+            this->tile_sprite.setFillColor(PLAINS_YELLOW);
+            
+            break;
+        }
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* setTileType() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -133,7 +217,8 @@ HexTile :: HexTile(double position_x, double position_y)
 ///
 /// \fn void HexTile :: draw(sf::RenderWindow* window_ptr)
 ///
-/// \brief Method to draw the hex tile to the render window.
+/// \brief Method to draw the hex tile to the render window. To be called only once per
+///     frame!
 ///
 /// \param window_ptr A pointer to the render window.
 ///
@@ -148,6 +233,7 @@ void HexTile :: draw(sf::RenderWindow* window_ptr)
         window_ptr->draw(this->node_sprite);
     }
     
+    this->frame++;
     return;
 }   /* draw() */
 

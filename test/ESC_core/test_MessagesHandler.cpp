@@ -3,27 +3,23 @@
  *
  *  [ESC] Interactive
  *
- *  Suite of tests for the HexMap class.
+ *  Suite of tests for the MessagesHandler class.
  *
  */
 
 
 ///
-/// \file test_HexMap.cpp
+/// \file test_MessagesHandler.cpp
 ///
-/// \brief Suite of tests for the HexMap class.
+/// \brief Suite of tests for the MessagesHandler class.
 ///
-/// A suite of tests for the HexMap class.
+/// A suite of tests for the MessagesHandler class.
 ///
 
 
 #include "../../header/ESC_core/constants.h"
 #include "../../header/ESC_core/testing_utils.h"
-#include "../../header/ESC_core/AssetsManager.h"
-#include "../../header/ESC_core/InputsHandler.h"
 #include "../../header/ESC_core/MessagesHandler.h"
-
-#include "../../header/HexMap/HexMap.h"
 
 
 // ---------------------------------------------------------------------------------- //
@@ -42,7 +38,7 @@ int main(int argc, char** argv)
         activateVirtualTerminal();
     #endif  /* _WIN32 */
     
-    printGold("\tTesting HexMap");
+    printGold("\tTesting MessagesHandler");
     std::cout << std::endl;
     
     srand(time(NULL));
@@ -51,38 +47,33 @@ int main(int argc, char** argv)
     
     try {
         //  1. construct
-        AssetsManager assets_manager;
-        InputsHandler inputs_handler;
         MessagesHandler messages_handler;
         
-        HexMap hex_map(6, &assets_manager, &inputs_handler, &messages_handler);
         
         //  2. test game loop
         sf::Clock clock;
         sf::Event event;
-        sf::RenderWindow window(sf::VideoMode(1200, 800), "Testing AssetsManager");
+        sf::RenderWindow window(sf::VideoMode(800, 600), "Testing MessagesHandler");
         
         double screen_width = window.getSize().x;
         double screen_height = window.getSize().y;
         
         testFloatEquals(
             screen_width,
-            1200,
+            800,
             __FILE__,
             __LINE__
         );
         
         testFloatEquals(
             screen_height,
-            800,
+            600,
             __FILE__,
             __LINE__
         );
         
         unsigned long long int frame = 0;
         double time_since_run_s = 0;
-        
-        //...
         
         while (window.isOpen()) {
             time_since_run_s = clock.getElapsedTime().asSeconds();
@@ -99,12 +90,7 @@ int main(int argc, char** argv)
                     }
                 }
                 
-                //...
-                
                 window.clear();
-                
-                hex_map.draw(&window);
-                
                 window.display();
                 
                 std::cout << frame << " : " << time_since_run_s << "\r" << std::flush;

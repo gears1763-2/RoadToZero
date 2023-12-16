@@ -25,13 +25,15 @@
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexMap :: __assembleHexMap(void)
+/// \fn void HexMap :: __layTiles(void)
 ///
-/// \brief Helper method to assemble the hex map.
+/// \brief Helper method to lay the hex tiles down to generate the game world.
 ///
 
-void HexMap :: __assembleHexMap(void)
+void HexMap :: __layTiles(void)
 {
+    this->n_tiles = 0;
+    
     //  1. add origin tile
     HexTile* hex_ptr = new HexTile(
         this->position_x,
@@ -42,6 +44,9 @@ void HexMap :: __assembleHexMap(void)
     );
     
     this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+    this->tile_position_x_vec.push_back(hex_ptr->position_x);
+    this->tile_position_y_vec.push_back(hex_ptr->position_y);
+    this->n_tiles++;
     
     
     //  2. fill out first row (reflect across origin tile)
@@ -55,6 +60,13 @@ void HexMap :: __assembleHexMap(void)
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+        this->tile_position_x_vec.push_back(hex_ptr->position_x);
+        this->tile_position_y_vec.push_back(hex_ptr->position_y);
+        this->n_tiles++;
+        
+        if (i == this->n_layers - 1) {
+            this->border_tiles_vec.push_back(hex_ptr);
+        }
         
         hex_ptr = new HexTile(
             this->position_x - 2 * (i + 1) * hex_ptr->minor_radius,
@@ -65,6 +77,13 @@ void HexMap :: __assembleHexMap(void)
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+        this->tile_position_x_vec.push_back(hex_ptr->position_x);
+        this->tile_position_y_vec.push_back(hex_ptr->position_y);
+        this->n_tiles++;
+        
+        if (i == this->n_layers - 1) {
+            this->border_tiles_vec.push_back(hex_ptr);
+        }
     }
     
     
@@ -99,6 +118,11 @@ void HexMap :: __assembleHexMap(void)
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+        this->tile_position_x_vec.push_back(hex_ptr->position_x);
+        this->tile_position_y_vec.push_back(hex_ptr->position_y);
+        this->n_tiles++;
+        
+        this->border_tiles_vec.push_back(hex_ptr);
         
         for (int i = 1; i < row_width; i++) {
             x_offset += 2 * first_row_left_tile->minor_radius;
@@ -112,6 +136,13 @@ void HexMap :: __assembleHexMap(void)
             );
         
             this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+            this->tile_position_x_vec.push_back(hex_ptr->position_x);
+            this->tile_position_y_vec.push_back(hex_ptr->position_y);
+            this->n_tiles++;
+            
+            if (row_width == this->n_layers + 1 or i == row_width - 1) {
+                this->border_tiles_vec.push_back(hex_ptr);
+            }
         }
         
         //  3.2. lower row
@@ -132,6 +163,11 @@ void HexMap :: __assembleHexMap(void)
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+        this->tile_position_x_vec.push_back(hex_ptr->position_x);
+        this->tile_position_y_vec.push_back(hex_ptr->position_y);
+        this->n_tiles++;
+        
+        this->border_tiles_vec.push_back(hex_ptr);
         
         for (int i = 1; i < row_width; i++) {
             x_offset += 2 * first_row_left_tile->minor_radius;
@@ -145,10 +181,356 @@ void HexMap :: __assembleHexMap(void)
             );
         
             this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
+            this->tile_position_x_vec.push_back(hex_ptr->position_x);
+            this->tile_position_y_vec.push_back(hex_ptr->position_y);
+            this->n_tiles++;
+            
+            if (row_width == this->n_layers + 1 or i == row_width - 1) {
+                this->border_tiles_vec.push_back(hex_ptr);
+            }
         }
         
         offset_count++;
     }
+    
+    return;
+}   /* __layTiles() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
+///
+/// \brief Helper method to generate a vector of noise, with values mapped to the closed
+///     interval [0, 1]. Applies a random cosine series approach.
+///
+/// \param n_elements The number of elements in the generated noise vector.
+///
+/// \param n_components The number of components to use in the random cosine series.
+///     Defaults to 64.
+///
+/// \return A vector of noise, with values mapped to the closed interval [0, 1].
+///
+
+std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
+{
+    //  1. generate random amplitude, wave number, direction, and phase vectors
+    std::vector<double> random_amplitude_vec(n_components, 0);
+    std::vector<double> random_wave_number_vec(n_components, 0);
+    std::vector<double> random_direction_vec(n_components, 0);
+    std::vector<double> random_phase_vec(n_components, 0);
+    
+    for (int i = 0; i < n_components; i++) {
+        random_amplitude_vec[i] = AMPLITUDE_BASE * (double)rand() / RAND_MAX;
+        
+        random_wave_number_vec[i] = WAVE_NUMBER_BASE * ((double)rand() / RAND_MAX);
+        
+        random_direction_vec[i] = 2 * M_PI * ((double)rand() / RAND_MAX);
+        
+        random_phase_vec[i] = PHASE_BASE * ((double)rand() / RAND_MAX);
+    }
+    
+    //  2. generate noise vec
+    double amp = 0;
+    double wave_no = 0;
+    double dir = 0;
+    double phase = 0;
+    
+    double x = 0;
+    double y = 0;
+    
+    double max_noise = -1 * std::numeric_limits<double>::infinity();
+    double min_noise = std::numeric_limits<double>::infinity();
+    
+    double noise = 0;
+    std::vector<double> noise_vec(n_elements, 0);
+    
+    for (int i = 0; i < n_elements; i++) {
+        x = this->tile_position_x_vec[i] - this->position_x;
+        y = this->tile_position_y_vec[i] - this->position_y;
+        
+        for (int j = 0; j < n_components; j++) {
+            amp = random_amplitude_vec[j];
+            wave_no = random_wave_number_vec[j];
+            dir = random_direction_vec[j];
+            phase = random_phase_vec[j];
+            
+            noise += amp * cos(wave_no * (x * sin(dir) + y * cos(dir)) + phase);
+        }
+        
+        noise_vec[i] = noise;
+        
+        if (noise > max_noise) {
+            max_noise = noise;
+        }
+        
+        else if (noise < min_noise) {
+            min_noise = noise;
+        }
+        
+        noise = 0;
+    }
+    
+    //  3. normalize noise vec
+    for (int i = 0; i < n_elements; i++) {
+        noise_vec[i] = (noise_vec[i] - min_noise) / (max_noise - min_noise);
+        
+        if (noise_vec[i] < 0) {
+            noise_vec[i] = 0;
+        }
+        else if (noise_vec[i] > 1) {
+            noise_vec[i] = 1;
+        }
+    }
+    
+    return noise_vec;
+}   /* __getNoise() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __procedurallyGenerateTileTypes(void)
+///
+/// \brief Helper method to procedurally generate tile types and set tiles accordingly.
+///
+
+void HexMap :: __procedurallyGenerateTileTypes(void)
+{
+    //  1. get noise vec
+    std::vector<double> noise_vec = this->__getNoise(this->n_tiles);
+    
+    //  2. set tile types based on noise
+    int noise_idx = 0;
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_map_iter_y->second->setTileType(noise_vec[noise_idx]);
+            noise_idx++;
+        }
+    }
+    
+    //  3. set border tile type to ocean
+    for (size_t i = 0; i < this->border_tiles_vec.size(); i++) {
+        this->border_tiles_vec[i]->setTileType(TileType :: OCEAN);
+    }
+    
+    //  4. enforce ocean continuity (i.e. all lake tiles touching ocean become ocean)
+    this->__enforceOceanContinuity();
+    
+    return;
+}   /* __procedurallyGenerateTileTypes() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn
+///
+
+std::vector<double> HexMap :: __getValidMapIndexPositions(
+    double potential_x,
+    double potential_y
+)
+{
+    std::vector<double> map_index_positions = {-1, -1};
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    HexTile* hex_ptr;
+    
+    double distance = 0;
+    
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_ptr = hex_map_iter_y->second;
+            
+            distance = sqrt(
+                pow(hex_ptr->position_x - potential_x, 2) + 
+                pow(hex_ptr->position_y - potential_y, 2)
+            );
+            
+            if (distance <= hex_ptr->minor_radius / 4) {
+                map_index_positions = {hex_ptr->position_x, hex_ptr->position_y};
+                return map_index_positions;
+            }
+        }
+    }
+    
+    return map_index_positions;
+}   /* __isInHexMap() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn bool __isLakeTouchingOcean(HexTile* hex_ptr)
+///
+/// \brief Helper method to check if given tile is a lake tile touching ocean.
+///
+/// \param hex_ptr A pointer to the given tile.
+///
+/// \return true if lake tile touching ocean, false otherwise.
+///
+
+bool HexMap :: __isLakeTouchingOcean(HexTile* hex_ptr)
+{
+    //  1. if not lake tile, return
+    if (not (hex_ptr->tile_type == TileType :: LAKE)) {
+        return false;
+    }
+    
+    //  2. build potential neighbour positions
+    std::vector<double> potential_neighbour_x_vec(6, 0);
+    std::vector<double> potential_neighbour_y_vec(6, 0);
+    
+    for (int i = 0; i < 6; i++) {
+        potential_neighbour_x_vec[i] = hex_ptr->position_x +
+            2 * hex_ptr->minor_radius * cos((60 * i) * (M_PI / 180));
+        
+        potential_neighbour_y_vec[i] = hex_ptr->position_y +
+            2 * hex_ptr->minor_radius * sin((60 * i) * (M_PI / 180));
+    }
+    
+    //  3. scan neighbours for ocean tiles
+    double potential_x = 0;
+    double potential_y = 0;
+    std::vector<double> map_index_positions = {-1, -1};
+    
+    for (int i = 0; i < 6; i++) {
+        potential_x = potential_neighbour_x_vec[i];
+        potential_y = potential_neighbour_y_vec[i];
+        
+        map_index_positions = this->__getValidMapIndexPositions(
+            potential_x,
+            potential_y
+        );
+        
+        if (map_index_positions[0] == -1) {
+            continue;
+        }
+        
+        if (
+            this->hex_map[map_index_positions[0]][map_index_positions[1]]->tile_type ==
+            TileType :: OCEAN
+        ) {
+            return true;
+        }
+    }
+    
+    return false;
+}   /* __isLakeTouchingOcean() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn bool HexMap :: __enforceOceanContinuity(void)
+///
+/// \brief Helper method to scan tiles and enforce ocean continuity. That is to say,
+///     if a lake tile is found to be in contact with an ocean tile, then it becomes
+///     ocean.
+///
+
+void HexMap :: __enforceOceanContinuity(void)
+{
+    std::cout << "enforcing ..." << std::endl;
+    
+    bool tile_changed = false;
+    
+    //  1. scan tiles and enforce (where appropriate)
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    HexTile* hex_ptr;
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_ptr = hex_map_iter_y->second;
+            
+            if (this->__isLakeTouchingOcean(hex_ptr)) {
+                hex_ptr->setTileType(TileType :: OCEAN);
+                tile_changed = true;
+            }
+        }
+    }
+    
+    if (tile_changed) {
+        this->__enforceOceanContinuity();
+    }
+    else {
+        return;
+    }
+}   /* __enforceOceanContinuity() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __assembleHexMap(void)
+///
+/// \brief Helper method to assemble the hex map.
+///
+
+void HexMap :: __assembleHexMap(void)
+{
+    //  1. seed RNG
+    unsigned long long int milliseconds_since_epoch =
+        std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        ).count();
+    srand(milliseconds_since_epoch);
+    
+    //  2. lay tiles
+    this->__layTiles();
+    
+    //  3. procedurally generate types
+    this->__procedurallyGenerateTileTypes();
+    
+    //  4. procedurally generate resources
+    //...
     
     return;
 }   /* __assembleHexMap() */
@@ -219,6 +601,65 @@ HexMap :: HexMap(
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexMap :: process(void)
+///
+/// \brief Method to process HexMap. To be called once per frame;
+///
+
+void HexMap :: process(void)
+{
+    //  1. handle inputs
+    if (inputs_handler_ptr->key_pressed_once_vec[sf::Keyboard::R]) {
+        this->reroll();
+    }
+    
+    //  2. process tiles
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_map_iter_y->second->process();
+        }
+    }
+    
+    return;
+}   /* process() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: reroll(void)
+///
+/// \brief Method to re-roll the hex map.
+///
+
+void HexMap :: reroll(void)
+{
+    this->clear();
+    this->__assembleHexMap();
+    
+    return;
+}   /* reroll() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexMap :: draw(sf::RenderWindow* window_ptr)
 ///
 /// \brief Method to draw the hex map to the render window. To be called only once per
@@ -279,6 +720,10 @@ void HexMap :: clear(void)
         }
     }
     this->hex_map.clear();
+    
+    this->tile_position_x_vec.clear();
+    this->tile_position_y_vec.clear();
+    this->border_tiles_vec.clear();
     
     return;
 }   /* clear() */

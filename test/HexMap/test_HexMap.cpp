@@ -92,6 +92,8 @@ int main(int argc, char** argv)
             ) {
                 while (window.pollEvent(event))
                 {
+                    inputs_handler.process(&event);
+                    
                     //...
                     
                     if (event.type == sf::Event::Closed) {
@@ -99,13 +101,15 @@ int main(int argc, char** argv)
                     }
                 }
                 
-                //...
+                hex_map.process();
                 
                 window.clear();
                 
                 hex_map.draw(&window);
                 
                 window.display();
+                
+                inputs_handler.reset();
                 
                 std::cout << frame << " : " << time_since_run_s << "\r" << std::flush;
                 frame++;

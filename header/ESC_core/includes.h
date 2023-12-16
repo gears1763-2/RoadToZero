@@ -22,6 +22,7 @@
 
 
 //  1. standard includes
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>

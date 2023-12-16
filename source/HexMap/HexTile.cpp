@@ -143,8 +143,9 @@ HexTile :: HexTile(
     //  3. set up and position the tile sprite
     this->__setUpTileSprite();
     
-    //  4. set tile type (default to forest)
+    //  4. set tile type and resource (default to forest and average)
     this->setTileType(TileType :: FOREST);
+    this->setTileResource(TileResource :: AVERAGE);
     
     std::cout << "HexTile constructed at " << this << std::endl;
     
@@ -206,7 +207,98 @@ void HexTile :: setTileType(TileType tile_type)
     }
     
     return;
+}   /* setTileType(TileType) */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: setTileType(double input_value)
+///
+/// \brief Method to set the tile type (by numeric input).
+///
+/// \param input_value A numerical input in the closed interval [0, 1].
+///
+
+void HexTile :: setTileType(double input_value)
+{
+    //  1. check input
+    if (input_value < 0 or input_value > 1) {
+        std::string error_str = "ERROR  HexTile::setTileType()  given input value is ";
+        error_str += "not in the closed interval [0, 1]";
+        
+        #ifdef _WIN32
+            std::cout << error_str << std::endl;
+        #endif  /* _WIN32 */
+        
+        throw std::runtime_error(error_str);
+    }
+    
+    //  2. convert input value to tile type
+    TileType tile_type;
+    
+    std::cout << input_value << std::endl;
+    if (input_value <= tile_type_cumulative_probabilities[0]) {
+        tile_type = TileType :: LAKE;
+    }
+    else if (input_value <= tile_type_cumulative_probabilities[1]) {
+        tile_type = TileType :: PLAINS;
+    }
+    else if (input_value <= tile_type_cumulative_probabilities[2]) {
+        tile_type = TileType :: FOREST;
+    }
+    else {
+        tile_type = TileType :: MOUNTAINS;
+    }
+    
+    //  3. call alternate method
+    this->setTileType(tile_type);
+    
+    return;
+}   /* setTileType(double) */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: setTileResource(TileResource tile_resource)
+///
+/// \brief Method to set the tile resource (by enum value).
+///
+/// \param tile_resource The resource (TileResource) value to attribute to the tile.
+///
+
+void HexTile :: setTileResource(TileResource tile_resource)
+{
+    this->tile_resource = tile_resource;
+    
+    return;
 }   /* setTileType() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: process(void)
+///
+/// \brief Method to process HexTile. To be called once per frame.
+///
+
+void HexTile :: process(void)
+{
+    //...
+
+    return;
+}   /* process() */
 
 // ---------------------------------------------------------------------------------- //
 

@@ -58,6 +58,17 @@ MessagesHandler :: MessagesHandler(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void MessagesHandler :: process(void)
+///
+/// \brief Method to process messages. To be called once per frame.
+///
+
+void MessagesHandler :: process(void)
+{
+    //...
+    
+    return;
+}   /* process() */
 
 // ---------------------------------------------------------------------------------- //
 

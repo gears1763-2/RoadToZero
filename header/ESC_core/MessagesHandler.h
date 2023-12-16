@@ -46,7 +46,7 @@ class MessagesHandler {
         //  2. methods
         MessagesHandler(void);
         
-        //...
+        void process(void);
         
         ~MessagesHandler(void);
     

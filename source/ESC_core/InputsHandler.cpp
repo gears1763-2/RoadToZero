@@ -396,7 +396,7 @@ InputsHandler :: InputsHandler(void)
 ///
 /// \fn process(sf::Event* event_ptr)
 ///
-/// \brief Method to process input events. To be called once per frame.
+/// \brief Method to process input events. To be called once per event.
 ///
 /// \param event_ptr A pointer to the sf::Event class.
 ///

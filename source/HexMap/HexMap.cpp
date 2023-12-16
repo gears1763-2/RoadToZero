@@ -40,7 +40,8 @@ void HexMap :: __layTiles(void)
         this->position_y,
         this->assets_manager_ptr,
         this->inputs_handler_ptr,
-        this->messages_handler_ptr
+        this->messages_handler_ptr,
+        this->render_window_ptr
     );
     
     this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -56,7 +57,8 @@ void HexMap :: __layTiles(void)
             this->position_y,
             this->assets_manager_ptr,
             this->inputs_handler_ptr,
-            this->messages_handler_ptr
+            this->messages_handler_ptr,
+            this->render_window_ptr
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -73,7 +75,8 @@ void HexMap :: __layTiles(void)
             this->position_y,
             this->assets_manager_ptr,
             this->inputs_handler_ptr,
-            this->messages_handler_ptr
+            this->messages_handler_ptr,
+            this->render_window_ptr
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -114,7 +117,8 @@ void HexMap :: __layTiles(void)
             y_offset,
             this->assets_manager_ptr,
             this->inputs_handler_ptr,
-            this->messages_handler_ptr
+            this->messages_handler_ptr,
+            this->render_window_ptr
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -132,7 +136,8 @@ void HexMap :: __layTiles(void)
                 y_offset,
                 this->assets_manager_ptr,
                 this->inputs_handler_ptr,
-                this->messages_handler_ptr
+                this->messages_handler_ptr,
+                this->render_window_ptr
             );
         
             this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -159,7 +164,8 @@ void HexMap :: __layTiles(void)
             y_offset,
             this->assets_manager_ptr,
             this->inputs_handler_ptr,
-            this->messages_handler_ptr
+            this->messages_handler_ptr,
+            this->render_window_ptr
         );
         
         this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -177,7 +183,8 @@ void HexMap :: __layTiles(void)
                 y_offset,
                 this->assets_manager_ptr,
                 this->inputs_handler_ptr,
-                this->messages_handler_ptr
+                this->messages_handler_ptr,
+                this->render_window_ptr
             );
         
             this->hex_map[hex_ptr->position_x][hex_ptr->position_y] = hex_ptr;
@@ -225,13 +232,13 @@ std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
     std::vector<double> random_phase_vec(n_components, 0);
     
     for (int i = 0; i < n_components; i++) {
-        random_amplitude_vec[i] = AMPLITUDE_BASE * (double)rand() / RAND_MAX;
+        random_amplitude_vec[i] = AMPLITUDE_BASE * ((double)rand() / RAND_MAX);
         
         random_wave_number_vec[i] = WAVE_NUMBER_BASE * ((double)rand() / RAND_MAX);
         
         random_direction_vec[i] = 2 * M_PI * ((double)rand() / RAND_MAX);
         
-        random_phase_vec[i] = PHASE_BASE * ((double)rand() / RAND_MAX);
+        random_phase_vec[i] = 2 * M_PI * ((double)rand() / RAND_MAX);
     }
     
     //  2. generate noise vec
@@ -344,7 +351,20 @@ void HexMap :: __procedurallyGenerateTileTypes(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn
+/// \fn std::vector<double> HexMap :: __getValidMapIndexPositions(
+///         double potential_x,
+///         double potential_y
+///     )
+///
+/// \brief Helper method to translate given position into valid index position for a
+//      tile, or otherwise return sentinel values (-1).
+///
+/// \param potential_x The potential x position of the tile.
+///
+/// \param potential_y The potential y position of the tile.
+///
+/// \return A vector of positions, either valid for indexing into the hex map, or
+///     sentinel values (-1).
 ///
 
 std::vector<double> HexMap :: __getValidMapIndexPositions(
@@ -505,6 +525,46 @@ void HexMap :: __enforceOceanContinuity(void)
 // ---------------------------------------------------------------------------------- //
 
 
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __procedurallyGenerateTileResources(void)
+///
+/// \brief Helper method to procedurally generate tile resources and set tiles
+///     accordingly.
+///
+
+void HexMap :: __procedurallyGenerateTileResources(void)
+{
+    //  1. get noise vec
+    std::vector<double> noise_vec = this->__getNoise(this->n_tiles);
+    
+    //  2. set tile resources based on noise
+    int noise_idx = 0;
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_map_iter_y->second->setTileResource(noise_vec[noise_idx]);
+            noise_idx++;
+        }
+    }
+    
+    return;
+}   /* __procedurallyGenerateTileResources() */
+
+// ---------------------------------------------------------------------------------- //
+
+
 
 // ---------------------------------------------------------------------------------- //
 
@@ -516,7 +576,7 @@ void HexMap :: __enforceOceanContinuity(void)
 
 void HexMap :: __assembleHexMap(void)
 {
-    //  1. seed RNG
+    //  1. seed RNG (using milliseconds since 1 Jan 1970)
     unsigned long long int milliseconds_since_epoch =
         std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()
@@ -530,7 +590,7 @@ void HexMap :: __assembleHexMap(void)
     this->__procedurallyGenerateTileTypes();
     
     //  4. procedurally generate resources
-    //...
+    this->__procedurallyGenerateTileResources();
     
     return;
 }   /* __assembleHexMap() */
@@ -550,7 +610,8 @@ void HexMap :: __assembleHexMap(void)
 ///         int n_layers,
 ///         AssetsManager* assets_manager_ptr,
 ///         InputsHandler* inputs_handler_ptr,
-///         MessagesHandler* messages_handler_ptr
+///         MessagesHandler* messages_handler_ptr,
+///         sf::RenderWindow* render_window_ptr
 ///     )
 ///
 /// \brief Constructor for the HexMap class.
@@ -563,18 +624,22 @@ void HexMap :: __assembleHexMap(void)
 ///
 /// \param messages_handler_ptr Pointer to the messages handler.
 ///
+/// \param render_window_ptr Pointer to the render window.
+///
 
 HexMap :: HexMap(
     int n_layers,
     AssetsManager* assets_manager_ptr,
     InputsHandler* inputs_handler_ptr,
-    MessagesHandler* messages_handler_ptr
+    MessagesHandler* messages_handler_ptr,
+    sf::RenderWindow* render_window_ptr
 )
 {
     //  1. set attributes
     this->assets_manager_ptr = assets_manager_ptr;
     this->inputs_handler_ptr = inputs_handler_ptr;
     this->messages_handler_ptr = messages_handler_ptr;
+    this->render_window_ptr = render_window_ptr;
     
     this->frame = 0;
     
@@ -609,9 +674,7 @@ HexMap :: HexMap(
 void HexMap :: process(void)
 {
     //  1. handle inputs
-    if (inputs_handler_ptr->key_pressed_once_vec[sf::Keyboard::R]) {
-        this->reroll();
-    }
+    //...
     
     //  2. process tiles
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
@@ -660,15 +723,12 @@ void HexMap :: reroll(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexMap :: draw(sf::RenderWindow* window_ptr)
+/// \fn void HexMap :: toggleResourceOverlay(void)
 ///
-/// \brief Method to draw the hex map to the render window. To be called only once per
-///     frame!
-///
-/// \param window_ptr A pointer to the render window.
+/// \brief Method to toggle the hex map resource overlay.
 ///
 
-void HexMap :: draw(sf::RenderWindow* window_ptr)
+void HexMap :: toggleResourceOverlay(void)
 {
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
     std::map<double, HexTile*>::iterator hex_map_iter_y;
@@ -682,7 +742,40 @@ void HexMap :: draw(sf::RenderWindow* window_ptr)
             hex_map_iter_y != hex_map_iter_x->second.end();
             hex_map_iter_y++
         ) {
-            hex_map_iter_y->second->draw(window_ptr);
+            hex_map_iter_y->second->toggleResourceOverlay();
+        }
+    }
+    
+    return;
+}   /* toggleResourceOverlay() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: draw(void)
+///
+/// \brief Method to draw the hex map to the render window. To be called only once per
+///     frame!
+///
+
+void HexMap :: draw(void)
+{
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_map_iter_y->second->draw();
         }
     }
     

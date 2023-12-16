@@ -50,12 +50,13 @@ int main(int argc, char** argv)
     
     
     try {
-        //  1. construct
+        //  1. construct, load/open some test assets
         AssetsManager assets_manager;
         InputsHandler inputs_handler;
         MessagesHandler messages_handler;
         
-        HexMap hex_map(6, &assets_manager, &inputs_handler, &messages_handler);
+        assets_manager.loadFont("assets/fonts/DroidSansMono.ttf", "DroidSansMono");
+        
         
         //  2. test game loop
         sf::Clock clock;
@@ -82,7 +83,13 @@ int main(int argc, char** argv)
         unsigned long long int frame = 0;
         double time_since_run_s = 0;
         
-        //...
+        HexMap hex_map(
+            6,
+            &assets_manager,
+            &inputs_handler,
+            &messages_handler,
+            &window
+        );
         
         while (window.isOpen()) {
             time_since_run_s = clock.getElapsedTime().asSeconds();
@@ -94,8 +101,6 @@ int main(int argc, char** argv)
                 {
                     inputs_handler.process(&event);
                     
-                    //...
-                    
                     if (event.type == sf::Event::Closed) {
                         window.close();
                     }
@@ -103,9 +108,17 @@ int main(int argc, char** argv)
                 
                 hex_map.process();
                 
+                if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Q]) {
+                    hex_map.reroll();
+                }
+                
+                if (inputs_handler.key_pressed_once_vec[sf::Keyboard::R]) {
+                    hex_map.toggleResourceOverlay();
+                }
+                
                 window.clear();
                 
-                hex_map.draw(&window);
+                hex_map.draw();
                 
                 window.display();
                 

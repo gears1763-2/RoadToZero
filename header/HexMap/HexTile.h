@@ -47,7 +47,7 @@ const sf::Color OCEAN_BLUE(0, 51, 102); ///< The base colour of an ocean (water)
 const sf::Color PLAINS_YELLOW(245, 222, 133); ///< The base colour of a plains tile.
 
 const std::vector<double> tile_type_cumulative_probabilities = {
-    0.30,  // LAKE
+    0.35,  // LAKE
     0.50,  // PLAINS
     0.75,  // FOREST
     1.00   // MOUNTAINS
@@ -69,6 +69,14 @@ enum TileResource {
     N_TILE_RESOURCES ///< A simple hack to get the number of elements in TileResource.
 };
 
+const std::vector<double> tile_resource_cumulative_probabilities = {
+    0.10,  // POOR
+    0.30,  // BELOW_AVERAGE
+    0.70,  // AVERAGE
+    0.90,  // ABOVE_AVERAGE
+    1.00   // GOOD
+};
+
 
 ///
 /// \class HexTile
@@ -82,11 +90,14 @@ class HexTile {
         AssetsManager* assets_manager_ptr; ///< A pointer to the assets manager.
         InputsHandler* inputs_handler_ptr; ///< A pointer to the inputs handler.
         MessagesHandler* messages_handler_ptr; ///< A pointer to the messages handler.
+        sf::RenderWindow* render_window_ptr; ///< A pointer to the render window.
         
         
         //  2. methods
         void __setUpNodeSprite(void);
         void __setUpTileSprite(void);
+        void __setUpResourceChip(void);
+        void __setResourceText(void);
     
     
     public:
@@ -95,6 +106,8 @@ class HexTile {
         TileResource tile_resource;
         
         bool show_node; ///< A boolean which indicates whether or not to show the tile node.
+        bool show_resource; ///< A boolean which indicates whether or not to show resource value.
+        bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
         
         int frame; ///< The current frame of this object.
         
@@ -106,10 +119,19 @@ class HexTile {
         
         sf::CircleShape node_sprite; ///< A circle shape to mark the tile node.
         sf::ConvexShape tile_sprite; ///< A convex shape which represents the tile.
+        sf::CircleShape resource_chip_sprite; ///< A circle shape which represents a resource chip.
+        sf::Text resource_text; ///< A text representation of the resource.
         
         
         //  2. methods
-        HexTile(double, double, AssetsManager*, InputsHandler*, MessagesHandler*);
+        HexTile(
+            double,
+            double,
+            AssetsManager*,
+            InputsHandler*,
+            MessagesHandler*,
+            sf::RenderWindow*
+        );
         
         void setTileType(TileType);
         void setTileType(double);
@@ -117,8 +139,11 @@ class HexTile {
         void setTileResource(TileResource);
         void setTileResource(double);
         
+        void toggleResourceOverlay(void);
+        void assess(void);
+        
         void process(void);
-        void draw(sf::RenderWindow*);
+        void draw(void);
         
         ~HexTile(void);
 };

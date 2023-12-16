@@ -74,11 +74,113 @@ void HexTile :: __setUpTileSprite(void)
         );
     }
     
-    this->tile_sprite.setOutlineThickness(2);
-    this->tile_sprite.setOutlineColor(sf::Color(0, 0, 0, 255));
+    this->tile_sprite.setOutlineThickness(1);
+    this->tile_sprite.setOutlineColor(sf::Color(175, 175, 175, 255));
     
     return;
 }   /* __setUpTileSprite() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpResourceChip(void)
+///
+/// \brief Helper method to set up resource chip sprite.
+///
+
+void HexTile :: __setUpResourceChip(void)
+{
+    this->resource_chip_sprite.setRadius(2 * this->minor_radius / 3);
+    
+    this->resource_chip_sprite.setOrigin(
+        this->resource_chip_sprite.getLocalBounds().width / 2,
+        this->resource_chip_sprite.getLocalBounds().height / 2
+    );
+    
+    this->resource_chip_sprite.setPosition(this->position_x, this->position_y);
+    
+    this->resource_chip_sprite.setFillColor(sf::Color(175, 175, 175, 175));
+    
+    return;
+}   /* __setUpResourceChip() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setResourceText(void)
+///
+/// \brief Helper method to set up resource text.
+///
+
+void HexTile :: __setResourceText(void)
+{
+    this->resource_text.setFont(*(assets_manager_ptr->getFont("DroidSansMono")));
+    
+    switch (this->tile_resource) {
+        case (TileResource :: POOR): {
+            this->resource_text.setString("-2");
+            
+            break;
+        }
+        
+        case (TileResource :: BELOW_AVERAGE): {
+            this->resource_text.setString("-1");
+            
+            break;
+        }
+        
+        case (TileResource :: AVERAGE): {
+            this->resource_text.setString("0");
+            
+            break;
+        }
+        
+        case (TileResource :: ABOVE_AVERAGE): {
+            this->resource_text.setString("+1");
+            
+            break;
+        }
+        
+        case (TileResource :: GOOD): {
+            this->resource_text.setString("+2");
+            
+            break;
+        }
+        
+        default: {
+            this->resource_text.setString("?");
+            
+            break;
+        }
+    }
+    
+    if (not this->resource_assessed) {
+        this->resource_text.setString("?");
+    }
+    
+    this->resource_text.setCharacterSize(16);
+    
+    this->resource_text.setOrigin(
+        this->resource_text.getLocalBounds().width / 2,
+        this->resource_text.getLocalBounds().height / 2
+    );
+    
+    this->resource_text.setFillColor(sf::Color(0, 0, 0, 255));
+    
+    this->resource_text.setPosition(
+        this->position_x,
+        this->position_y - 4
+    );
+    
+    return;
+}   /* __setResourceText() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -96,7 +198,8 @@ void HexTile :: __setUpTileSprite(void)
 ///         double position_y,
 ///         AssetsManager* assets_manager_ptr,
 ///         InputsHandler* inputs_handler_ptr,
-///         MessagesHandler* messages_handler_ptr
+///         MessagesHandler* messages_handler_ptr,
+///         sf::RenderWindow* render_window_ptr
 ///     )
 ///
 /// \brief Constructor for the HexTile class.
@@ -113,21 +216,27 @@ void HexTile :: __setUpTileSprite(void)
 ///
 /// \param messages_handler_ptr Pointer to the messages handler.
 ///
+/// \param render_window_ptr Pointer to the render window.
+///
 
 HexTile :: HexTile(
     double position_x,
     double position_y,
     AssetsManager* assets_manager_ptr,
     InputsHandler* inputs_handler_ptr,
-    MessagesHandler* messages_handler_ptr
+    MessagesHandler* messages_handler_ptr,
+    sf::RenderWindow* render_window_ptr
 )
 {
     //  1. set attributes
     this->assets_manager_ptr = assets_manager_ptr;
     this->inputs_handler_ptr = inputs_handler_ptr;
     this->messages_handler_ptr = messages_handler_ptr;
+    this->render_window_ptr = render_window_ptr;
     
     this->show_node = false;
+    this->show_resource = false;
+    this->resource_assessed = false;
     
     this->frame = 0;
     
@@ -137,13 +246,13 @@ HexTile :: HexTile(
     this->major_radius = 32;
     this->minor_radius = (sqrt(3) / 2) * this->major_radius;
     
-    //  2. set up and position the node sprite
+    //  2. set up and position drawable attributes
     this->__setUpNodeSprite();
-    
-    //  3. set up and position the tile sprite
     this->__setUpTileSprite();
+    this->__setUpResourceChip();
+    this->__setResourceText();
     
-    //  4. set tile type and resource (default to forest and average)
+    //  3. set tile type and resource (default to forest and average)
     this->setTileType(TileType :: FOREST);
     this->setTileResource(TileResource :: AVERAGE);
     
@@ -240,7 +349,6 @@ void HexTile :: setTileType(double input_value)
     //  2. convert input value to tile type
     TileType tile_type;
     
-    std::cout << input_value << std::endl;
     if (input_value <= tile_type_cumulative_probabilities[0]) {
         tile_type = TileType :: LAKE;
     }
@@ -277,9 +385,107 @@ void HexTile :: setTileType(double input_value)
 void HexTile :: setTileResource(TileResource tile_resource)
 {
     this->tile_resource = tile_resource;
+    this->__setResourceText();
     
     return;
-}   /* setTileType() */
+}   /* setTileResource(TileResource) */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: setTileResource(double input_value)
+///
+/// \brief Method to set the tile resource (by numeric input).
+///
+/// \param input_value A numerical input in the closed interval [0, 1].
+///
+
+void HexTile :: setTileResource(double input_value)
+{
+    //  1. check input
+    if (input_value < 0 or input_value > 1) {
+        std::string error_str = "ERROR  HexTile::setTileResource()  given input value is ";
+        error_str += "not in the closed interval [0, 1]";
+        
+        #ifdef _WIN32
+            std::cout << error_str << std::endl;
+        #endif  /* _WIN32 */
+        
+        throw std::runtime_error(error_str);
+    }
+    
+    //  2. convert input value to tile resource
+    TileResource tile_resource;
+    
+    std::cout << input_value << std::endl;
+    if (input_value <= tile_resource_cumulative_probabilities[0]) {
+        tile_resource = TileResource :: POOR;
+    }
+    else if (input_value <= tile_resource_cumulative_probabilities[1]) {
+        tile_resource = TileResource :: BELOW_AVERAGE;
+    }
+    else if (input_value <= tile_resource_cumulative_probabilities[2]) {
+        tile_resource = TileResource :: AVERAGE;
+    }
+    else if (input_value <= tile_resource_cumulative_probabilities[3]) {
+        tile_resource = TileResource :: ABOVE_AVERAGE;
+    }
+    else {
+        tile_resource = TileResource :: GOOD;
+    }
+    
+    //  3. call alternate method
+    this->setTileResource(tile_resource);
+    
+    return;
+}   /* setTileResource(double) */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: toggleResourceOverlay(void)
+///
+/// \brief Method to toggle the tile resource overlay.
+///
+
+void HexTile :: toggleResourceOverlay(void)
+{
+    if (this->show_resource) {
+        this->show_resource = false;
+    }
+    else {
+        this->show_resource = true;
+    }
+    
+    return;
+}   /* toggleResourceOverlay() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: assess(void)
+///
+/// \brief Method to assess the tile's resource.
+///
+
+void HexTile :: assess(void)
+{
+    this->resource_assessed = true;
+    
+    return;
+}   /* assess() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -307,22 +513,26 @@ void HexTile :: process(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexTile :: draw(sf::RenderWindow* window_ptr)
+/// \fn void HexTile :: draw(void)
 ///
 /// \brief Method to draw the hex tile to the render window. To be called only once per
 ///     frame!
 ///
-/// \param window_ptr A pointer to the render window.
-///
 
-void HexTile :: draw(sf::RenderWindow* window_ptr)
+void HexTile :: draw(void)
 {
     //  1. draw hex
-    window_ptr->draw(this->tile_sprite);
+    this->render_window_ptr->draw(this->tile_sprite);
     
     //  2. draw node
     if (this->show_node) {
-        window_ptr->draw(this->node_sprite);
+        this->render_window_ptr->draw(this->node_sprite);
+    }
+    
+    //  3. draw resource
+    if (this->show_resource) {
+        this->render_window_ptr->draw(this->resource_chip_sprite);
+        this->render_window_ptr->draw(this->resource_text);
     }
     
     this->frame++;

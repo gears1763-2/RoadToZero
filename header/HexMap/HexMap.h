@@ -23,8 +23,7 @@
 
 
 const double AMPLITUDE_BASE = 1; ///< A base amplitude value to use in procedural generation (based on random cosine series).
-const double WAVE_NUMBER_BASE = (2 * M_PI) / 32; ///< A base wave number to use in procedural generation(based on random cosine series).
-const double PHASE_BASE = 64; ///< A base phase to use in procedural generation(based on random cosine series).
+const double WAVE_NUMBER_BASE = (2.0 * M_PI) / 64; ///< A base wave number to use in procedural generation(based on random cosine series).
 
 
 ///
@@ -39,6 +38,7 @@ class HexMap {
         AssetsManager* assets_manager_ptr; ///< A pointer to the assets manager.
         InputsHandler* inputs_handler_ptr; ///< A pointer to the inputs handler.
         MessagesHandler* messages_handler_ptr; ///< A pointer to the messages handler.
+        sf::RenderWindow* render_window_ptr; ///< A pointer to the render window.
         
         
         //  2. methods
@@ -73,12 +73,19 @@ class HexMap {
         
         
         //  2. methods
-        HexMap(int, AssetsManager*, InputsHandler*, MessagesHandler*);
+        HexMap(
+            int,
+            AssetsManager*,
+            InputsHandler*,
+            MessagesHandler*,
+            sf::RenderWindow*
+        );
         
         void process(void);
         void reroll(void);
+        void toggleResourceOverlay(void);
         
-        void draw(sf::RenderWindow*);
+        void draw(void);
         void clear(void);
         
         ~HexMap(void);

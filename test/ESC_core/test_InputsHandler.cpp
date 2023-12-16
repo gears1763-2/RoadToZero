@@ -115,9 +115,12 @@ int main(int argc, char** argv)
                 window.display();
                 
                 inputs_handler.printKeysPressed();
+                
                 if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Enter]) {
                     std::cout << "Enter" << std::endl;
                 }
+                
+                
                 
                 inputs_handler.reset();
                 

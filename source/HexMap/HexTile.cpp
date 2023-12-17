@@ -603,8 +603,8 @@ void HexTile :: process(void)
 ///
 /// \fn void HexTile :: draw(void)
 ///
-/// \brief Method to draw the hex tile to the render window. To be called only once per
-///     frame!
+/// \brief Method to draw the hex tile to the render window. To be called once per
+///     frame.
 ///
 
 void HexTile :: draw(void)

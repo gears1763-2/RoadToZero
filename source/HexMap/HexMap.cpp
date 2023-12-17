@@ -25,6 +25,24 @@
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn
+///
+
+void HexMap :: __setUpGlassScreen(void)
+{
+    this->glass_screen.setSize(sf::Vector2f(GAME_WIDTH, GAME_HEIGHT));
+    this->glass_screen.setFillColor(sf::Color(40, 40, 40, 40));
+    
+    return;
+}   /* __setUpGlassScreen() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexMap :: __layTiles(void)
 ///
 /// \brief Helper method to lay the hex tiles down to generate the game world.
@@ -864,6 +882,9 @@ HexMap :: HexMap(
     //  2. assemble n layer hex map
     this->__assembleHexMap();
     
+    //  3. set up and position drawable attributes
+    this->__setUpGlassScreen();
+    
     std::cout << "HexMap constructed at " << this << std::endl;
     
     return;
@@ -900,7 +921,7 @@ void HexMap :: assess(void)
 ///
 /// \fn void HexMap :: process(void)
 ///
-/// \brief Method to process HexMap. To be called once per frame;
+/// \brief Method to process HexMap. To be called once per frame.
 ///
 
 void HexMap :: process(void)
@@ -989,8 +1010,8 @@ void HexMap :: toggleResourceOverlay(void)
 ///
 /// \fn void HexMap :: draw(void)
 ///
-/// \brief Method to draw the hex map to the render window. To be called only once per
-///     frame!
+/// \brief Method to draw the hex map to the render window. To be called once per
+///     frame.
 ///
 
 void HexMap :: draw(void)
@@ -1017,6 +1038,9 @@ void HexMap :: draw(void)
     if (selected_tile_ptr != NULL) {
         selected_tile_ptr->draw();
     }
+    
+    //  3. draw glass screen
+    this->render_window_ptr->draw(this->glass_screen);
     
     this->frame++;
     return;

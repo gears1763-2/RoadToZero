@@ -62,7 +62,10 @@ int main(int argc, char** argv)
         //  2. test game loop
         sf::Clock clock;
         sf::Event event;
-        sf::RenderWindow window(sf::VideoMode(1200, 800), "Testing AssetsManager");
+        sf::RenderWindow window(
+            sf::VideoMode(GAME_WIDTH, GAME_HEIGHT),
+            "Testing HexMap"
+        );
         
         double screen_width = window.getSize().x;
         double screen_height = window.getSize().y;

@@ -38,6 +38,8 @@ class HexMap {
         
         
         //  2. methods
+        void __setUpGlassScreen(void);
+        
         void __layTiles(void);
         
         std::vector<double> __getNoise(int, int=128);
@@ -65,6 +67,8 @@ class HexMap {
         
         double position_x; ///< The x position of the hex map's origin (i.e. central) tile.
         double position_y; ///< The y position of the hex map's origin (i.e. central) tile.
+        
+        sf::RectangleShape glass_screen; ///< To give the effect of an old glass screen over the hex map.
         
         std::vector<double> tile_position_x_vec; ///< A vector of tile x positions.
         std::vector<double> tile_position_y_vec; ///< A vector of tile y position.

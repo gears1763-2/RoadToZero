@@ -166,6 +166,50 @@ $(OBJ_ASSETSMANAGER) $(OBJ_INPUTSHANDLER) $(OBJ_MESSAGESHANDLER) $(OBJ_TESTING_U
 
 #### ==== END HexMap ==== ####
 
+
+
+#### ==== ContextMenu ==== ####
+
+SRC_CONTEXTMENU = source/ContextMenu/ContextMenu.cpp
+OBJ_CONTEXTMENU = object/ContextMenu/ContextMenu.o
+
+.PHONY: ContextMenu
+ContextMenu: $(SRC_CONTEXTMENU)
+	$(CXX) $(CXXFLAGS) -c $(SRC_CONTEXTMENU) -o $(OBJ_CONTEXTMENU)
+
+
+SRC_TEST_CONTEXTMENU = test/ContextMenu/test_ContextMenu.cpp
+OUT_TEST_CONTEXTMENU = test/bin/test_ContextMenu.out
+
+.PHONY: TEST_ContextMenu
+TEST_ContextMenu: ContextMenu HexMap HexTile AssetsManager InputsHandler MessagesHandler testing_utils
+	$(CXX) $(CXXFLAGS) $(SRC_TEST_CONTEXTMENU) $(OBJ_CONTEXTMENU) $(OBJ_HEXMAP) \
+$(OBJ_HEXTILE) $(OBJ_ASSETSMANAGER) $(OBJ_INPUTSHANDLER) $(OBJ_MESSAGESHANDLER) \
+$(OBJ_TESTING_UTILS) -o $(OUT_TEST_CONTEXTMENU) $(SFML)
+
+#### ==== END ContextMenu ==== ####
+
+
+
+#### ==== Game ==== ####
+
+OBJ_ALL = $(OBJ_HEXMAP) \
+          $(OBJ_HEXTILE) \
+          $(OBJ_CONTEXTMENU) \
+          $(OBJ_ASSETSMANAGER) \
+          $(OBJ_INPUTSHANDLER) \
+          $(OBJ_MESSAGESHANDLER)
+
+#### ==== END Game ==== ####
+
+
+
+#### ==== Main ==== ####
+
+#...
+
+#### ==== END Main ==== ####
+
 ## ======== END BUILD =============================================================== ##
 
 
@@ -193,6 +237,7 @@ compress:
 dirs:
 	mkdir -pv bin
 	mkdir -pv object
+	mkdir -pv object/ContextMenu
 	mkdir -pv object/ESC_core
 	mkdir -pv object/HexMap
 	mkdir -pv test/bin
@@ -243,5 +288,12 @@ test_HexMap:
 	make dirs
 	make TEST_HexMap
 	$(OUT_TEST_HEXMAP)
+
+
+.PHONY: test_ContextMenu
+test_ContextMenu:
+	make dirs
+	make TEST_ContextMenu
+	$(OUT_TEST_CONTEXTMENU)
 
 ## ======== END TARGETS ============================================================= ##

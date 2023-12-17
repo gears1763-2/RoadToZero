@@ -26,12 +26,6 @@
 #include "../ESC_core/MessagesHandler.h"
 
 
-const sf::Color MENU_FRAME_GREY(185, 187, 182); ///< The base colour of the context menu frame.
-const sf::Color MONOCHROME_SCREEN_BACKGROUND(40, 40, 40); ///< The base colour of old monochrome screens.
-const sf::Color VISUAL_SCREEN_FRAME_GREY(151, 151, 143); ///< The base colour of the framing of the visual screen.
-const sf::Color MONOCHROME_TEXT_GREEN(0, 255, 102); ///< The base colour of old monochrome text (green).
-
-
 ///
 /// \class ContextMenu
 ///

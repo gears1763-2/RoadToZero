@@ -25,7 +25,9 @@
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn
+/// \fn void HexMap :: __setUpGlassScreen(void)
+///
+/// \brief Helper method to set up glass screen effect (drawable).
 ///
 
 void HexMap :: __setUpGlassScreen(void)
@@ -1033,7 +1035,7 @@ void HexMap :: draw(void)
         }
     }
     
-    //  2. redraw selected tile on top
+    //  2. redraw selected tile
     HexTile* selected_tile_ptr = this->__getSelectedTile();
     if (selected_tile_ptr != NULL) {
         selected_tile_ptr->draw();

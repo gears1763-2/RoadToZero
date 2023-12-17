@@ -25,9 +25,6 @@
 #include "includes.h"
 
 
-const double FLOAT_TOLERANCE = 1e-6; ///< Tolerance for floating point equality tests.
-
-
 #ifdef _WIN32
     void activateVirtualTerminal(void);
 #endif  /* _WIN32 */

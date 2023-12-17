@@ -618,10 +618,9 @@ void ContextMenu :: process(void)
             game_menu_string                       += "                                \n";
             game_menu_string                       += "                                \n";
             game_menu_string                       += "                                \n";
+            game_menu_string                       += "[Q]:    QUIT                    \n";
             game_menu_string                       += "                                \n";
             game_menu_string                       += "[ESC]:  CLOSE MENU              \n";
-            game_menu_string                       += "[Q]:    QUIT                    \n";
-            
             
             this->console_message = game_menu_string;
         }

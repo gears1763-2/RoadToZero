@@ -142,8 +142,8 @@ int main(int argc, char** argv)
                 
                 window.clear();
                 
+                hex_map.draw(); // draw hex map before context menu!
                 context_menu.draw();
-                hex_map.draw();
                 
                 window.display();
                 

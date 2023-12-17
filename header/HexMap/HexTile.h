@@ -41,19 +41,6 @@ enum TileType {
     N_TILE_TYPES ///< A simple hack to get the number of elements in TileType.
 };
 
-const sf::Color FOREST_GREEN(34, 139, 34); ///< The base colour of a forest tile.
-const sf::Color LAKE_BLUE(0, 102, 204); ///< The base colour of a lake (water) tile.
-const sf::Color MOUNTAINS_GREY(97, 110, 113); ///< The base colour of a mountains tile.
-const sf::Color OCEAN_BLUE(0, 51, 102); ///< The base colour of an ocean (water) tile.
-const sf::Color PLAINS_YELLOW(245, 222, 133); ///< The base colour of a plains tile.
-
-const std::vector<double> tile_type_cumulative_probabilities = {
-    0.25,  // LAKE
-    0.50,  // PLAINS
-    0.75,  // FOREST
-    1.00   // MOUNTAINS
-};
-
 
 ///
 /// \enum TileResource
@@ -68,14 +55,6 @@ enum TileResource {
     ABOVE_AVERAGE, ///< An above average resource value.
     GOOD, ///< A good resource value.
     N_TILE_RESOURCES ///< A simple hack to get the number of elements in TileResource.
-};
-
-const std::vector<double> tile_resource_cumulative_probabilities = {
-    0.10,  // POOR
-    0.30,  // BELOW_AVERAGE
-    0.70,  // AVERAGE
-    0.90,  // ABOVE_AVERAGE
-    1.00   // GOOD
 };
 
 

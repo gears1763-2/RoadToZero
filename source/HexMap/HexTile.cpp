@@ -109,7 +109,7 @@ void HexTile :: __setUpSelectOutlineSprite(void)
     }
     
     this->select_outline_sprite.setOutlineThickness(4);
-    this->select_outline_sprite.setOutlineColor(sf::Color(255, 0, 0, 255));
+    this->select_outline_sprite.setOutlineColor(MONOCHROME_TEXT_RED);
     
     this->select_outline_sprite.setFillColor(sf::Color(0, 0, 0, 0));
     
@@ -625,14 +625,12 @@ void HexTile :: draw(void)
     
     //  4. draw selection outline
     if (this->is_selected) {
-        this->select_outline_sprite.setOutlineColor(
-            sf::Color(
-                255, 
-                0, 
-                0, 
-                255 * pow(cos((M_PI * this->frame) / (1.5 * FRAMES_PER_SECOND)), 2)
-            )
-        );
+        sf::Color outline_colour = this->select_outline_sprite.getOutlineColor();
+        
+        outline_colour.a =
+            255 * pow(cos((M_PI * this->frame) / (1.5 * FRAMES_PER_SECOND)), 2);
+        
+        this->select_outline_sprite.setOutlineColor(outline_colour);
         
         this->render_window_ptr->draw(this->select_outline_sprite);
     }

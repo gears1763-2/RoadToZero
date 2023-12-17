@@ -19,6 +19,7 @@
 #define HEXTILE_H
 
 
+#include "../ESC_core/constants.h"
 #include "../ESC_core/includes.h"
 #include "../ESC_core/AssetsManager.h"
 #include "../ESC_core/InputsHandler.h"
@@ -96,8 +97,11 @@ class HexTile {
         //  2. methods
         void __setUpNodeSprite(void);
         void __setUpTileSprite(void);
-        void __setUpResourceChip(void);
+        void __setUpSelectOutlineSprite(void);
+        void __setUpResourceChipSprite(void);
         void __setResourceText(void);
+        
+        bool __isClicked(void);
     
     
     public:
@@ -108,6 +112,7 @@ class HexTile {
         bool show_node; ///< A boolean which indicates whether or not to show the tile node.
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
+        bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         
         int frame; ///< The current frame of this object.
         
@@ -119,6 +124,7 @@ class HexTile {
         
         sf::CircleShape node_sprite; ///< A circle shape to mark the tile node.
         sf::ConvexShape tile_sprite; ///< A convex shape which represents the tile.
+        sf::ConvexShape select_outline_sprite; ///< A convex shape which outlines the tile when selected.
         sf::CircleShape resource_chip_sprite; ///< A circle shape which represents a resource chip.
         sf::Text resource_text; ///< A text representation of the resource.
         

@@ -430,11 +430,19 @@ void InputsHandler :: process(sf::Event* event_ptr)
                 std::cout << "left click        " << std::endl;
             }
             
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+            {
+                this->mouse_right_click = true;
+                
+                std::cout << "right click        " << std::endl;
+            }
+            
             break;
         }
         
         case (sf::Event::MouseButtonReleased): {
             this->mouse_left_click = false;
+            this->mouse_right_click = false;
             
             break;
         }
@@ -494,6 +502,7 @@ void InputsHandler :: printKeysPressed(void)
 void InputsHandler :: reset(void)
 {
     this->mouse_left_click = false;
+    this->mouse_right_click = false;
     
     for (size_t i = 0; i < this->key_press_vec.size(); i++) {
         this->key_pressed_once_vec[i] = false;

@@ -19,6 +19,7 @@
 #define ASSETSMANAGER_H
 
 
+#include "constants.h"
 #include "includes.h"
 
 

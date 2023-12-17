@@ -19,6 +19,7 @@
 #define INPUTSHANDLER_H
 
 
+#include "constants.h"
 #include "includes.h"
 
 
@@ -41,6 +42,7 @@ class InputsHandler {
     public:
         //  1. attributes
         bool mouse_left_click; ///< A boolean which indicates if the mouse left button has been clicked.
+        bool mouse_right_click; ///< A boolean which indicates if the mouse right button has been clicked.
         
         std::vector<bool> key_pressed_once_vec; ///< A vector (bool) which indicates which keys have been pressed once. Useful for discrete inputs.
         std::vector<bool> key_press_vec; ///< A vector <bool> which indicates which keys are currently pressed. Useful for smooth movement.

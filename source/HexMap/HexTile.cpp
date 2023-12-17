@@ -87,12 +87,48 @@ void HexTile :: __setUpTileSprite(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexTile :: __setUpResourceChip(void)
+/// \fn void HexTile :: __setUpSelectOutlineSprite(void)
+///
+/// \brief Helper method to set up select outline sprite.
+///
+
+void HexTile :: __setUpSelectOutlineSprite(void)
+{
+    int n_points = 6;
+    
+    this->select_outline_sprite.setPointCount(n_points);
+    
+    for (int i = 0; i < n_points; i++) {
+        this->select_outline_sprite.setPoint(
+            i,
+            sf::Vector2f(
+                this->position_x + this->major_radius * cos((30 + 60 * i) * (M_PI / 180)),
+                this->position_y + this->major_radius * sin((30 + 60 * i) * (M_PI / 180))
+            )
+        );
+    }
+    
+    this->select_outline_sprite.setOutlineThickness(4);
+    this->select_outline_sprite.setOutlineColor(sf::Color(255, 0, 0, 255));
+    
+    this->select_outline_sprite.setFillColor(sf::Color(0, 0, 0, 0));
+    
+    return;
+}   /* __setUpSelectOutline() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpResourceChipSprite(void)
 ///
 /// \brief Helper method to set up resource chip sprite.
 ///
 
-void HexTile :: __setUpResourceChip(void)
+void HexTile :: __setUpResourceChipSprite(void)
 {
     this->resource_chip_sprite.setRadius(2 * this->minor_radius / 3);
     
@@ -184,6 +220,40 @@ void HexTile :: __setResourceText(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn bool HexTile :: __isClicked(void)
+///
+/// \brief Helper method to determine if tile was clicked on.
+///
+/// \return Boolean indicating whether or not tile was clicked on.
+///
+
+bool HexTile :: __isClicked(void)
+{
+    sf::Vector2i mouse_position = sf::Mouse::getPosition(*render_window_ptr);
+        
+    double mouse_x = mouse_position.x;
+    double mouse_y = mouse_position.y;
+    
+    double distance = sqrt(
+        pow(this->position_x - mouse_x, 2) +
+        pow(this->position_y - mouse_y, 2)
+    );
+    
+    if (distance < this->minor_radius) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}   /* __isClicked() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -236,7 +306,8 @@ HexTile :: HexTile(
     
     this->show_node = false;
     this->show_resource = false;
-    this->resource_assessed = true;
+    this->resource_assessed = false;
+    this->is_selected = false;
     
     this->frame = 0;
     
@@ -249,7 +320,8 @@ HexTile :: HexTile(
     //  2. set up and position drawable attributes
     this->__setUpNodeSprite();
     this->__setUpTileSprite();
-    this->__setUpResourceChip();
+    this->__setUpSelectOutlineSprite();
+    this->__setUpResourceChipSprite();
     this->__setResourceText();
     
     //  3. set tile type and resource (default to forest and average)
@@ -482,6 +554,7 @@ void HexTile :: toggleResourceOverlay(void)
 void HexTile :: assess(void)
 {
     this->resource_assessed = true;
+    this->__setResourceText();
     
     return;
 }   /* assess() */
@@ -500,8 +573,24 @@ void HexTile :: assess(void)
 
 void HexTile :: process(void)
 {
-    //...
-
+    //  1. handle inputs
+    if (inputs_handler_ptr->mouse_left_click) {
+        if (this->__isClicked()) {
+            std::cout << "Tile (" << this->position_x << ", " << this->position_y <<
+                ") was selected" << std::endl;
+            
+            this->is_selected = true;
+        }
+        
+        else {
+            this->is_selected = false;
+        }
+    }
+    
+    if (inputs_handler_ptr->mouse_right_click) {
+        this->is_selected = false;
+    }
+    
     return;
 }   /* process() */
 
@@ -532,6 +621,20 @@ void HexTile :: draw(void)
     if (this->show_resource) {
         this->render_window_ptr->draw(this->resource_chip_sprite);
         this->render_window_ptr->draw(this->resource_text);
+    }
+    
+    //  4. draw selection outline
+    if (this->is_selected) {
+        this->select_outline_sprite.setOutlineColor(
+            sf::Color(
+                255, 
+                0, 
+                0, 
+                255 * pow(cos((M_PI * this->frame) / (1.5 * FRAMES_PER_SECOND)), 2)
+            )
+        );
+        
+        this->render_window_ptr->draw(this->select_outline_sprite);
     }
     
     this->frame++;

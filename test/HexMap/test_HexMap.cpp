@@ -18,6 +18,7 @@
 
 
 #include "../../header/ESC_core/constants.h"
+#include "../../header/ESC_core/includes.h"
 #include "../../header/ESC_core/testing_utils.h"
 #include "../../header/ESC_core/AssetsManager.h"
 #include "../../header/ESC_core/InputsHandler.h"
@@ -109,11 +110,18 @@ int main(int argc, char** argv)
                 hex_map.process();
                 
                 if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Q]) {
+                    std::cout << "Q" << std::endl;
                     hex_map.reroll();
                 }
                 
                 if (inputs_handler.key_pressed_once_vec[sf::Keyboard::R]) {
+                    std::cout << "R" << std::endl;
                     hex_map.toggleResourceOverlay();
+                }
+                
+                if (inputs_handler.key_pressed_once_vec[sf::Keyboard::A]) {
+                    std::cout << "A" << std::endl;
+                    hex_map.assess();
                 }
                 
                 window.clear();

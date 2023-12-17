@@ -18,6 +18,7 @@
 
 
 #include "../../header/ESC_core/constants.h"
+#include "../../header/ESC_core/includes.h"
 #include "../../header/ESC_core/testing_utils.h"
 #include "../../header/ESC_core/MessagesHandler.h"
 

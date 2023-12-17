@@ -53,6 +53,8 @@ class HexMap {
         void __procedurallyGenerateTileResources(void);
         
         void __assembleHexMap(void);
+        
+        HexTile* __getSelectedTile(void);
     
     
     public:
@@ -79,6 +81,8 @@ class HexMap {
             MessagesHandler*,
             sf::RenderWindow*
         );
+        
+        void assess(void);
         
         void process(void);
         void reroll(void);

@@ -757,6 +757,56 @@ void HexMap :: __assembleHexMap(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn HexTile* HexMap :: __getSelectedTile(void)
+///
+/// \brief Helper method to get pointer to selected tile.
+///
+/// \return Pointer to selected tile (or NULL if no tile selected).
+///
+
+HexTile* HexMap :: __getSelectedTile(void)
+{
+    HexTile* selected_tile_ptr = NULL;
+    
+    bool break_flag = false;
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            if (hex_map_iter_y->second->is_selected) {
+                selected_tile_ptr = hex_map_iter_y->second;
+                break_flag = true;
+            }
+            
+            if (break_flag) {
+                break;
+            }
+        }
+        
+        if (break_flag) {
+            break;
+        }
+    }
+    
+    return selected_tile_ptr;
+}   /* __getSelectedTile() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -818,6 +868,28 @@ HexMap :: HexMap(
     
     return;
 }   /* HexMap() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: assess(void)
+///
+/// \brief Method to assess the resource of the selected tile.
+///
+
+void HexMap :: assess(void)
+{
+    HexTile* selected_tile_ptr = this->__getSelectedTile();
+    if (selected_tile_ptr != NULL) {
+        selected_tile_ptr->assess();
+    }
+
+    return;
+}   /* assess() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -923,6 +995,7 @@ void HexMap :: toggleResourceOverlay(void)
 
 void HexMap :: draw(void)
 {
+    //  1. draw all tiles in order
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
     std::map<double, HexTile*>::iterator hex_map_iter_y;
     for (
@@ -937,6 +1010,12 @@ void HexMap :: draw(void)
         ) {
             hex_map_iter_y->second->draw();
         }
+    }
+    
+    //  2. redraw selected tile on top
+    HexTile* selected_tile_ptr = this->__getSelectedTile();
+    if (selected_tile_ptr != NULL) {
+        selected_tile_ptr->draw();
     }
     
     this->frame++;

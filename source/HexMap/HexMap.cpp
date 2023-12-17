@@ -228,13 +228,16 @@ std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
     //  1. generate random amplitude, wave number, direction, and phase vectors
     std::vector<double> random_amplitude_vec(n_components, 0);
     std::vector<double> random_wave_number_vec(n_components, 0);
+    std::vector<double> random_frequency_vec(n_components, 0);
     std::vector<double> random_direction_vec(n_components, 0);
     std::vector<double> random_phase_vec(n_components, 0);
     
     for (int i = 0; i < n_components; i++) {
-        random_amplitude_vec[i] = AMPLITUDE_BASE * ((double)rand() / RAND_MAX);
+        random_amplitude_vec[i] = 10 * ((double)rand() / RAND_MAX);
         
-        random_wave_number_vec[i] = WAVE_NUMBER_BASE * ((double)rand() / RAND_MAX);
+        random_wave_number_vec[i] = 2 * M_PI * ((double)rand() / RAND_MAX);
+        
+        random_frequency_vec[i] = ((double)rand() / RAND_MAX);
         
         random_direction_vec[i] = 2 * M_PI * ((double)rand() / RAND_MAX);
         
@@ -244,11 +247,13 @@ std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
     //  2. generate noise vec
     double amp = 0;
     double wave_no = 0;
+    double freq = 0;
     double dir = 0;
     double phase = 0;
     
     double x = 0;
     double y = 0;
+    double t = time(NULL);
     
     double max_noise = -1 * std::numeric_limits<double>::infinity();
     double min_noise = std::numeric_limits<double>::infinity();
@@ -263,10 +268,15 @@ std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
         for (int j = 0; j < n_components; j++) {
             amp = random_amplitude_vec[j];
             wave_no = random_wave_number_vec[j];
+            freq = random_frequency_vec[j];
             dir = random_direction_vec[j];
             phase = random_phase_vec[j];
             
-            noise += amp * cos(wave_no * (x * sin(dir) + y * cos(dir)) + phase);
+            noise += (amp / (j + 1)) * cos(
+                wave_no * (j + 1) * (x * sin(dir) + y * cos(dir)) +
+                2 * M_PI * (j + 1) * freq * t +
+                phase
+            );
         }
         
         noise_vec[i] = noise;
@@ -311,10 +321,11 @@ std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
 
 void HexMap :: __procedurallyGenerateTileTypes(void)
 {
-    //  1. get noise vec
+    //  1. get random cosine series noise vec
     std::vector<double> noise_vec = this->__getNoise(this->n_tiles);
     
-    //  2. set tile types based on noise
+    //  2. set initial tile types based on either random cosine series noise or white
+    //     noise (decided by coin toss)
     int noise_idx = 0;
     
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
@@ -329,17 +340,25 @@ void HexMap :: __procedurallyGenerateTileTypes(void)
             hex_map_iter_y != hex_map_iter_x->second.end();
             hex_map_iter_y++
         ) {
-            hex_map_iter_y->second->setTileType(noise_vec[noise_idx]);
+            if ((double)rand() / RAND_MAX > 0.5) {
+                hex_map_iter_y->second->setTileType(noise_vec[noise_idx]);
+            }
+            else {
+                hex_map_iter_y->second->setTileType((double)rand() / RAND_MAX);
+            }
             noise_idx++;
         }
     }
     
-    //  3. set border tile type to ocean
+    //  3. smooth tile types (majority rules)
+    this->__smoothTileTypes();
+    
+    //  4. set border tile type to ocean
     for (size_t i = 0; i < this->border_tiles_vec.size(); i++) {
         this->border_tiles_vec[i]->setTileType(TileType :: OCEAN);
     }
     
-    //  4. enforce ocean continuity (i.e. all lake tiles touching ocean become ocean)
+    //  5. enforce ocean continuity (i.e. all lake tiles touching ocean become ocean)
     this->__enforceOceanContinuity();
     
     return;
@@ -364,7 +383,7 @@ void HexMap :: __procedurallyGenerateTileTypes(void)
 /// \param potential_y The potential y position of the tile.
 ///
 /// \return A vector of positions, either valid for indexing into the hex map, or
-///     sentinel values (-1).
+///     sentinel values (-1) if invalid.
 ///
 
 std::vector<double> HexMap :: __getValidMapIndexPositions(
@@ -414,6 +433,176 @@ std::vector<double> HexMap :: __getValidMapIndexPositions(
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn std::vector<HexTile*> HexMap :: __getNeighboursVector(HexTile* hex_ptr)
+///
+/// \brief Helper method to assemble a vector pointers to all neighbours of the given
+///     tile.
+///
+/// \param hex_ptr A pointer to the given tile.
+///
+/// \return A vector of pointers to all neighbours of the given tile.
+///
+
+std::vector<HexTile*> HexMap :: __getNeighboursVector(HexTile* hex_ptr)
+{
+    std::vector<HexTile*> neighbours_vec;
+    
+    //  1. build potential neighbour positions
+    std::vector<double> potential_neighbour_x_vec(6, 0);
+    std::vector<double> potential_neighbour_y_vec(6, 0);
+    
+    for (int i = 0; i < 6; i++) {
+        potential_neighbour_x_vec[i] = hex_ptr->position_x +
+            2 * hex_ptr->minor_radius * cos((60 * i) * (M_PI / 180));
+        
+        potential_neighbour_y_vec[i] = hex_ptr->position_y +
+            2 * hex_ptr->minor_radius * sin((60 * i) * (M_PI / 180));
+    }
+    
+    //  2. populate neighbours vector
+    std::vector<double> map_index_positions;
+    double potential_x = 0;
+    double potential_y = 0;
+    
+    for (int i = 0; i < 6; i++) {
+        potential_x = potential_neighbour_x_vec[i];
+        potential_y = potential_neighbour_y_vec[i];
+        
+        map_index_positions = this->__getValidMapIndexPositions(
+            potential_x,
+            potential_y
+        );
+        
+        if (not (map_index_positions[0] == -1)) {
+            neighbours_vec.push_back(
+                this->hex_map[map_index_positions[0]][map_index_positions[1]]
+            );
+        }
+    }
+    
+    return neighbours_vec;
+}   /* __getNeighbourVector() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn TileType HexMap :: __getMajorityTileType(HexTile* hex_ptr)
+///
+/// \brief Function to return majority tile type of a tile and its neighbours. If no
+///     clear majority, simply returns the type of the given tile.
+///
+/// \param hex_ptr Pointer to the given tile.
+///
+/// \return The majority tile type of the tile and its neighbours. If no clear majority
+///     type, then the type of the given tile is simply returned.
+///
+
+TileType HexMap :: __getMajorityTileType(HexTile* hex_ptr)
+{
+    //  1. init type count map
+    std::map<TileType, int> type_count_map;
+    type_count_map[hex_ptr->tile_type] = 1;
+    
+    //  2. survey neighbours, count type instances
+    std::vector<HexTile*> neighbours_vec = this->__getNeighboursVector(hex_ptr);
+    
+    for (size_t i = 0; i < neighbours_vec.size(); i++) {
+        if (type_count_map.count(neighbours_vec[i]->tile_type) <= 0) {
+            type_count_map[neighbours_vec[i]->tile_type] = 1;
+        }
+        else {
+            type_count_map[neighbours_vec[i]->tile_type] += 1;
+        }
+    }
+    
+    //  3. find majority tile type
+    int max_count = -1 * std::numeric_limits<int>::infinity();
+    TileType majority_tile_type = hex_ptr->tile_type;
+    
+    std::map<TileType, int>::iterator map_iter;
+    for (
+        map_iter = type_count_map.begin();
+        map_iter != type_count_map.end();
+        map_iter++
+    ){
+        if (map_iter->second > max_count) {
+            max_count = map_iter->second;
+            majority_tile_type = map_iter->first;
+        }
+    }
+    
+    //  4. detect ties
+    for (
+        map_iter = type_count_map.begin();
+        map_iter != type_count_map.end();
+        map_iter++
+    ){
+        if (
+            map_iter->second == max_count and
+            map_iter->first != majority_tile_type
+        ) {
+            majority_tile_type = hex_ptr->tile_type;
+            break;
+        }
+    }
+    
+    return majority_tile_type;
+}   /* __getMajorityTileType() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __smoothTileTypes(void)
+///
+/// \brief Helper method to smooth tile types using a majority rules approach.
+///
+
+void HexMap :: __smoothTileTypes(void)
+{
+    std::cout << "smoothing ..." << std::endl;
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    HexTile* hex_ptr;
+    TileType majority_tile_type;
+    
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_ptr = hex_map_iter_y->second;
+            majority_tile_type = this->__getMajorityTileType(hex_ptr);
+            
+            if (majority_tile_type != hex_ptr->tile_type) {
+                hex_ptr->setTileType(majority_tile_type);
+            }
+        }
+    }
+
+    return;
+}   /* __smoothTileTypes() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn bool __isLakeTouchingOcean(HexTile* hex_ptr)
 ///
 /// \brief Helper method to check if given tile is a lake tile touching ocean.
@@ -430,40 +619,11 @@ bool HexMap :: __isLakeTouchingOcean(HexTile* hex_ptr)
         return false;
     }
     
-    //  2. build potential neighbour positions
-    std::vector<double> potential_neighbour_x_vec(6, 0);
-    std::vector<double> potential_neighbour_y_vec(6, 0);
+    //  2. scan neighbours for ocean tiles
+    std::vector<HexTile*> neighbours_vec = this->__getNeighboursVector(hex_ptr);
     
-    for (int i = 0; i < 6; i++) {
-        potential_neighbour_x_vec[i] = hex_ptr->position_x +
-            2 * hex_ptr->minor_radius * cos((60 * i) * (M_PI / 180));
-        
-        potential_neighbour_y_vec[i] = hex_ptr->position_y +
-            2 * hex_ptr->minor_radius * sin((60 * i) * (M_PI / 180));
-    }
-    
-    //  3. scan neighbours for ocean tiles
-    double potential_x = 0;
-    double potential_y = 0;
-    std::vector<double> map_index_positions = {-1, -1};
-    
-    for (int i = 0; i < 6; i++) {
-        potential_x = potential_neighbour_x_vec[i];
-        potential_y = potential_neighbour_y_vec[i];
-        
-        map_index_positions = this->__getValidMapIndexPositions(
-            potential_x,
-            potential_y
-        );
-        
-        if (map_index_positions[0] == -1) {
-            continue;
-        }
-        
-        if (
-            this->hex_map[map_index_positions[0]][map_index_positions[1]]->tile_type ==
-            TileType :: OCEAN
-        ) {
+    for (size_t i = 0; i < neighbours_vec.size(); i++) {
+        if (neighbours_vec[i]->tile_type == TileType :: OCEAN) {
             return true;
         }
     }
@@ -487,7 +647,7 @@ bool HexMap :: __isLakeTouchingOcean(HexTile* hex_ptr)
 
 void HexMap :: __enforceOceanContinuity(void)
 {
-    std::cout << "enforcing ..." << std::endl;
+    std::cout << "enforcing ocean continuity ..." << std::endl;
     
     bool tile_changed = false;
     
@@ -536,10 +696,10 @@ void HexMap :: __enforceOceanContinuity(void)
 
 void HexMap :: __procedurallyGenerateTileResources(void)
 {
-    //  1. get noise vec
+    //  1. get random cosine series noise vec
     std::vector<double> noise_vec = this->__getNoise(this->n_tiles);
     
-    //  2. set tile resources based on noise
+    //  2. set tile resources based on random cosine series noise
     int noise_idx = 0;
     
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;

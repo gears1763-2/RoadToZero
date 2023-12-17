@@ -47,7 +47,7 @@ const sf::Color OCEAN_BLUE(0, 51, 102); ///< The base colour of an ocean (water)
 const sf::Color PLAINS_YELLOW(245, 222, 133); ///< The base colour of a plains tile.
 
 const std::vector<double> tile_type_cumulative_probabilities = {
-    0.35,  // LAKE
+    0.25,  // LAKE
     0.50,  // PLAINS
     0.75,  // FOREST
     1.00   // MOUNTAINS

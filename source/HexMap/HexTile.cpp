@@ -236,7 +236,7 @@ HexTile :: HexTile(
     
     this->show_node = false;
     this->show_resource = false;
-    this->resource_assessed = false;
+    this->resource_assessed = true;
     
     this->frame = 0;
     
@@ -421,7 +421,6 @@ void HexTile :: setTileResource(double input_value)
     //  2. convert input value to tile resource
     TileResource tile_resource;
     
-    std::cout << input_value << std::endl;
     if (input_value <= tile_resource_cumulative_probabilities[0]) {
         tile_resource = TileResource :: POOR;
     }

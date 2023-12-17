@@ -22,10 +22,6 @@
 #include "HexTile.h"
 
 
-const double AMPLITUDE_BASE = 1; ///< A base amplitude value to use in procedural generation (based on random cosine series).
-const double WAVE_NUMBER_BASE = (2.0 * M_PI) / 64; ///< A base wave number to use in procedural generation(based on random cosine series).
-
-
 ///
 /// \class HexMap
 ///
@@ -44,10 +40,13 @@ class HexMap {
         //  2. methods
         void __layTiles(void);
         
-        std::vector<double> __getNoise(int, int=64);
+        std::vector<double> __getNoise(int, int=128);
         
         void __procedurallyGenerateTileTypes(void);
         std::vector<double> __getValidMapIndexPositions(double, double);
+        std::vector<HexTile*> __getNeighboursVector(HexTile*);
+        TileType __getMajorityTileType(HexTile*);
+        void __smoothTileTypes(void);
         bool __isLakeTouchingOcean(HexTile*);
         void __enforceOceanContinuity(void);
         

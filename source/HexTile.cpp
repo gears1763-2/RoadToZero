@@ -577,7 +577,52 @@ void HexTile :: assess(void)
 
 void HexTile :: processEvent(void)
 {
-    //...
+    if (this->event_ptr->type == sf::Event::KeyPressed) {
+        switch (this->event_ptr->key.code) {
+            case (sf::Keyboard::Escape): {
+                this->is_selected = false;
+            }
+            
+            
+            default: {
+                // do nothing!
+                
+                break;
+            }
+        }
+    }
+    
+    
+    if (this->event_ptr->type == sf::Event::MouseButtonPressed) {
+        this->is_selected = false;
+        
+        switch (this->event_ptr->mouseButton.button) {
+            case (sf::Mouse::Left): {
+                if (this->__isClicked()) {
+                    std::cout << "Tile (" << this->position_x << ", " <<
+                        this->position_y << ") was selected" << std::endl;
+                    
+                    this->is_selected = true;
+                }
+                
+                break;
+            }
+            
+            
+            case (sf::Mouse::Right): {
+                this->is_selected = false;
+                
+                break;
+            }
+            
+            
+            default: {
+                // do nothing!
+                
+                break;
+            }
+        }
+    }
     
     return;
 }   /* processEvent() */

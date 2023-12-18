@@ -733,10 +733,10 @@ void ContextMenu :: process(void)
     }
     
     
-    if (this->inputs_handler_ptr->mouse_left_click) {
-        if (not this->messages_handler_ptr->isEmpty(MESSAGE_CHANNEL_SELECTED_TILE)) {
+    if (inputs_handler_ptr->mouse_left_click) {
+        if (not this->messages_handler_ptr->isEmpty(MESSAGE_CHANNEL_TILE)) {
             Message selected_message = this->messages_handler_ptr->receiveMessage(
-                MESSAGE_CHANNEL_SELECTED_TILE
+                MESSAGE_CHANNEL_TILE
             );
             
             if (selected_message.subject == "DUMMY") {

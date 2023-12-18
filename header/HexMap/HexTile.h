@@ -84,6 +84,7 @@ class HexTile {
         void __setResourceText(void);
         
         bool __isClicked(void);
+        std::string __assembleMessageStringPayload(void);
     
     
     public:
@@ -130,9 +131,9 @@ class HexTile {
         void toggleResourceOverlay(void);
         void assess(void);
         
-        void process(void);
+        void sendMessage(void);
         
-        void emitSelectedMessage(void);
+        void process(void);
         
         void draw(void);
         

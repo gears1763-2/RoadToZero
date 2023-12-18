@@ -377,6 +377,11 @@ void InputsHandler :: __constructKeyCodeMap(void)
 
 InputsHandler :: InputsHandler(void)
 {
+    this->any_key_once = false;
+    
+    this->mouse_left_click = false;
+    this->mouse_right_click = false;
+    
     this->key_pressed_once_vec.resize(sf::Keyboard::KeyCount, false);
     this->key_press_vec.resize(sf::Keyboard::KeyCount, false);
     
@@ -412,10 +417,16 @@ void InputsHandler :: process(sf::Event* event_ptr)
             
             this->key_press_vec[event_ptr->key.code] = true;
             
+            if (not this->any_key_once) {
+                this->any_key_once = true;
+            }
+            
             break;
         }
         
         case (sf::Event::KeyReleased): {
+            this->any_key_once = false;
+            
             this->key_pressed_once_vec[event_ptr->key.code] = false;
             this->key_press_vec[event_ptr->key.code] = false;
             
@@ -423,6 +434,10 @@ void InputsHandler :: process(sf::Event* event_ptr)
         }
         
         case (sf::Event::MouseButtonPressed): {
+            if (not this->any_key_once) {
+                this->any_key_once = true;
+            }
+            
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
             {
                 this->mouse_left_click = true;
@@ -441,6 +456,8 @@ void InputsHandler :: process(sf::Event* event_ptr)
         }
         
         case (sf::Event::MouseButtonReleased): {
+            this->any_key_once = false;
+            
             this->mouse_left_click = false;
             this->mouse_right_click = false;
             
@@ -501,6 +518,8 @@ void InputsHandler :: printKeysPressed(void)
 
 void InputsHandler :: reset(void)
 {
+    this->any_key_once = false;
+    
     this->mouse_left_click = false;
     this->mouse_right_click = false;
     

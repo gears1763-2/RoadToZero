@@ -65,7 +65,7 @@ const std::vector<double> TILE_RESOURCE_CUMULATIVE_PROBABILITIES = {
     1.00   // GOOD
 }; ///< Cumulative probabilities for each tile resource (to support procedural generation).
 
-const std::string MESSAGE_CHANNEL_SELECTED_TILE = "MESSAGE_CHANNEL_SELECTED_TILE"; ///< A channel for tile selection messages (for indexing into message map).
+const std::string MESSAGE_CHANNEL_TILE = "MESSAGE_CHANNEL_TILE"; ///< A channel for tile messages (for indexing into message map).
 
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //
 

@@ -827,47 +827,6 @@ HexTile* HexMap :: __getSelectedTile(void)
 
 // ---------------------------------------------------------------------------------- //
 
-
-
-// ---------------------------------------------------------------------------------- //
-
-///
-/// \fn void HexMap :: __sendDummySelectedMessage(void)
-///
-/// \brief Method to format and emit a dummy message when no tile is selected.
-///
-
-void HexMap :: __sendDummySelectedMessage(void)
-{
-    //  1. check if last message sent was dummy (if so, do nothing)
-    if (not this->messages_handler_ptr->isEmpty(MESSAGE_CHANNEL_SELECTED_TILE)) {
-        Message message = this->messages_handler_ptr->receiveMessage(
-            MESSAGE_CHANNEL_SELECTED_TILE
-        );
-        
-        if (message.subject == "DUMMY") {
-            return;
-        }
-    }
-    
-    //  2. format message header
-    Message dummy_message;
-    
-    dummy_message.sender_name = "HexMap";
-    dummy_message.sender_address = this->address_int;
-    dummy_message.subject = "DUMMY";
-    dummy_message.channel = MESSAGE_CHANNEL_SELECTED_TILE;
-    
-    //  3. send message
-    this->messages_handler_ptr->sendMessage(dummy_message);
-    
-    std::cout << "HexMap at " << this << " emitted dummy (selected) message" << std::endl;
-    
-    return;
-}   /* __sendDummySelectedMessage() */
-
-// ---------------------------------------------------------------------------------- //
-
 // ======== END PRIVATE ============================================================= //
 
 
@@ -935,7 +894,7 @@ HexMap :: HexMap(
     this->__setUpGlassScreen();
     
     //  4. add message channel(s)
-    this->messages_handler_ptr->addChannel(MESSAGE_CHANNEL_SELECTED_TILE);
+    this->messages_handler_ptr->addChannel(MESSAGE_CHANNEL_TILE);
     
     std::cout << "HexMap constructed at " << this << " (" << this->address_int
         << ")" << std::endl;
@@ -964,6 +923,47 @@ void HexMap :: assess(void)
 
     return;
 }   /* assess() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: sendMessage(void)
+///
+/// \brief Method to format and send a tile message on certain events.
+///
+
+void HexMap :: sendMessage(void)
+{
+    //  1. check if last message sent was dummy (if so, do nothing)
+    if (not this->messages_handler_ptr->isEmpty(MESSAGE_CHANNEL_TILE)) {
+        Message message = this->messages_handler_ptr->receiveMessage(
+            MESSAGE_CHANNEL_TILE
+        );
+        
+        if (message.subject == "DUMMY") {
+            return;
+        }
+    }
+    
+    //  2. format message header
+    Message dummy_message;
+    
+    dummy_message.sender_name = "HexMap";
+    dummy_message.sender_address = this->address_int;
+    dummy_message.subject = "DUMMY";
+    dummy_message.channel = MESSAGE_CHANNEL_TILE;
+    
+    //  3. send message
+    this->messages_handler_ptr->sendMessage(dummy_message);
+    
+    std::cout << "HexMap at " << this << " sent a message" << std::endl;
+    
+    return;
+}   /* sendMessage() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -1001,10 +1001,10 @@ void HexMap :: process(void)
         HexTile* selected_hex_ptr = __getSelectedTile();
         
         if (selected_hex_ptr != NULL) {
-            selected_hex_ptr->emitSelectedMessage();
+            selected_hex_ptr->sendMessage();
         }
         else {
-            this->__sendDummySelectedMessage();
+            this->sendMessage();
         }
     }
     

@@ -254,6 +254,104 @@ bool HexTile :: __isClicked(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn std::string HexTile :: __assembleMessageStringPayload(void)
+///
+/// \brief Helpe method to assemble string payload of tile message.
+///
+/// \return String payload of tile message.
+///
+
+std::string HexTile :: __assembleMessageStringPayload(void)
+{
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string payload                          = "  **** TILE INFO/OPTIONS ****   \n";
+    payload                                     += "                                \n";
+    
+    
+    payload                                     += "TYPE:     ";
+    
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            payload +=                                        "FOREST               \n";
+            
+            break;
+        }
+        
+        case (TileType :: LAKE): {
+            payload +=                                        "LAKE                 \n";
+            
+            break;
+        }
+        
+        case (TileType :: MOUNTAINS): {
+            payload +=                                        "MOUNTAINS            \n";
+            
+            break;
+        }
+        
+        case (TileType :: OCEAN): {
+            payload +=                                        "OCEAN                \n";
+            
+            break;
+        }
+        
+        case (TileType :: PLAINS): {
+            payload +=                                        "PLAINS               \n";
+            
+            break;
+        }
+        
+        default: {
+            payload +=                                        "???                  \n";
+            
+            break;
+        }
+    }
+    
+    
+    payload                                     += "RESOURCE: ";
+    
+    if (not this->resource_assessed) {
+        payload +=                                            "[A]: ASSESS RESOURCE \n";
+    }
+    
+    else {
+        switch (this->tile_resource) {
+            //...
+            
+            default: {
+                payload +=                                    "???                  \n";
+                
+                break;
+            }
+        }
+    }
+    
+    
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "                                \n";
+    payload                                     += "[ESC]: MENU                     ";
+    
+    return payload;
+}   /* __assembleMessageStringPayload() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -573,6 +671,39 @@ void HexTile :: assess(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn HexTile :: sendMessage(void)
+///
+/// \brief Method to format and send a tile message on certain events.
+///
+
+void HexTile :: sendMessage(void)
+{
+    //  1. format message header
+    Message selected_message;
+    
+    selected_message.sender_name = "HexTile";
+    selected_message.sender_address = this->address_int;
+    selected_message.subject = "Tile selected";
+    selected_message.channel = MESSAGE_CHANNEL_TILE;
+    
+    //  2. assemble message payload
+    selected_message.string_payload = this->__assembleMessageStringPayload();
+    
+    //  3. send message
+    this->messages_handler_ptr->sendMessage(selected_message);
+    
+    std::cout << "HexTile at " << this << " sent a message" << std::endl;
+    
+    return;
+}   /* sendMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: process(void)
 ///
 /// \brief Method to process HexTile. To be called once per frame.
@@ -602,59 +733,6 @@ void HexTile :: process(void)
     
     return;
 }   /* process() */
-
-// ---------------------------------------------------------------------------------- //
-
-
-
-// ---------------------------------------------------------------------------------- //
-
-///
-/// \fn HexTile :: emitSelectedMessage(void)
-///
-/// \brief Method to format and emit message when selected.
-///
-
-void HexTile :: emitSelectedMessage(void)
-{
-    //  1. format message header
-    Message selected_message;
-    
-    selected_message.sender_name = "HexTile";
-    selected_message.sender_address = this->address_int;
-    selected_message.subject = "Tile selected";
-    selected_message.channel = MESSAGE_CHANNEL_SELECTED_TILE;
-    
-    //  2. format message payload
-    
-    //       32 char x 17 line console "--------------------------------\n";
-    std::string payload              = "  **** TILE INFO/OPTIONS ****   \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "                                \n";
-    payload                         += "[ESC]: MENU                     ";
-    
-    selected_message.string_payload = payload;
-    
-    //  3. send message
-    this->messages_handler_ptr->sendMessage(selected_message);
-    
-    std::cout << "HexTile at " << this << " emitted selected message" << std::endl;
-    
-    return;
-}   /* emitSelectedMessage() */
 
 // ---------------------------------------------------------------------------------- //
 

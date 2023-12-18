@@ -41,6 +41,8 @@ class InputsHandler {
     
     public:
         //  1. attributes
+        bool any_key_once; ///< A boolean which indicates if any key has just been pressed/clicked once.
+        
         bool mouse_left_click; ///< A boolean which indicates if the mouse left button has been clicked.
         bool mouse_right_click; ///< A boolean which indicates if the mouse right button has been clicked.
         

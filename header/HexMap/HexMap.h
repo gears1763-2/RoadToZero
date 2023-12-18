@@ -60,8 +60,6 @@ class HexMap {
         void __assembleHexMap(void);
         
         HexTile* __getSelectedTile(void);
-        
-        void __sendDummySelectedMessage(void);
     
     
     public:
@@ -92,6 +90,8 @@ class HexMap {
         );
         
         void assess(void);
+        
+        void sendMessage(void);
         
         void process(void);
         void reroll(void);

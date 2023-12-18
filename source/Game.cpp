@@ -84,6 +84,84 @@ void Game :: __drawFrameClockOverlay(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __processEvent(void)
+///
+/// \brief Helper method to process Game. To be called once per event.
+///
+
+void Game :: __processEvent(void)
+{
+    if (this->event.type == sf::Event::KeyPressed) {
+        switch (this->event.key.code) {
+            case (sf::Keyboard::Tilde): {
+                this->__toggleFrameClockOverlay();
+                
+                break;
+            }
+            
+            default: {
+                // do nothing!
+                
+                break;
+            }
+        }
+    }
+
+    if (this->event.type == sf::Event::Closed) {
+        this->render_window_ptr->close();
+        this->quit_game = true;
+    }
+    
+    return;
+}   /* __processEvent() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __processFrame(void)
+///
+/// \brief Helper method to process Game. To be called once per frame.
+///
+
+void Game :: __processFrame(void)
+{
+    //...
+    
+    return;
+}   /* __processFrame() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __draw(void)
+///
+/// \brief Helper method to draw game to the render window. To be called once per frame.
+///
+
+void Game :: __draw(void)
+{
+    if (this->show_frame_clock_overlay) {
+        this->__drawFrameClockOverlay();
+    }
+    
+    return;
+}   /* draw() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -165,42 +243,27 @@ bool Game :: run(void)
             while (this->render_window_ptr->pollEvent(this->event)) {
                 this->hex_map_ptr->processEvent();
                 
-                if (this->event.type == sf::Event::KeyPressed) {
-                    switch (this->event.key.code) {
-                        case (sf::Keyboard::Tilde): {
-                            this->__toggleFrameClockOverlay();
-                            
-                            break;
-                        }
-                        
-                        default: {
-                            // do nothing!
-                            
-                            break;
-                        }
-                    }
-                }
-                
-                if (this->event.type == sf::Event::Closed) {
-                    this->render_window_ptr->close();
-                    this->quit_game = true;
-                }
+                this->__processEvent();
             }
+            
             
             //  6.2. process frame
             this->hex_map_ptr->processFrame();
+            
+            this->__processFrame();
+            
             
             //  6.3. draw frame
             this->render_window_ptr->clear();
             
             this->hex_map_ptr->draw();
             
-            if (this->show_frame_clock_overlay) {
-                this->__drawFrameClockOverlay();
-            }
+            this->__draw();
             
             this->render_window_ptr->display();
             
+            
+            //  6.4. increment frame
             this->frame++;
         }
     }

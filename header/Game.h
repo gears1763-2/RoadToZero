@@ -40,6 +40,11 @@ class Game {
         //  2. methods
         void __toggleFrameClockOverlay(void);
         void __drawFrameClockOverlay(void);
+        
+        void __processEvent(void);
+        void __processFrame(void);
+        
+        void __draw(void);
     
     
     public:

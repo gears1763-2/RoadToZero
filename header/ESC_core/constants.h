@@ -50,20 +50,22 @@ const sf::Color MOUNTAINS_GREY(97, 110, 113); ///< The base colour of a mountain
 const sf::Color OCEAN_BLUE(0, 51, 102); ///< The base colour of an ocean (water) tile.
 const sf::Color PLAINS_YELLOW(245, 222, 133); ///< The base colour of a plains tile.
 
-const std::vector<double> tile_type_cumulative_probabilities = {
+const std::vector<double> TILE_TYPE_CUMULATIVE_PROBABILITIES = {
     0.25,  // LAKE
     0.50,  // PLAINS
     0.75,  // FOREST
     1.00   // MOUNTAINS
 }; ///< Cumulative probabilities for each tile type (to support procedural generation).
 
-const std::vector<double> tile_resource_cumulative_probabilities = {
+const std::vector<double> TILE_RESOURCE_CUMULATIVE_PROBABILITIES = {
     0.10,  // POOR
     0.30,  // BELOW_AVERAGE
     0.70,  // AVERAGE
     0.90,  // ABOVE_AVERAGE
     1.00   // GOOD
 }; ///< Cumulative probabilities for each tile resource (to support procedural generation).
+
+const std::string MESSAGE_CHANNEL_SELECTED_TILE = "MESSAGE_CHANNEL_SELECTED_TILE"; ///< A channel for tile selection messages (for indexing into message map).
 
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //
 

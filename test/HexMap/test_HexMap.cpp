@@ -111,7 +111,7 @@ int main(int argc, char** argv)
                 }
                 
                 hex_map.process();
-                
+                    
                 if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Q]) {
                     std::cout << "Q" << std::endl;
                     hex_map.reroll();

@@ -67,6 +67,9 @@ enum TileResource {
 class HexTile {
     private:
         //  1. attributes
+        unsigned long long int address_int; ///< An int representation of the memory address of this object.
+        std::string address_string; ///< A string representation of the memory address of this object.
+        
         AssetsManager* assets_manager_ptr; ///< A pointer to the assets manager.
         InputsHandler* inputs_handler_ptr; ///< A pointer to the inputs handler.
         MessagesHandler* messages_handler_ptr; ///< A pointer to the messages handler.
@@ -128,6 +131,9 @@ class HexTile {
         void assess(void);
         
         void process(void);
+        
+        void emitSelectedMessage(void);
+        
         void draw(void);
         
         ~HexTile(void);

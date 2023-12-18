@@ -31,6 +31,9 @@
 class HexMap {
     private:
         //  1. attributes
+        unsigned long long int address_int; ///< An int representation of the memory address of this object.
+        std::string address_string; ///< A string representation of the hex address of this object.
+        
         AssetsManager* assets_manager_ptr; ///< A pointer to the assets manager.
         InputsHandler* inputs_handler_ptr; ///< A pointer to the inputs handler.
         MessagesHandler* messages_handler_ptr; ///< A pointer to the messages handler.
@@ -57,6 +60,8 @@ class HexMap {
         void __assembleHexMap(void);
         
         HexTile* __getSelectedTile(void);
+        
+        void __sendDummySelectedMessage(void);
     
     
     public:

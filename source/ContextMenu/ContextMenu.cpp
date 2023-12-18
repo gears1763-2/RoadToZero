@@ -446,6 +446,99 @@ void ContextMenu :: __drawConsoleScreenFrame(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void ContextMenu :: __setConsoleState(ConsoleState console_state)
+///
+/// \brief Helper method to set state of console screen and update string if necessary.
+///
+/// \param console_state The state (ConsoleState) to set the console to.
+///
+
+void ContextMenu :: __setConsoleState(ConsoleState console_state)
+{
+    //  1. if no change, do nothing
+    if (this->console_state == console_state) {
+        return;
+    }
+    
+    //  2. update console state, set console string accordingly
+    this->console_state = console_state;
+    this->__setConsoleString();
+    
+    return;
+}   /* __setConsoleState() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn std::string ContextMenu :: __setConsoleString(void)
+///
+/// \brief Helper method to set console string depending on console state.
+///
+
+void ContextMenu :: __setConsoleString(void)
+{
+    this->console_string.clear();
+    
+    switch (this->console_state) {
+        case (ConsoleState :: MENU): {
+            //           32 char x 17 line console "--------------------------------\n";
+            this->console_string                 = "         **** MENU ****         \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[T]:  TUTORIAL                  \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[R]:  RESTART                   \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[Q]:    QUIT                    \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[ESC]:  CLOSE MENU              \n";
+            this->console_string                += "                                \n";
+            
+            break;
+        }
+        
+        
+        case (ConsoleState :: TILE): {
+            // console string set from tile message
+            
+            break;
+        }
+        
+        
+        default: {
+            //           32 char x 17 line console "--------------------------------\n";
+            this->console_string                 = "  **** RTZ 64 CONTEXT V12 ****  \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "64K RAM SYSTEM  38911 BYTES FREE\n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[ESC]:        MENU              \n";
+            this->console_string                += "[LEFT CLICK]: TILE INFO/OPTIONS \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "READY.                          ";
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* __setConsoleString() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void ContextMenu :: __drawConsoleText(void)
 ///
 /// \brief Helper method to draw animated text to context menu console screen.
@@ -453,39 +546,13 @@ void ContextMenu :: __drawConsoleScreenFrame(void)
 
 void ContextMenu :: __drawConsoleText(void)
 {
-    //  1. init console text
-    sf::Text console_text;
+    //  1. set up console text (drawable)
+    sf::Text console_text(
+        this->console_string,
+        *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        16
+    );
     
-    if (this->console_message.empty()) {
-        
-        //              32 char x 16 line console "--------------------------------\n";
-        std::string console_string              = "  **** RTZ 64 CONTEXT V12 ****  \n";
-        console_string                         += "                                \n";
-        console_string                         += "64K RAM SYSTEM  38911 BYTES FREE\n";
-        console_string                         += "                                \n";
-        console_string                         += "[ESC]:             MENU         \n";
-        console_string                         += "[LEFT CLICK TILE]: TILE OPTIONS \n";
-        console_string                         += "                                \n";
-        console_string                         += "READY                           ";
-        
-        console_text.setString(console_string);
-    }
-    
-    else {
-        
-        //              32 char x 16 line console "--------------------------------\n";
-        std::string console_string = this->console_message;
-        console_string                         += "\nFRAME: ";
-        console_string                         += std::to_string(this->frame);
-        
-        console_text.setString(console_string);
-    }
-    
-    
-    //  2. set console text font, size, colour, and position
-    console_text.setFont(*(assets_manager_ptr->getFont("Glass_TTY_VT220")));
-    console_text.setCharacterSize(16);
-        
     console_text.setFillColor(MONOCHROME_TEXT_GREEN);
         
     console_text.setPosition(
@@ -494,11 +561,11 @@ void ContextMenu :: __drawConsoleText(void)
     );
     
     
-    //  3. draw console text
+    //  2. draw console text
     this->render_window_ptr->draw(console_text);
     
     
-    //  4. assemble and draw blinking console cursor
+    //  3. assemble and draw blinking console cursor
     if ((this->frame % FRAMES_PER_SECOND) > FRAMES_PER_SECOND / 2) {
         sf::RectangleShape console_cursor(sf::Vector2f(10, 16));
     
@@ -510,6 +577,27 @@ void ContextMenu :: __drawConsoleText(void)
         );
         
         this->render_window_ptr->draw(console_cursor);
+    }
+    
+    //  4. updating frame count if console is in menu state
+    if (this->console_state == ConsoleState :: MENU) {
+        std::string frame_count_string = "FRAME: ";
+        frame_count_string += std::to_string(this->frame);
+        
+        sf::Text frame_count_text(
+            frame_count_string,
+            *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+            16
+        );
+        
+        frame_count_text.setFillColor(MONOCHROME_TEXT_GREEN);
+        
+        frame_count_text.setPosition(
+            console_text.getPosition().x,
+            console_text.getPosition().y + console_text.getLocalBounds().height - 10
+        );
+        
+        this->render_window_ptr->draw(frame_count_text);
     }
     
     return;
@@ -552,10 +640,19 @@ ContextMenu :: ContextMenu(
 )
 {
     //  1. set attributes
+    this->address_int = (unsigned long long int)this;
+    
+    std::stringstream ss;
+    ss << std::hex << this;
+    this->address_string = ss.str();
+    
     this->assets_manager_ptr = assets_manager_ptr;
     this->inputs_handler_ptr = inputs_handler_ptr;
     this->messages_handler_ptr = messages_handler_ptr;
     this->render_window_ptr = render_window_ptr;
+    
+    this->console_state = ConsoleState :: NONE;
+    this->__setConsoleState(ConsoleState :: READY);
     
     this->game_menu_up = false;
     
@@ -564,8 +661,6 @@ ContextMenu :: ContextMenu(
     this->position_x = GAME_WIDTH;
     this->position_y = 0;
     
-    this->console_message = "";
-    
     //  2. set up and position drawable attributes
     this->__setUpMenuFrame();
     this->__setUpVisualScreen();
@@ -573,7 +668,8 @@ ContextMenu :: ContextMenu(
     this->__setUpConsoleScreen();
     this->__setUpConsoleScreenFrame();
     
-    std::cout << "ContextMenu constructed at " << this << std::endl;
+    std::cout << "ContextMenu constructed at " << this << " (" << this->address_int
+        << ")" << std::endl;
     
     return;
 }   /* ContextMenu() */
@@ -595,51 +691,68 @@ ContextMenu :: ContextMenu(
 ///
 /// \fn void ContextMenu :: process(void)
 ///
-/// \brief Method to process ContextMenu. To be called once per frame.
+/// \brief Method to process ContextMenu. To be called once per event.
 ///
 
 void ContextMenu :: process(void)
 {
     //  1. handle inputs
     if (this->inputs_handler_ptr->key_pressed_once_vec[sf::Keyboard::Escape]) {
-        if (not this->game_menu_up) {
-            this->game_menu_up = true;
-        
-            //              32 char x 16 line console "--------------------------------\n";
-            std::string game_menu_string            = "         **** MENU ****         \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "[T]:  TUTORIAL                  \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "[R]:  RESTART                   \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "[Q]:    QUIT                    \n";
-            game_menu_string                       += "                                \n";
-            game_menu_string                       += "[ESC]:  CLOSE MENU              \n";
+        switch (this->console_state) {
+            case (ConsoleState :: MENU): {
+                this->__setConsoleState(ConsoleState :: READY);
+                
+                break;
+            }
             
-            this->console_message = game_menu_string;
-        }
-        
-        else {
-            this->game_menu_up = false;
-            this->console_message.clear();
+            
+            default: {
+                this->__setConsoleState(ConsoleState :: MENU);
+                
+                break;
+            }
         }
     }
+    
     
     if (this->inputs_handler_ptr->key_pressed_once_vec[sf::Keyboard::Q]) {
-        if (this->game_menu_up) {
-            this->render_window_ptr->close();
+        switch (this->console_state) {
+            case (ConsoleState :: MENU): {
+                this->render_window_ptr->close();
+                
+                break;
+            }
+            
+            
+            default: {
+                // do nothing!
+                
+                break;
+            }
         }
     }
     
+    
+    if (this->inputs_handler_ptr->mouse_left_click) {
+        if (not this->messages_handler_ptr->isEmpty(MESSAGE_CHANNEL_SELECTED_TILE)) {
+            Message selected_message = this->messages_handler_ptr->receiveMessage(
+                MESSAGE_CHANNEL_SELECTED_TILE
+            );
+            
+            if (selected_message.subject == "DUMMY") {
+                this->__setConsoleState(ConsoleState :: READY);
+            }
+            
+            else {
+                this->__setConsoleState(ConsoleState :: TILE);
+                this->console_string = selected_message.string_payload;
+            }
+        }
+    }
+    
+    
     if (this->inputs_handler_ptr->mouse_right_click) {
-        this->game_menu_up = false;
-        this->console_message.clear();
+        this->__setConsoleState(ConsoleState :: READY);
     }
     
     return;
@@ -690,7 +803,8 @@ void ContextMenu :: draw(void)
 
 ContextMenu :: ~ContextMenu(void)
 {
-    std::cout << "ContextMenu at " << this << " destroyed" << std::endl;
+    std::cout << "ContextMenu at " << this << " (" << this->address_int
+        << ") destroyed" << std::endl;
     
     return;
 }   /* ~ContextMenu() */

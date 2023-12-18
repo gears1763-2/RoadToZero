@@ -299,6 +299,12 @@ HexTile :: HexTile(
 )
 {
     //  1. set attributes
+    this->address_int = (unsigned long long int)this;
+    
+    std::stringstream ss;
+    ss << std::hex << this;
+    this->address_string = ss.str();
+    
     this->assets_manager_ptr = assets_manager_ptr;
     this->inputs_handler_ptr = inputs_handler_ptr;
     this->messages_handler_ptr = messages_handler_ptr;
@@ -328,7 +334,8 @@ HexTile :: HexTile(
     this->setTileType(TileType :: FOREST);
     this->setTileResource(TileResource :: AVERAGE);
     
-    std::cout << "HexTile constructed at " << this << std::endl;
+    std::cout << "HexTile constructed at " << this << " (" << this->address_int
+        << ")" << std::endl;
     
     return;
 }   /* HexTile() */
@@ -421,13 +428,13 @@ void HexTile :: setTileType(double input_value)
     //  2. convert input value to tile type
     TileType tile_type;
     
-    if (input_value <= tile_type_cumulative_probabilities[0]) {
+    if (input_value <= TILE_TYPE_CUMULATIVE_PROBABILITIES[0]) {
         tile_type = TileType :: LAKE;
     }
-    else if (input_value <= tile_type_cumulative_probabilities[1]) {
+    else if (input_value <= TILE_TYPE_CUMULATIVE_PROBABILITIES[1]) {
         tile_type = TileType :: PLAINS;
     }
-    else if (input_value <= tile_type_cumulative_probabilities[2]) {
+    else if (input_value <= TILE_TYPE_CUMULATIVE_PROBABILITIES[2]) {
         tile_type = TileType :: FOREST;
     }
     else {
@@ -493,16 +500,16 @@ void HexTile :: setTileResource(double input_value)
     //  2. convert input value to tile resource
     TileResource tile_resource;
     
-    if (input_value <= tile_resource_cumulative_probabilities[0]) {
+    if (input_value <= TILE_RESOURCE_CUMULATIVE_PROBABILITIES[0]) {
         tile_resource = TileResource :: POOR;
     }
-    else if (input_value <= tile_resource_cumulative_probabilities[1]) {
+    else if (input_value <= TILE_RESOURCE_CUMULATIVE_PROBABILITIES[1]) {
         tile_resource = TileResource :: BELOW_AVERAGE;
     }
-    else if (input_value <= tile_resource_cumulative_probabilities[2]) {
+    else if (input_value <= TILE_RESOURCE_CUMULATIVE_PROBABILITIES[2]) {
         tile_resource = TileResource :: AVERAGE;
     }
-    else if (input_value <= tile_resource_cumulative_probabilities[3]) {
+    else if (input_value <= TILE_RESOURCE_CUMULATIVE_PROBABILITIES[3]) {
         tile_resource = TileResource :: ABOVE_AVERAGE;
     }
     else {
@@ -574,16 +581,18 @@ void HexTile :: assess(void)
 void HexTile :: process(void)
 {
     //  1. handle inputs
+    if (this->inputs_handler_ptr->key_pressed_once_vec[sf::Keyboard::Escape]) {
+        this->is_selected = false;
+    }
+    
     if (inputs_handler_ptr->mouse_left_click) {
+        this->is_selected = false;
+        
         if (this->__isClicked()) {
             std::cout << "Tile (" << this->position_x << ", " << this->position_y <<
                 ") was selected" << std::endl;
             
             this->is_selected = true;
-        }
-        
-        else {
-            this->is_selected = false;
         }
     }
     
@@ -593,6 +602,59 @@ void HexTile :: process(void)
     
     return;
 }   /* process() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn HexTile :: emitSelectedMessage(void)
+///
+/// \brief Method to format and emit message when selected.
+///
+
+void HexTile :: emitSelectedMessage(void)
+{
+    //  1. format message header
+    Message selected_message;
+    
+    selected_message.sender_name = "HexTile";
+    selected_message.sender_address = this->address_int;
+    selected_message.subject = "Tile selected";
+    selected_message.channel = MESSAGE_CHANNEL_SELECTED_TILE;
+    
+    //  2. format message payload
+    
+    //       32 char x 17 line console "--------------------------------\n";
+    std::string payload              = "  **** TILE INFO/OPTIONS ****   \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "                                \n";
+    payload                         += "[ESC]: MENU                     ";
+    
+    selected_message.string_payload = payload;
+    
+    //  3. send message
+    this->messages_handler_ptr->sendMessage(selected_message);
+    
+    std::cout << "HexTile at " << this << " emitted selected message" << std::endl;
+    
+    return;
+}   /* emitSelectedMessage() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -653,7 +715,8 @@ void HexTile :: draw(void)
 
 HexTile :: ~HexTile(void)
 {
-    std::cout << "HexTile at " << this << " destroyed" << std::endl;
+    std::cout << "HexTile at " << this << " (" << this->address_int
+        << ") destroyed" << std::endl;
     
     return;
 }   /* ~HexTile() */

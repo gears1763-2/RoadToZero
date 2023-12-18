@@ -27,6 +27,21 @@
 
 
 ///
+/// \enum ConsoleState
+///
+/// \brief An enumeration of the different console screen states
+///
+
+enum ConsoleState {
+    NONE, ///< None state (for initialization)
+    READY, ///< Ready (default) state.
+    MENU, ///< Game menu state.
+    TILE, ///< Tile context state.
+    N_CONSOLE_STATES ///< A simple hack to get the number of console screen states.
+};
+
+
+///
 /// \class ContextMenu
 ///
 /// \brief A class which defines a context menu for the game.
@@ -35,6 +50,9 @@
 class ContextMenu {
     private:
         //  1. attributes
+        unsigned long long int address_int; ///< An int representation of the memory address of this object.
+        std::string address_string; ///< A string representation of the hex address of this object.
+        
         AssetsManager* assets_manager_ptr; ///< A pointer to the assets manager.
         InputsHandler* inputs_handler_ptr; ///< A pointer to the inputs handler.
         MessagesHandler* messages_handler_ptr; ///< A pointer to the messages handler.
@@ -51,11 +69,17 @@ class ContextMenu {
         void __setUpConsoleScreen(void);
         void __setUpConsoleScreenFrame(void);
         void __drawConsoleScreenFrame(void);
+        
+        void __setConsoleState(ConsoleState);
+        void __setConsoleString(void);
+        
         void __drawConsoleText(void);
     
     
     public:
         //  1. attributes
+        ConsoleState console_state; ///< The current state of the console screen.
+        
         bool game_menu_up; ///< Indicates whether or not the game menu is up.
         
         int frame; ///< The current frame of this object.
@@ -63,7 +87,7 @@ class ContextMenu {
         double position_x; ///< The position of the object.
         double position_y; ///< The position of the object.
         
-        std::string console_message; ///< The message to be printed to the console screen.
+        std::string console_string; ///< The string to be printed to the console screen.
         
         sf::RectangleShape menu_frame; ///< The frame of the context menu.
         

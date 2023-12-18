@@ -119,11 +119,10 @@ int main(int argc, char** argv)
                     }
                 }
                 
-                context_menu.process();
-                
-                //...
-                
+                messages_handler.process();
+                    
                 hex_map.process();
+                context_menu.process();
                 
                 if (inputs_handler.key_pressed_once_vec[sf::Keyboard::Q]) {
                     std::cout << "Q" << std::endl;

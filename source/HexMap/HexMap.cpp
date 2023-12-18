@@ -827,6 +827,47 @@ HexTile* HexMap :: __getSelectedTile(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __sendDummySelectedMessage(void)
+///
+/// \brief Method to format and emit a dummy message when no tile is selected.
+///
+
+void HexMap :: __sendDummySelectedMessage(void)
+{
+    //  1. check if last message sent was dummy (if so, do nothing)
+    if (not this->messages_handler_ptr->isEmpty(MESSAGE_CHANNEL_SELECTED_TILE)) {
+        Message message = this->messages_handler_ptr->receiveMessage(
+            MESSAGE_CHANNEL_SELECTED_TILE
+        );
+        
+        if (message.subject == "DUMMY") {
+            return;
+        }
+    }
+    
+    //  2. format message header
+    Message dummy_message;
+    
+    dummy_message.sender_name = "HexMap";
+    dummy_message.sender_address = this->address_int;
+    dummy_message.subject = "DUMMY";
+    dummy_message.channel = MESSAGE_CHANNEL_SELECTED_TILE;
+    
+    //  3. send message
+    this->messages_handler_ptr->sendMessage(dummy_message);
+    
+    std::cout << "HexMap at " << this << " emitted dummy (selected) message" << std::endl;
+    
+    return;
+}   /* __sendDummySelectedMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -866,6 +907,12 @@ HexMap :: HexMap(
 )
 {
     //  1. set attributes
+    this->address_int = (unsigned long long int)this;
+    
+    std::stringstream ss;
+    ss << std::hex << this;
+    this->address_string = ss.str();
+    
     this->assets_manager_ptr = assets_manager_ptr;
     this->inputs_handler_ptr = inputs_handler_ptr;
     this->messages_handler_ptr = messages_handler_ptr;
@@ -887,7 +934,11 @@ HexMap :: HexMap(
     //  3. set up and position drawable attributes
     this->__setUpGlassScreen();
     
-    std::cout << "HexMap constructed at " << this << std::endl;
+    //  4. add message channel(s)
+    this->messages_handler_ptr->addChannel(MESSAGE_CHANNEL_SELECTED_TILE);
+    
+    std::cout << "HexMap constructed at " << this << " (" << this->address_int
+        << ")" << std::endl;
     
     return;
 }   /* HexMap() */
@@ -928,10 +979,7 @@ void HexMap :: assess(void)
 
 void HexMap :: process(void)
 {
-    //  1. handle inputs
-    //...
-    
-    //  2. process tiles
+    //  1. process tiles
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
     std::map<double, HexTile*>::iterator hex_map_iter_y;
     for (
@@ -945,6 +993,18 @@ void HexMap :: process(void)
             hex_map_iter_y++
         ) {
             hex_map_iter_y->second->process();
+        }
+    }
+    
+    //  2. handle inputs
+    if (inputs_handler_ptr->mouse_left_click) {
+        HexTile* selected_hex_ptr = __getSelectedTile();
+        
+        if (selected_hex_ptr != NULL) {
+            selected_hex_ptr->emitSelectedMessage();
+        }
+        else {
+            this->__sendDummySelectedMessage();
         }
     }
     
@@ -1102,7 +1162,8 @@ HexMap :: ~HexMap(void)
 {
     this->clear();
     
-    std::cout << "HexMap at " << this << " destroyed" << std::endl;
+    std::cout << "HexMap at " << this << " (" << this->address_int
+        << ") destroyed" << std::endl;
     
     return;
 }   /* ~HexMap() */

@@ -852,7 +852,9 @@ void HexTile :: decorateTile(void)
         }
         
         case (TileType :: LAKE): {
-            //...
+            this->tile_decoration_sprite.setTexture(
+                *(this->assets_manager_ptr->getTexture("water_shimmer_64x64_1"))
+            );
             
             break;
         }
@@ -866,7 +868,9 @@ void HexTile :: decorateTile(void)
         }
         
         case (TileType :: OCEAN): {
-            //...
+            this->tile_decoration_sprite.setTexture(
+                *(this->assets_manager_ptr->getTexture("water_waves_64x64_1"))
+            );
             
             break;
         }
@@ -886,18 +890,37 @@ void HexTile :: decorateTile(void)
         }
     }
     
-    this->tile_decoration_sprite.setOrigin(
-        this->tile_decoration_sprite.getLocalBounds().width / 2,
-        this->tile_decoration_sprite.getLocalBounds().height
-    );
     
-    this->tile_decoration_sprite.setPosition(
-        this->position_x,
-        this->position_y + 12
-    );
+    if (this->tile_type == TileType :: OCEAN or this->tile_type == TileType :: LAKE) {
+        this->tile_decoration_sprite.setOrigin(
+            this->tile_decoration_sprite.getLocalBounds().width / 2,
+            this->tile_decoration_sprite.getLocalBounds().height / 2
+        );
+        
+        this->tile_decoration_sprite.setPosition(
+            this->position_x,
+            this->position_y
+        );
+        
+        if ((double)rand() / RAND_MAX > 0.5) {
+            this->tile_decoration_sprite.setScale(sf::Vector2f(-1, 1));
+        }
+    }
     
-    if ((double)rand() / RAND_MAX > 0.5) {
-        this->tile_decoration_sprite.setScale(sf::Vector2f(-1, 1));
+    else {
+        this->tile_decoration_sprite.setOrigin(
+            this->tile_decoration_sprite.getLocalBounds().width / 2,
+            this->tile_decoration_sprite.getLocalBounds().height
+        );
+        
+        this->tile_decoration_sprite.setPosition(
+            this->position_x,
+            this->position_y + 12
+        );
+        
+        if ((double)rand() / RAND_MAX > 0.5) {
+            this->tile_decoration_sprite.setScale(sf::Vector2f(-1, 1));
+        }
     }
     
     return;

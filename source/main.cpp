@@ -50,6 +50,16 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "mountain_64x64_1"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/water_waves_64x64_1.png",
+        "water_waves_64x64_1"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/water_shimmer_64x64_1.png",
+        "water_shimmer_64x64_1"
+    );
+    
     return;
 }   /* loadAssets() */
 

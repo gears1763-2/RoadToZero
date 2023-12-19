@@ -32,7 +32,7 @@
 ///
 
 enum ConsoleState {
-    NONE, ///< None state (for initialization)
+    NONE_STATE, ///< None state (for initialization)
     READY, ///< Ready (default) state.
     MENU, ///< Game menu state.
     TILE, ///< Tile context state.

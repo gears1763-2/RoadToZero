@@ -230,6 +230,74 @@ void HexMap :: __layTiles(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexMap :: __buildDrawOrderVector(void)
+///
+/// \brief Helper method to build tile drawing order vector.
+///
+
+void HexMap :: __buildDrawOrderVector(void)
+{
+    //  1. build temp list of tiles
+    std::list<HexTile*> temp_list;
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            temp_list.push_back(hex_map_iter_y->second);
+        }
+    }
+    
+    //  2. move elements from temp list to drawing order vector
+    double min_position_y = 0;
+    std::list<HexTile*>::iterator list_iter;
+    
+    while (not temp_list.empty()) {
+        //  2.1. determine min y position
+        min_position_y = std::numeric_limits<double>::infinity();
+        
+        for (
+            list_iter = temp_list.begin();
+            list_iter != temp_list.end();
+            list_iter++
+        ) {
+            if ((*list_iter)->position_y < min_position_y) {
+                min_position_y = (*list_iter)->position_y;
+            }
+        }
+        
+        //  2.2 move min y list elements to drawing order vec
+        list_iter = temp_list.begin();
+        while (list_iter != temp_list.end()) {
+            if ((*list_iter)->position_y == min_position_y) {
+                this->hex_draw_order_vec.push_back((*list_iter));
+                list_iter = temp_list.erase(list_iter);
+            }
+            
+            else {
+                list_iter++;
+            }
+        }
+    }
+    
+    return;
+}   /* __buildDrawOrderVector() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
 ///
 /// \brief Helper method to generate a vector of noise, with values mapped to the closed
@@ -380,6 +448,21 @@ void HexMap :: __procedurallyGenerateTileTypes(void)
     
     //  5. enforce ocean continuity (i.e. all lake tiles touching ocean become ocean)
     this->__enforceOceanContinuity();
+    
+    //  6. decorate tiles
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            hex_map_iter_y->second->decorateTile();
+        }
+    }
     
     return;
 }   /* __procedurallyGenerateTileTypes() */
@@ -765,6 +848,7 @@ void HexMap :: __assembleHexMap(void)
     
     //  2. lay tiles
     this->__layTiles();
+    this->__buildDrawOrderVector();
     
     //  3. procedurally generate types
     this->__procedurallyGenerateTileTypes();
@@ -1185,21 +1269,9 @@ void HexMap :: draw(void)
     
     this->render_window_ptr->draw(this->glass_screen);
     
-    //  2. draw all tiles in order
-    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
-    std::map<double, HexTile*>::iterator hex_map_iter_y;
-    for (
-        hex_map_iter_x = this->hex_map.begin();
-        hex_map_iter_x != this->hex_map.end();
-        hex_map_iter_x++
-    ) {
-        for (
-            hex_map_iter_y = hex_map_iter_x->second.begin();
-            hex_map_iter_y != hex_map_iter_x->second.end();
-            hex_map_iter_y++
-        ) {
-            hex_map_iter_y->second->draw();
-        }
+    //  2. draw tiles in drawing order
+    for (size_t i = 0; i < this->hex_draw_order_vec.size(); i++) {
+        this->hex_draw_order_vec[i]->draw();
     }
     
     //  3. redraw selected tile

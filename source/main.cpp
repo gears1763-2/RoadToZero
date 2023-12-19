@@ -34,6 +34,22 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     assets_manager_ptr->loadFont("assets/fonts/DroidSansMono.ttf", "DroidSansMono");
     assets_manager_ptr->loadFont("assets/fonts/Glass_TTY_VT220.ttf", "Glass_TTY_VT220");
     
+    //  2. load tile sheets
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/pine_tree_64x64_1.png",
+        "pine_tree_64x64_1"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/wheat_64x64_1.png",
+        "wheat_64x64_1"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/mountain_64x64_1.png",
+        "mountain_64x64_1"
+    );
+    
     return;
 }   /* loadAssets() */
 

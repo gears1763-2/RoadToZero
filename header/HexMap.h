@@ -42,6 +42,7 @@ class HexMap {
         void __setUpGlassScreen(void);
         
         void __layTiles(void);
+        void __buildDrawOrderVector(void);
         
         std::vector<double> __getNoise(int, int=128);
         
@@ -83,6 +84,7 @@ class HexMap {
         std::vector<HexTile*> border_tiles_vec; ///< A vector of pointers to the border tiles.
         
         std::map<double, std::map<double, HexTile*>>  hex_map; ///< A position-indexed, nested map of hex tiles.
+        std::vector<HexTile*> hex_draw_order_vec; ///< A vector of hex tiles, in drawing order.
         
         
         //  2. methods

@@ -618,7 +618,9 @@ HexTile :: HexTile(
     this->show_resource = false;
     this->resource_assessed = false;
     this->is_selected = false;
+    
     this->has_improvement = false;
+    this->tile_improvement_ptr = NULL;
     
     this->frame = 0;
     
@@ -635,8 +637,8 @@ HexTile :: HexTile(
     this->__setUpResourceChipSprite();
     this->__setResourceText();
     
-    //  3. set tile type and resource (default to forest and average)
-    this->setTileType(TileType :: FOREST);
+    //  3. set tile type and resource (default to none type and average)
+    this->setTileType(TileType :: NONE_TYPE);
     this->setTileResource(TileResource :: AVERAGE);
     
     std::cout << "HexTile constructed at " << this << std::endl;
@@ -663,7 +665,7 @@ void HexTile :: setTileType(TileType tile_type)
     switch (this->tile_type) {
         case (TileType :: FOREST): {
             this->tile_sprite.setFillColor(FOREST_GREEN);
-            
+
             break;
         }
         
@@ -833,6 +835,81 @@ void HexTile :: setTileResource(double input_value)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexTile :: decorateTile(void)
+///
+/// \brief Method to decorate tile.
+///
+
+void HexTile :: decorateTile(void)
+{
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            this->tile_decoration_sprite.setTexture(
+                *(this->assets_manager_ptr->getTexture("pine_tree_64x64_1"))
+            );
+            
+            break;
+        }
+        
+        case (TileType :: LAKE): {
+            //...
+            
+            break;
+        }
+        
+        case (TileType :: MOUNTAINS): {
+            this->tile_decoration_sprite.setTexture(
+                *(this->assets_manager_ptr->getTexture("mountain_64x64_1"))
+            );
+            
+            break;
+        }
+        
+        case (TileType :: OCEAN): {
+            //...
+            
+            break;
+        }
+        
+        case (TileType :: PLAINS): {
+            this->tile_decoration_sprite.setTexture(
+                *(this->assets_manager_ptr->getTexture("wheat_64x64_1"))
+            );
+            
+            break;
+        }
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    this->tile_decoration_sprite.setOrigin(
+        this->tile_decoration_sprite.getLocalBounds().width / 2,
+        this->tile_decoration_sprite.getLocalBounds().height
+    );
+    
+    this->tile_decoration_sprite.setPosition(
+        this->position_x,
+        this->position_y + 12
+    );
+    
+    if ((double)rand() / RAND_MAX > 0.5) {
+        this->tile_decoration_sprite.setScale(sf::Vector2f(-1, 1));
+    }
+    
+    return;
+}   /* decorateTile(void) */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: toggleResourceOverlay(void)
 ///
 /// \brief Method to toggle the tile resource overlay.
@@ -884,6 +961,12 @@ void HexTile :: assess(void)
 
 void HexTile :: processEvent(void)
 {
+    //  1. process TileImprovement events
+    if (this->tile_improvement_ptr != NULL) {
+        this->tile_improvement_ptr->processEvent();
+    }
+    
+    //  2. process HexTile events
     if (this->event_ptr->type == sf::Event::KeyPressed) {
         this->__handleKeyPressEvents();
     }
@@ -909,6 +992,12 @@ void HexTile :: processEvent(void)
 
 void HexTile :: processMessage(void)
 {
+    //  1. process TileImprovement messages
+    if (this->tile_improvement_ptr != NULL) {
+        this->tile_improvement_ptr->processMessage();
+    }
+    
+    //  2. process HexTile messages
     //...
     
     return;
@@ -937,13 +1026,16 @@ void HexTile :: draw(void)
         this->render_window_ptr->draw(this->node_sprite);
     }
     
-    //  3. draw resource
+    //  3. draw tile decoration
+    this->render_window_ptr->draw(this->tile_decoration_sprite);
+    
+    //  4. draw resource
     if (this->show_resource) {
         this->render_window_ptr->draw(this->resource_chip_sprite);
         this->render_window_ptr->draw(this->resource_text);
     }
     
-    //  4. draw selection outline
+    //  5. draw selection outline
     if (this->is_selected) {
         sf::Color outline_colour = this->select_outline_sprite.getOutlineColor();
         
@@ -973,6 +1065,10 @@ void HexTile :: draw(void)
 
 HexTile :: ~HexTile(void)
 {
+    if (this->tile_improvement_ptr != NULL) {
+        delete this->tile_improvement_ptr;
+    }
+    
     std::cout << "HexTile at " << this << " destroyed" << std::endl;
     
     return;

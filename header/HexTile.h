@@ -19,10 +19,7 @@
 #define HEXTILE_H
 
 
-#include "ESC_core/constants.h"
-#include "ESC_core/includes.h"
-#include "ESC_core/AssetsManager.h"
-#include "ESC_core/MessageHub.h"
+#include "TileImprovement.h"
 
 
 ///
@@ -32,6 +29,7 @@
 ///
 
 enum TileType {
+    NONE_TYPE, ///< A dummy tile (for initialization).
     FOREST, ///< A forest tile.
     LAKE, ///< A lake tile.
     MOUNTAINS, ///< A mountains tile.
@@ -103,7 +101,9 @@ class HexTile {
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
+        
         bool has_improvement; ///< A boolean which indicates if tile has improvement or not.
+        TileImprovement* tile_improvement_ptr; ///< A pointer to the improvement for this tile.
         
         int frame; ///< The current frame of this object.
         
@@ -118,6 +118,7 @@ class HexTile {
         sf::ConvexShape select_outline_sprite; ///< A convex shape which outlines the tile when selected.
         sf::CircleShape resource_chip_sprite; ///< A circle shape which represents a resource chip.
         sf::Text resource_text; ///< A text representation of the resource.
+        sf::Sprite tile_decoration_sprite; ///< A tile decoration sprite.
         
         
         //  2. methods
@@ -135,6 +136,8 @@ class HexTile {
         
         void setTileResource(TileResource);
         void setTileResource(double);
+        
+        void decorateTile(void);
         
         void toggleResourceOverlay(void);
         void assess(void);

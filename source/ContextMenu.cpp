@@ -790,7 +790,7 @@ ContextMenu :: ContextMenu(
     this->message_hub_ptr = message_hub_ptr;
     
     //  1.2. public
-    this->console_state = ConsoleState :: NONE;
+    this->console_state = ConsoleState :: NONE_STATE;
     this->__setConsoleState(ConsoleState :: READY);
     
     this->game_menu_up = false;

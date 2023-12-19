@@ -91,6 +91,10 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 
 // ======== GAME CONSTANTS =================================================== //
 
+const unsigned int EMISSIONS_LIFETIME_LIMIT_TONNES = 1500; ///< The CO2-equivalent mass of emissions that would result from burning 1,000,000 L of diesel fuel.
+
+const double CO2E_KG_PER_LITRE_DIESEL = 3.1596; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
+
 const std::string GAME_CHANNEL = "GAME CHANNEL"; ///< A message channel for game messages.
 
 // ======== END GAME CONSTANTS =================================================== //

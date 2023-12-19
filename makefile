@@ -94,6 +94,18 @@ $(OBJ_MESSAGEHUB): $(SRC_MESSAGEHUB)
 
 
 
+#### ==== TileImprovement ==== ####
+
+SRC_TILEIMPROVEMENT = source/TileImprovement.cpp
+OBJ_TILEIMPROVEMENT = object/TileImprovement.o
+
+$(OBJ_TILEIMPROVEMENT): $(SRC_TILEIMPROVEMENT)
+	$(CXX) $(CXXFLAGS) -c $(SRC_TILEIMPROVEMENT) -o $(OBJ_TILEIMPROVEMENT)
+
+#### ==== END TileImprovement ==== ####
+
+
+
 #### ==== HexTile ==== ####
 
 SRC_HEXTILE = source/HexTile.cpp
@@ -148,6 +160,7 @@ OBJ_ALL = $(OBJ_GAME) \
           $(OBJ_CONTEXTMENU) \
           $(OBJ_HEXMAP) \
           $(OBJ_HEXTILE) \
+          $(OBJ_TILEIMPROVEMENT) \
           $(OBJ_ASSETSMANAGER) \
           $(OBJ_MESSAGEHUB) \
           $(OBJ_TESTING_UTILS)

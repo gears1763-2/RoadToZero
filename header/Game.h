@@ -63,6 +63,10 @@ class Game {
         
         unsigned int year; ///< Current game year.
         unsigned int month; ///< Current game month.
+        unsigned int population; ///< Current population.
+        unsigned int credits; ///< Current balance of credits.
+        unsigned int demand_MWh; ///< Current energy demand [MWh].
+        unsigned int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
         
         sf::Clock clock; ///< The game clock.
         sf::Event event; ///< The game events class.

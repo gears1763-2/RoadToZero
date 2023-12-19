@@ -241,15 +241,19 @@ void Game :: __drawHUD(void)
     std::string HUD_string = "YEAR: ";
     HUD_string += std::to_string(this->year);
     
-    HUD_string += "   MONTH: ";
+    HUD_string += "    MONTH: ";
     HUD_string += std::to_string(this->month);
     
-    HUD_string += "   POPULATION: ";
+    HUD_string += "    POPULATION: ";
     HUD_string += std::to_string(0);   //<--- CHANGE THIS!
     
-    HUD_string += "   CREDITS: ";
+    HUD_string += "    CREDITS: ";
     HUD_string += std::to_string(0);   //<--- CHANGE THIS!
     HUD_string += " K";
+    
+    HUD_string += "    CURRENT DEMAND: ";
+    HUD_string += std::to_string(0);   //<--- CHANGE THIS!
+    HUD_string += " MWh";
     
     sf::Text HUD_text(
         HUD_string,
@@ -268,12 +272,12 @@ void Game :: __drawHUD(void)
     
     
     //  2. second line
-    HUD_string = "DEMAND: ";
+    HUD_string = "CUMULATIVE EMISSIONS: ";
     HUD_string += std::to_string(0);   //<--- CHANGE THIS!
-    HUD_string += " kWh";
+    HUD_string += " tonnes (CO2e)";
     
-    HUD_string += "   EMISSIONS: ";
-    HUD_string += std::to_string(0);   //<--- CHANGE THIS!
+    HUD_string += "    LIFETIME LIMIT: ";
+    HUD_string += std::to_string(1000);   //<--- CHANGE THIS!
     HUD_string += " tonnes (CO2e)";
     
     HUD_text.setString(HUD_string);

@@ -33,7 +33,7 @@
 void HexMap :: __setUpGlassScreen(void)
 {
     this->glass_screen.setSize(sf::Vector2f(GAME_WIDTH, GAME_HEIGHT));
-    this->glass_screen.setFillColor(sf::Color(40, 40, 40, 40));
+    this->glass_screen.setFillColor(sf::Color(MONOCHROME_SCREEN_BACKGROUND));
     
     return;
 }   /* __setUpGlassScreen() */
@@ -1178,7 +1178,14 @@ void HexMap :: processMessage(void)
 
 void HexMap :: draw(void)
 {
-    //  1. draw all tiles in order
+    //  1. draw background
+    sf::Color glass_screen_colour = this->glass_screen.getFillColor();
+    glass_screen_colour.a = 255;
+    this->glass_screen.setFillColor(glass_screen_colour);
+    
+    this->render_window_ptr->draw(this->glass_screen);
+    
+    //  2. draw all tiles in order
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
     std::map<double, HexTile*>::iterator hex_map_iter_y;
     for (
@@ -1195,13 +1202,17 @@ void HexMap :: draw(void)
         }
     }
     
-    //  2. redraw selected tile
+    //  3. redraw selected tile
     HexTile* selected_tile_ptr = this->__getSelectedTile();
     if (selected_tile_ptr != NULL) {
         selected_tile_ptr->draw();
     }
     
-    //  3. draw glass screen
+    //  4. draw glass screen
+    glass_screen_colour = this->glass_screen.getFillColor();
+    glass_screen_colour.a = 40;
+    this->glass_screen.setFillColor(glass_screen_colour);
+    
     this->render_window_ptr->draw(this->glass_screen);
     
     this->frame++;

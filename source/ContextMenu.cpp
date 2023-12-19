@@ -551,7 +551,7 @@ void ContextMenu :: __drawConsoleText(void)
     //  1. set up console text (drawable)
     sf::Text console_text(
         this->console_string,
-        *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
         16
     );
     
@@ -588,7 +588,7 @@ void ContextMenu :: __drawConsoleText(void)
         
         sf::Text frame_count_text(
             frame_count_string,
-            *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+            *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
             16
         );
         

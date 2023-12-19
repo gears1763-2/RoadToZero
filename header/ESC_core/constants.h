@@ -32,6 +32,9 @@ const double FLOAT_TOLERANCE = 1e-6; ///< Tolerance for floating point equality 
 
 // ======== GENERAL GAME CONSTANTS ================================================== //
 
+const unsigned long long int SECONDS_PER_YEAR = 31537970;
+const unsigned long long int SECONDS_PER_MONTH = 2628164;
+
 const int FRAMES_PER_SECOND = 60; ///< Target frames per second.
 const double SECONDS_PER_FRAME = 1.0 / 60; ///< Target seconds per frame (just reciprocal of target frames per second).
 

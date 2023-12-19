@@ -40,7 +40,6 @@ class Game {
         
         //  2. methods
         void __toggleFrameClockOverlay(void);
-        void __drawFrameClockOverlay(void);
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
@@ -48,6 +47,8 @@ class Game {
         void __processEvent(void);
         void __processMessage(void);
         
+        void __drawFrameClockOverlay(void);
+        void __drawHUD(void);
         void __draw(void);
     
     
@@ -59,6 +60,9 @@ class Game {
         
         unsigned long long int frame; ///< The current frame of the game.
         double time_since_start_s; ///< The time elapsed [s] since the start of the game.
+        
+        unsigned int year; ///< Current game year.
+        unsigned int month; ///< Current game month.
         
         sf::Clock clock; ///< The game clock.
         sf::Event event; ///< The game events class.

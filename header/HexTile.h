@@ -89,6 +89,7 @@ class HexTile {
         std::string __getTileTypeSubstring(void);
         std::string __getTileResourceSubstring(void);
         std::string __getTileImprovementSubstring(void);
+        std::string __getTileOptionsSubstring(void);
         void __sendTileStateMessage(void);
     
     
@@ -102,6 +103,7 @@ class HexTile {
         bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         
+        bool settlement_built; ///< A boolean which indicates if a settlement has been built yet or not.
         bool has_improvement; ///< A boolean which indicates if tile has improvement or not.
         TileImprovement* tile_improvement_ptr; ///< A pointer to the improvement for this tile.
         

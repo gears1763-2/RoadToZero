@@ -139,7 +139,7 @@ void HexTile :: __setUpResourceChipSprite(void)
     
     this->resource_chip_sprite.setPosition(this->position_x, this->position_y);
     
-    this->resource_chip_sprite.setFillColor(sf::Color(175, 175, 175, 175));
+    this->resource_chip_sprite.setFillColor(sf::Color(175, 175, 175, 250));
     
     return;
 }   /* __setUpResourceChip() */
@@ -159,61 +159,70 @@ void HexTile :: __setResourceText(void)
 {
     this->resource_text.setFont(*(assets_manager_ptr->getFont("DroidSansMono")));
     
-    switch (this->tile_resource) {
-        case (TileResource :: POOR): {
-            this->resource_text.setString("-2");
+    this->resource_text.setFillColor(sf::Color(0, 0, 0, 255));
+    
+    if (this->resource_assessed) {
+        switch (this->tile_resource) {
+            case (TileResource :: POOR): {
+                this->resource_text.setString("-2");
+                this->resource_text.setFillColor(MONOCHROME_TEXT_RED);
+                
+                break;
+            }
             
-            break;
-        }
-        
-        case (TileResource :: BELOW_AVERAGE): {
-            this->resource_text.setString("-1");
+            case (TileResource :: BELOW_AVERAGE): {
+                this->resource_text.setString("-1");
+                this->resource_text.setFillColor(MONOCHROME_TEXT_RED);
+                
+                break;
+            }
             
-            break;
-        }
-        
-        case (TileResource :: AVERAGE): {
-            this->resource_text.setString("0");
+            case (TileResource :: AVERAGE): {
+                this->resource_text.setString("+0");
+                
+                break;
+            }
             
-            break;
-        }
-        
-        case (TileResource :: ABOVE_AVERAGE): {
-            this->resource_text.setString("+1");
+            case (TileResource :: ABOVE_AVERAGE): {
+                this->resource_text.setString("+1");
+                this->resource_text.setFillColor(MONOCHROME_TEXT_GREEN);
+                
+                break;
+            }
             
-            break;
-        }
-        
-        case (TileResource :: GOOD): {
-            this->resource_text.setString("+2");
+            case (TileResource :: GOOD): {
+                this->resource_text.setString("+2");
+                this->resource_text.setFillColor(MONOCHROME_TEXT_GREEN);
+                
+                break;
+            }
             
-            break;
-        }
-        
-        default: {
-            this->resource_text.setString("?");
-            
-            break;
+            default: {
+                this->resource_text.setString("?");
+                
+                break;
+            }
         }
     }
     
-    if (not this->resource_assessed) {
+    else {
         this->resource_text.setString("?");
     }
     
-    this->resource_text.setCharacterSize(16);
+    this->resource_text.setCharacterSize(20);
     
     this->resource_text.setOrigin(
         this->resource_text.getLocalBounds().width / 2,
         this->resource_text.getLocalBounds().height / 2
     );
     
-    this->resource_text.setFillColor(sf::Color(0, 0, 0, 255));
-    
     this->resource_text.setPosition(
         this->position_x,
         this->position_y - 4
     );
+    
+    this->resource_text.setOutlineThickness(1);
+    this->resource_text.setOutlineColor(sf::Color(0, 0, 0, 255));
     
     return;
 }   /* __setResourceText() */
@@ -491,7 +500,12 @@ std::string HexTile :: __getTileResourceSubstring(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn
+/// \fn std::string HexTile :: __getTileImprovementSubstring(void)
+///
+/// \brief Helper method to assemble and return the tile improvement substring.
+///
+/// \return Tile improvement substring.
+///
 
 std::string HexTile :: __getTileImprovementSubstring(void)
 {
@@ -515,6 +529,33 @@ std::string HexTile :: __getTileImprovementSubstring(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn std::string HexTile :: __getTileOptionsSubstring(void)
+///
+/// \brief Helper method to assemble and return tile options substring.
+///
+/// \return Tile options substring.
+///
+
+std::string HexTile :: __getTileOptionsSubstring(void)
+{
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string options_substring                = "     **** TILE OPTIONS ****     \n";
+    options_substring                           += "                                \n";
+    
+    if ((not this->has_improvement) and (not this->settlement_built)) {
+        options_substring                       += "[B]:  BUILD SETTLEMENT          ";
+    }
+    
+    return options_substring;
+}   /* __getTileOptionsString() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: __sendTileStateMessage(void)
 ///
 /// \brief Helper method to format and send tile state message.
@@ -529,7 +570,7 @@ void HexTile :: __sendTileStateMessage(void)
     
     
     //                   32 char x 17 line console "--------------------------------\n";
-    std::string string_payload                   = "  **** TILE INFO/OPTIONS ****   \n";
+    std::string string_payload                   = "      **** TILE INFO ****       \n";
     string_payload                              += "                                \n";
     
     string_payload                              += this->__getTileCoordsSubstring();
@@ -538,17 +579,9 @@ void HexTile :: __sendTileStateMessage(void)
     string_payload                              += this->__getTileTypeSubstring();
     string_payload                              += this->__getTileResourceSubstring();
     string_payload                              += this->__getTileImprovementSubstring();
-    
     string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                \n";
-    string_payload                              += "                                ";
+
+    string_payload                              += this->__getTileOptionsSubstring();
     
     
     tile_state_message.string_payload = string_payload;
@@ -620,6 +653,7 @@ HexTile :: HexTile(
     this->is_selected = false;
     
     this->has_improvement = false;
+    this->settlement_built = false;
     this->tile_improvement_ptr = NULL;
     
     this->frame = 0;
@@ -966,6 +1000,7 @@ void HexTile :: assess(void)
 {
     this->resource_assessed = true;
     this->__setResourceText();
+    this->__sendTileStateMessage();
     
     return;
 }   /* assess() */

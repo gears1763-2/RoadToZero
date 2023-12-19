@@ -70,6 +70,8 @@ class TileImprovement {
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
         
+        sf::Sprite tile_improvement_sprite_static; ///< A static sprite, for decorating the tile.
+        std::vector<sf::Sprite> tile_improvement_sprite_animated; ///< An animated sprite, for the ContextMenu visual screen.
         
         //  2. methods
         TileImprovement(

@@ -488,9 +488,10 @@ void ContextMenu :: __setConsoleString(void)
             //           32 char x 17 line console "--------------------------------\n";
             this->console_string                 = "         **** MENU ****         \n";
             this->console_string                += "                                \n";
-            this->console_string                += "[T]:  TUTORIAL                  \n";
-            this->console_string                += "                                \n";
             this->console_string                += "[R]:  RESTART                   \n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[TAB]:  TOGGLE RESOURCE OVERLAY \n";
+            this->console_string                += "[T]:  TUTORIAL                  \n";
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";
@@ -499,7 +500,6 @@ void ContextMenu :: __setConsoleString(void)
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";
             this->console_string                += "[Q]:    QUIT                    \n";
-            this->console_string                += "                                \n";
             this->console_string                += "[ESC]:  CLOSE MENU              \n";
             this->console_string                += "                                \n";
             
@@ -519,6 +519,8 @@ void ContextMenu :: __setConsoleString(void)
             this->console_string                 = "  **** RTZ 64 CONTEXT V12 ****  \n";
             this->console_string                += "                                \n";
             this->console_string                += "64K RAM SYSTEM  38911 BYTES FREE\n";
+            this->console_string                += "                                \n";
+            this->console_string                += "[TAB]:  TOGGLE RESOURCE OVERLAY \n";
             this->console_string                += "                                \n";
             this->console_string                += "[ESC]:        MENU              \n";
             this->console_string                += "[LEFT CLICK]: TILE INFO/OPTIONS \n";

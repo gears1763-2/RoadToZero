@@ -204,8 +204,8 @@ docs:
 	doxygen docs/config.doxygen
 	(cd docs/latex && \
      make pdf && \
-     mv -fv refman.pdf ../$(DOCSNAME).pdf)
-	7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on docs/$(DOCSNAME).7z docs/html
+     mv -fv refman.pdf ../$(DOCSNAME)_LaTeX.pdf)
+	7z a -t7z -m0=lzma -mx=9 -mfb=64 -md=32m -ms=on docs/$(DOCSNAME)_html.7z docs/html
 	rm -frv docs/html
 	rm -frv docs/latex
 	rm -frv docs/bibTmpDir

@@ -103,6 +103,14 @@ void Game :: __handleKeyPressEvents(void)
             break;
         }
         
+        
+        case (sf::Keyboard::Tab): {
+            this->hex_map_ptr->toggleResourceOverlay();
+            
+            break;
+        }
+        
+        
         default: {
             // do nothing!
             

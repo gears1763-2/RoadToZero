@@ -157,7 +157,7 @@ void HexTile :: __setUpResourceChipSprite(void)
 
 void HexTile :: __setResourceText(void)
 {
-    this->resource_text.setFont(*(assets_manager_ptr->getFont("Glass_TTY_VT220")));
+    this->resource_text.setFont(*(assets_manager_ptr->getFont("DroidSansMono")));
     
     switch (this->tile_resource) {
         case (TileResource :: POOR): {
@@ -364,6 +364,157 @@ void HexTile :: __sendTileSelectedMessage(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn std::string HexTile :: __getTileCoordsSubstring(void)
+///
+/// \brief Helper method to assemble and return tile coordinates substring.
+///
+/// \return Tile coordinates substring.
+///
+
+std::string HexTile :: __getTileCoordsSubstring(void)
+{
+    std::string coords_substring = "TILE COORDS:  (";
+    coords_substring += std::to_string(int(this->position_x - 400));
+    coords_substring += ", ";
+    coords_substring += std::to_string(int(this->position_y - 400));
+    coords_substring += ")\n";
+    
+    return coords_substring;
+}   /* __getTileCoordsSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn std::string HexTile :: __getTileTypeSubstring(void)
+///
+/// \brief Helper method to assemble and return tile type substring.
+///
+/// \return Tile type substring.
+///
+
+std::string HexTile :: __getTileTypeSubstring(void)
+{
+    std::string type_substring = "TILE TYPE:         ";
+    
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            type_substring += "FOREST\n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: LAKE): {
+            type_substring += "LAKE\n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: MOUNTAINS): {
+            type_substring += "MOUNTAINS\n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: OCEAN): {
+            type_substring += "OCEAN\n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: PLAINS): {
+            type_substring += "PLAINS\n";
+            
+            break;
+        }
+        
+        
+        default: {
+            type_substring += "???\n";
+            
+            break;
+        }
+    }
+    
+    return type_substring;
+}   /* __getTileTypeSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn std::string HexTile :: __getTileResourceSubstring(void)
+///
+/// \brief Helper method to assemble and return tile resource substring.
+///
+/// \return Tile resource substring.
+///
+
+std::string HexTile :: __getTileResourceSubstring(void)
+{
+    std::string resource_substring = "TILE RESOURCE:     ";
+    
+    if (this->resource_assessed) {
+        switch (this->tile_resource) {
+            //...
+            
+            
+            default: {
+                resource_substring += "???\n";
+                
+                break;
+            }
+        }
+    }
+    
+    else {
+        resource_substring += "[A]: ASSESS\n";
+    }
+    
+    return resource_substring;
+}   /* __getTileResourceSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn
+
+std::string HexTile :: __getTileImprovementSubstring(void)
+{
+    std::string improvement_substring = "TILE IMPROVEMENT:  ";
+    
+    if (this->has_improvement) {
+        //...
+    }
+    
+    else {
+        improvement_substring += "NONE\n";
+    }
+    
+    return improvement_substring;
+}   /* __getTileImprovementSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: __sendTileStateMessage(void)
 ///
 /// \brief Helper method to format and send tile state message.
@@ -381,86 +532,13 @@ void HexTile :: __sendTileStateMessage(void)
     std::string string_payload                   = "  **** TILE INFO/OPTIONS ****   \n";
     string_payload                              += "                                \n";
     
-    
-    string_payload                              += "TILE COORDS:  (";
-    string_payload                              += std::to_string(
-        int(this->position_x - 400)
-    );
-    string_payload                              += ", ";
-    string_payload                              += std::to_string(
-        int(this->position_y - 400)
-    );
-    string_payload                              += ")\n";
+    string_payload                              += this->__getTileCoordsSubstring();
     string_payload                              += "                                \n";
     
+    string_payload                              += this->__getTileTypeSubstring();
+    string_payload                              += this->__getTileResourceSubstring();
+    string_payload                              += this->__getTileImprovementSubstring();
     
-    string_payload                              += "TILE TYPE:      ";
-    
-    switch (this->tile_type) {
-        case (TileType :: FOREST): {
-            string_payload                      +=                  "FOREST         \n";
-            
-            break;
-        }
-        
-        
-        case (TileType :: LAKE): {
-            string_payload                      +=                  "LAKE           \n";
-            
-            break;
-        }
-        
-        
-        case (TileType :: MOUNTAINS): {
-            string_payload                      +=                  "MOUNTAINS      \n";
-            
-            break;
-        }
-        
-        
-        case (TileType :: OCEAN): {
-            string_payload                      +=                  "OCEAN          \n";
-            
-            break;
-        }
-        
-        
-        case (TileType :: PLAINS): {
-            string_payload                      +=                  "PLAINS         \n";
-            
-            break;
-        }
-        
-        
-        default: {
-            string_payload                      +=                  "???            \n";
-            
-            break;
-        }
-    }
-    
-    
-    string_payload                              += "TILE RESOURCE:  ";
-    
-    if (this->resource_assessed) {
-        switch (this->tile_resource) {
-            //...
-            
-            
-            default: {
-                string_payload                  +=                  "???            \n";
-                
-                break;
-            }
-        }
-    }
-    
-    else {
-        string_payload                          +=                  "???            \n";
-    }
-    
-    
-    string_payload                              += "                                \n";
     string_payload                              += "                                \n";
     string_payload                              += "                                \n";
     string_payload                              += "                                \n";
@@ -540,6 +618,7 @@ HexTile :: HexTile(
     this->show_resource = false;
     this->resource_assessed = false;
     this->is_selected = false;
+    this->has_improvement = false;
     
     this->frame = 0;
     

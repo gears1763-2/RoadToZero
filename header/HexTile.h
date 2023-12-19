@@ -86,6 +86,11 @@ class HexTile {
         void __handleMouseButtonEvents(void);
         
         void __sendTileSelectedMessage(void);
+        
+        std::string __getTileCoordsSubstring(void);
+        std::string __getTileTypeSubstring(void);
+        std::string __getTileResourceSubstring(void);
+        std::string __getTileImprovementSubstring(void);
         void __sendTileStateMessage(void);
     
     
@@ -98,6 +103,7 @@ class HexTile {
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
+        bool has_improvement; ///< A boolean which indicates if tile has improvement or not.
         
         int frame; ///< The current frame of this object.
         

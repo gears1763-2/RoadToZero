@@ -168,8 +168,8 @@ void Game :: __handleMouseButtonEvents(void)
 void Game :: __processEvent(void)
 {
     if (this->event.type == sf::Event::Closed) {
-        this->render_window_ptr->close();
         this->quit_game = true;
+        this->game_loop_broken = true;
     }
     
     if (this->event.type == sf::Event::KeyPressed) {

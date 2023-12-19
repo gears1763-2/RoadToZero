@@ -303,6 +303,9 @@ void HexTile :: __handleMouseButtonEvents(void)
                     this->position_y << ") was selected" << std::endl;
                 
                 this->is_selected = true;
+                
+                this->__sendTileSelectedMessage();
+                this->__sendTileStateMessage();
             }
             
             else {
@@ -344,7 +347,12 @@ void HexTile :: __handleMouseButtonEvents(void)
 
 void HexTile :: __sendTileSelectedMessage(void)
 {
-    //...
+    Message tile_selected_message;
+    
+    tile_selected_message.channel = TILE_SELECTED_CHANNEL;
+    tile_selected_message.subject = "tile selected";
+    
+    this->message_hub_ptr->sendMessage(tile_selected_message);
     
     return;
 }   /* __sendTileSelectedMessage() */
@@ -363,7 +371,111 @@ void HexTile :: __sendTileSelectedMessage(void)
 
 void HexTile :: __sendTileStateMessage(void)
 {
-    //...
+    Message tile_state_message;
+    
+    tile_state_message.channel = TILE_STATE_CHANNEL;
+    tile_state_message.subject = "tile state";
+    
+    
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string string_payload                   = "  **** TILE INFO/OPTIONS ****   \n";
+    string_payload                              += "                                \n";
+    
+    
+    string_payload                              += "TILE COORDS:  (";
+    string_payload                              += std::to_string(
+        int(this->position_x - 400)
+    );
+    string_payload                              += ", ";
+    string_payload                              += std::to_string(
+        int(this->position_y - 400)
+    );
+    string_payload                              += ")\n";
+    string_payload                              += "                                \n";
+    
+    
+    string_payload                              += "TILE TYPE:      ";
+    
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            string_payload                      +=                  "FOREST         \n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: LAKE): {
+            string_payload                      +=                  "LAKE           \n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: MOUNTAINS): {
+            string_payload                      +=                  "MOUNTAINS      \n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: OCEAN): {
+            string_payload                      +=                  "OCEAN          \n";
+            
+            break;
+        }
+        
+        
+        case (TileType :: PLAINS): {
+            string_payload                      +=                  "PLAINS         \n";
+            
+            break;
+        }
+        
+        
+        default: {
+            string_payload                      +=                  "???            \n";
+            
+            break;
+        }
+    }
+    
+    
+    string_payload                              += "TILE RESOURCE:  ";
+    
+    if (this->resource_assessed) {
+        switch (this->tile_resource) {
+            //...
+            
+            
+            default: {
+                string_payload                  +=                  "???            \n";
+                
+                break;
+            }
+        }
+    }
+    
+    else {
+        string_payload                          +=                  "???            \n";
+    }
+    
+    
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                \n";
+    string_payload                              += "                                ";
+    
+    
+    tile_state_message.string_payload = string_payload;
+    
+    this->message_hub_ptr->sendMessage(tile_state_message);
     
     return;
 }   /* __sendTileStateMessage() */

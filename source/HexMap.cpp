@@ -840,7 +840,9 @@ HexTile* HexMap :: __getSelectedTile(void)
 void HexMap :: __handleKeyPressEvents(void)
 {
     switch (this->event_ptr->key.code) {
-        //...
+        case (sf::Keyboard::Escape): {
+            this->tile_selected = false;
+        }
         
         
         default: {
@@ -869,14 +871,26 @@ void HexMap :: __handleMouseButtonEvents(void)
 {
     switch (this->event_ptr->mouseButton.button) {
         case (sf::Mouse::Left): {
-            //...
+            HexTile* hex_ptr = this->__getSelectedTile();
+            
+            if (hex_ptr != NULL) {
+                this->tile_selected = true;
+            }
+            
+            else if (this->tile_selected) {
+                this->tile_selected = false;
+                this->__sendNoTileSelectedMessage();
+            }
             
             break;
         }
         
         
         case (sf::Mouse::Right): {
-            //...
+            if (this->tile_selected) {
+                this->tile_selected = false;
+                this->__sendNoTileSelectedMessage();
+            }
             
             break;
         }
@@ -891,6 +905,30 @@ void HexMap :: __handleMouseButtonEvents(void)
     
     return;
 }   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __sendNoTileSelectedMessage(void)
+///
+/// \brief Helper method to format and send message on no tile selected.
+///
+
+void HexMap :: __sendNoTileSelectedMessage(void)
+{
+    Message no_tile_selected_message;
+    
+    no_tile_selected_message.channel = NO_TILE_SELECTED_CHANNEL;
+    no_tile_selected_message.subject = "no tile selected";
+    
+    this->message_hub_ptr->sendMessage(no_tile_selected_message);
+    
+    return;
+}   /* __sendNoTileSelectedMessage() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -942,6 +980,8 @@ HexMap :: HexMap(
     this->message_hub_ptr = message_hub_ptr;
     
     //  1.2. public
+    this->tile_selected = false;
+    
     this->frame = 0;
     
     this->n_layers = n_layers;
@@ -960,6 +1000,7 @@ HexMap :: HexMap(
     
     //  4. add message channel(s)
     this->message_hub_ptr->addChannel(TILE_SELECTED_CHANNEL);
+    this->message_hub_ptr->addChannel(NO_TILE_SELECTED_CHANNEL);
     this->message_hub_ptr->addChannel(TILE_STATE_CHANNEL);
     
     std::cout << "HexMap constructed at " << this << std::endl;

@@ -508,7 +508,7 @@ void ContextMenu :: __setConsoleString(void)
         
         
         case (ConsoleState :: TILE): {
-            // console string set from tile message
+            // take console string from tile state message
             
             break;
         }
@@ -849,7 +849,56 @@ void ContextMenu :: processEvent(void)
 
 void ContextMenu :: processMessage(void)
 {
-    //...
+    switch (this->console_state) {
+        case (ConsoleState :: TILE): {
+            //  process no tile selected
+            if (not this->message_hub_ptr->isEmpty(NO_TILE_SELECTED_CHANNEL)) {
+                Message no_tile_selected_message = this->message_hub_ptr->receiveMessage(
+                    NO_TILE_SELECTED_CHANNEL
+                );
+                
+                if (no_tile_selected_message.subject == "no tile selected") {
+                    this->__setConsoleState(ConsoleState :: READY);
+                    this->message_hub_ptr->popMessage(NO_TILE_SELECTED_CHANNEL);
+                }
+            }
+            
+            //  process tile state
+            if (not this->message_hub_ptr->isEmpty(TILE_STATE_CHANNEL)) {
+                Message tile_state_message = this->message_hub_ptr->receiveMessage(
+                    TILE_STATE_CHANNEL
+                );
+                
+                if (tile_state_message.subject == "tile state") {
+                    this->console_string = tile_state_message.string_payload;
+                    this->message_hub_ptr->popMessage(TILE_STATE_CHANNEL);
+                }
+            }
+            
+            //  process tile selected (subsequent left clicks causing program to hang)
+            if (not this->message_hub_ptr->isEmpty(TILE_SELECTED_CHANNEL)) {
+                this->message_hub_ptr->popMessage(TILE_SELECTED_CHANNEL);
+            }
+            
+            break;
+        }
+        
+        default: {
+            //  process tile selected
+            if (not this->message_hub_ptr->isEmpty(TILE_SELECTED_CHANNEL)) {
+                Message tile_selected_message = this->message_hub_ptr->receiveMessage(
+                    TILE_SELECTED_CHANNEL
+                );
+                
+                if (tile_selected_message.subject == "tile selected") {
+                    this->__setConsoleState(ConsoleState :: TILE);
+                    this->message_hub_ptr->popMessage(TILE_SELECTED_CHANNEL);
+                }
+            }
+            
+            break;
+        }
+    }
     
     return;
 }   /* processMessage() */

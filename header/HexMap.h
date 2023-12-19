@@ -61,10 +61,14 @@ class HexMap {
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
+        
+        void __sendNoTileSelectedMessage(void);
     
     
     public:
         //  1. attributes
+        bool tile_selected; ///< A boolean which indicates if a tile is currently selected.
+        
         int n_layers; ///< The number of layers in the hex map.
         int n_tiles; ///< The number of tiles in the hex map.
         int frame; ///< The current frame of this object.

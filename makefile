@@ -118,7 +118,15 @@ $(OBJ_HEXMAP): $(SRC_HEXMAP)
 
 
 
-#...
+#### ==== ContextMenu ==== ####
+
+SRC_CONTEXTMENU = source/ContextMenu.cpp
+OBJ_CONTEXTMENU = object/ContextMenu.o
+
+$(OBJ_CONTEXTMENU): $(SRC_CONTEXTMENU)
+	$(CXX) $(CXXFLAGS) -c $(SRC_CONTEXTMENU) -o $(OBJ_CONTEXTMENU)
+
+#### ==== END ContextMenu ==== ####
 
 
 
@@ -137,6 +145,7 @@ $(OBJ_GAME): $(SRC_GAME)
 #### ==== main ==== ####
 
 OBJ_ALL = $(OBJ_GAME) \
+          $(OBJ_CONTEXTMENU) \
           $(OBJ_HEXMAP) \
           $(OBJ_HEXTILE) \
           $(OBJ_ASSETSMANAGER) \

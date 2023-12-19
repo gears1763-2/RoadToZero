@@ -58,6 +58,34 @@ MessageHub :: MessageHub(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn bool MessageHub :: hasTraffic(void)
+///
+/// \brief Method to determine if there remains any message traffic.
+///
+
+bool MessageHub :: hasTraffic(void)
+{
+    std::map<std::string, std::list<Message>>::iterator map_iter;
+    for (
+        map_iter = this->message_map.begin();
+        map_iter != this->message_map.end();
+        map_iter++
+    ) {
+        if (not map_iter->second.empty()) {
+            return true;
+        }
+    }
+    
+    return false;
+}   /* hasTraffic() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void MessageHub :: addChannel(std::string channel)
 ///
 /// \brief Method to add channel to message map.
@@ -255,17 +283,72 @@ Message MessageHub :: receiveMessage(std::string channel)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void MessageHub :: process(void)
+/// \fn void MessageHub :: popMessage(std::string channel)
 ///
-/// \brief Method to process messages. To be called once per frame.
+/// \brief Method to pop latest message off of the given channel.
+///
+/// \param channel The key for the message channel being popped.
 ///
 
-void MessageHub :: process(void)
+void MessageHub :: popMessage(std::string channel)
 {
-    //...
+    //  1. check if channel is in map (if not, throw error)
+    if (this->message_map.count(channel) <= 0) {
+        std::string error_str = "ERROR  MessageHub::receiveMessage()  channel ";
+        error_str += channel;
+        error_str += " is not in message map";
+        
+        #ifdef _WIN32
+            std::cout << error_str << std::endl;
+        #endif  /* _WIN32 */
+        
+        throw std::runtime_error(error_str);
+    }
+    
+    //  2. check if channel is empty (if so, throw error)
+    if (this->message_map[channel].empty()) {
+        std::string error_str = "ERROR  MessageHub::receiveMessage()  channel ";
+        error_str += channel;
+        error_str += " is empty";
+        
+        #ifdef _WIN32
+            std::cout << error_str << std::endl;
+        #endif  /* _WIN32 */
+        
+        throw std::runtime_error(error_str);
+    }
+    
+    //  3. pop message
+    this->message_map[channel].pop_back();
     
     return;
-}   /* process() */
+}   /* popMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void MessageHub :: clearMessages(void)
+///
+/// \brief Method to clear messages from the MessageHub.
+///
+
+void MessageHub :: clearMessages(void)
+{
+    std::map<std::string, std::list<Message>>::iterator map_iter;
+    for (
+        map_iter = this->message_map.begin();
+        map_iter != this->message_map.end();
+        map_iter++
+    ) {
+        map_iter->second.clear();
+    }
+    
+    return;
+}   /* clearMessages() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -282,14 +365,7 @@ void MessageHub :: process(void)
 void MessageHub :: clear(void)
 {
     
-    std::map<std::string, std::list<Message>>::iterator map_iter;
-    for (
-        map_iter = this->message_map.begin();
-        map_iter != this->message_map.end();
-        map_iter++
-    ) {
-        map_iter->second.clear();
-    }
+    this->clearMessages();
     this->message_map.clear();
     
     return;

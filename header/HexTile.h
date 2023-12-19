@@ -81,6 +81,12 @@ class HexTile {
         void __setResourceText(void);
         
         bool __isClicked(void);
+        
+        void __handleKeyPressEvents(void);
+        void __handleMouseButtonEvents(void);
+        
+        void __sendTileSelectedMessage(void);
+        void __sendTileStateMessage(void);
     
     
     public:
@@ -128,7 +134,7 @@ class HexTile {
         void assess(void);
         
         void processEvent(void);
-        void processFrame(void);
+        void processMessage(void);
         
         void draw(void);
         

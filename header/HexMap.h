@@ -58,6 +58,9 @@ class HexMap {
         void __assembleHexMap(void);
         
         HexTile* __getSelectedTile(void);
+        
+        void __handleKeyPressEvents(void);
+        void __handleMouseButtonEvents(void);
     
     
     public:
@@ -79,7 +82,6 @@ class HexMap {
         
         
         //  2. methods
-        HexMap(void);
         HexMap(
             int,
             sf::Event*,
@@ -94,7 +96,7 @@ class HexMap {
         void toggleResourceOverlay(void);
         
         void processEvent(void);
-        void processFrame(void);
+        void processMessage(void);
         
         void draw(void);
         

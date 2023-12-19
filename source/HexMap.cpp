@@ -827,32 +827,78 @@ HexTile* HexMap :: __getSelectedTile(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __handleKeyPressEvents(void)
+///
+/// \brief Helper method to handle key press events.
+///
+
+void HexMap :: __handleKeyPressEvents(void)
+{
+    switch (this->event_ptr->key.code) {
+        //...
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+
+    return;
+}   /* __handleKeyPressEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn HexMap :: __handleMouseButtonEvents(void)
+///
+/// \brief Helper method to handle mouse button events.
+///
+
+void HexMap :: __handleMouseButtonEvents(void)
+{
+    switch (this->event_ptr->mouseButton.button) {
+        case (sf::Mouse::Left): {
+            //...
+            
+            break;
+        }
+        
+        
+        case (sf::Mouse::Right): {
+            //...
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
 
 // ======== PUBLIC ================================================================== //
-
-// ---------------------------------------------------------------------------------- //
-
-///
-/// \fn HexMap :: HexMap(void)
-///
-/// \brief Constructor (dummy) for the HexMap class.
-///
-
-HexMap :: HexMap(void)
-{
-    //...
-    
-    std::cout << "HexMap dummy constructed at " << this << std::endl;
-    
-    return;
-}   /* HexMap(), dummy */
-
-// ---------------------------------------------------------------------------------- //
-
-
 
 // ---------------------------------------------------------------------------------- //
 
@@ -911,6 +957,10 @@ HexMap :: HexMap(
     
     //  3. set up and position drawable attributes
     this->__setUpGlassScreen();
+    
+    //  4. add message channel(s)
+    this->message_hub_ptr->addChannel(TILE_SELECTED_CHANNEL);
+    this->message_hub_ptr->addChannel(TILE_STATE_CHANNEL);
     
     std::cout << "HexMap constructed at " << this << std::endl;
     
@@ -1006,7 +1056,7 @@ void HexMap :: toggleResourceOverlay(void)
 
 void HexMap :: processEvent(void)
 {
-    //  1. process tiles
+    //  1. process HexTile events
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
     std::map<double, HexTile*>::iterator hex_map_iter_y;
     for (
@@ -1023,8 +1073,14 @@ void HexMap :: processEvent(void)
         }
     }
     
-    //  2. handle inputs
-    //...
+    //  2. process HexMap events
+    if (this->event_ptr->type == sf::Event::KeyPressed) {
+        this->__handleKeyPressEvents();
+    }
+    
+    if (this->event_ptr->type == sf::Event::MouseButtonPressed) {
+        this->__handleMouseButtonEvents();
+    }
     
     return;
 }   /* processEvent() */
@@ -1036,14 +1092,14 @@ void HexMap :: processEvent(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexMap :: processFrame(void)
+/// \fn void HexMap :: processMessage(void)
 ///
-/// \brief Method to process HexMap. To be called once per frame.
+/// \brief Method to process HexMap. To be called once per message.
 ///
 
-void HexMap :: processFrame(void)
+void HexMap :: processMessage(void)
 {
-    //  1. process tiles
+    //  1. process HexTile messages
     std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
     std::map<double, HexTile*>::iterator hex_map_iter_y;
     for (
@@ -1056,12 +1112,15 @@ void HexMap :: processFrame(void)
             hex_map_iter_y != hex_map_iter_x->second.end();
             hex_map_iter_y++
         ) {
-            hex_map_iter_y->second->processFrame();
+            hex_map_iter_y->second->processMessage();
         }
     }
     
+    //  2. process HexMap messages
+    //...
+    
     return;
-}   /* processFrame() */
+}   /* processMessage() */
 
 // ---------------------------------------------------------------------------------- //
 

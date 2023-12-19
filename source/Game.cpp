@@ -89,6 +89,77 @@ void Game :: __drawFrameClockOverlay(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __handleKeyPressEvents(void)
+///
+/// \brief Helper method to handle key press events.
+///
+
+void Game :: __handleKeyPressEvents(void)
+{
+    switch (this->event.key.code) {
+        case (sf::Keyboard::Tilde): {
+            this->__toggleFrameClockOverlay();
+            
+            break;
+        }
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+
+    return;
+}   /* __handleKeyPressEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn Game :: __handleMouseButtonEvents(void)
+///
+/// \brief Helper method to handle mouse button events.
+///
+
+void Game :: __handleMouseButtonEvents(void)
+{
+    switch (this->event.mouseButton.button) {
+        case (sf::Mouse::Left): {
+            //...
+            
+            break;
+        }
+        
+        
+        case (sf::Mouse::Right): {
+            //...
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __processEvent(void)
 ///
 /// \brief Helper method to process Game. To be called once per event.
@@ -96,26 +167,17 @@ void Game :: __drawFrameClockOverlay(void)
 
 void Game :: __processEvent(void)
 {
-    if (this->event.type == sf::Event::KeyPressed) {
-        switch (this->event.key.code) {
-            case (sf::Keyboard::Tilde): {
-                this->__toggleFrameClockOverlay();
-                
-                break;
-            }
-            
-            default: {
-                // do nothing!
-                
-                break;
-            }
-        }
-    }
-    
-    
     if (this->event.type == sf::Event::Closed) {
         this->render_window_ptr->close();
         this->quit_game = true;
+    }
+    
+    if (this->event.type == sf::Event::KeyPressed) {
+        this->__handleKeyPressEvents();
+    }
+    
+    if (this->event.type == sf::Event::MouseButtonPressed) {
+        this->__handleMouseButtonEvents();
     }
     
     return;
@@ -128,17 +190,30 @@ void Game :: __processEvent(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void Game :: __processFrame(void)
+/// \fn void Game :: __processMessage(void)
 ///
-/// \brief Helper method to process Game. To be called once per frame.
+/// \brief Helper method to process Game. To be called once per message.
 ///
 
-void Game :: __processFrame(void)
+void Game :: __processMessage(void)
 {
-    //...
+    if (not this->message_hub.isEmpty(GAME_CHANNEL)) {
+        Message game_channel_message = this->message_hub.receiveMessage(GAME_CHANNEL);
+        
+        if (game_channel_message.subject == "quit game") {
+            this->quit_game = true;
+            this->game_loop_broken = true;
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
+        
+        if (game_channel_message.subject == "restart game") {
+            this->game_loop_broken = true;
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
+    }
     
     return;
-}   /* __processFrame() */
+}   /* __processMessage() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -194,6 +269,7 @@ Game :: Game(
     
     //  1.2. public
     this->quit_game = false;
+    this->game_loop_broken = false;
     this->show_frame_clock_overlay = false;
     
     this->frame = 0;
@@ -206,6 +282,16 @@ Game :: Game(
         this->assets_manager_ptr,
         &(this->message_hub)
     );
+    
+    this->context_menu_ptr = new ContextMenu(
+        &(this->event),
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        &(this->message_hub)
+    );
+    
+    //  2. add message channel(s)
+    this->message_hub.addChannel(GAME_CHANNEL);
     
     std::cout << "Game constructed at " << this << std::endl;
     
@@ -236,29 +322,31 @@ bool Game :: run(void)
     //...
     
     //  3. start game loop
-    while (this->render_window_ptr->isOpen()) {
+    while (not this->game_loop_broken) {
         this->time_since_start_s = this->clock.getElapsedTime().asSeconds();
         
         if (this->time_since_start_s >= (this->frame + 1) * SECONDS_PER_FRAME) {
             //  6.1. process events
             while (this->render_window_ptr->pollEvent(this->event)) {
                 this->hex_map_ptr->processEvent();
-                
+                this->context_menu_ptr->processEvent();
                 this->__processEvent();
             }
             
             
-            //  6.2. process frame
-            this->hex_map_ptr->processFrame();
-            
-            this->__processFrame();
+            //  6.2. process messages
+            while (this->message_hub.hasTraffic()) {
+                this->hex_map_ptr->processMessage();
+                this->context_menu_ptr->processMessage();
+                this->__processMessage();
+            }
             
             
             //  6.3. draw frame
             this->render_window_ptr->clear();
             
             this->hex_map_ptr->draw();
-            
+            this->context_menu_ptr->draw();
             this->__draw();
             
             this->render_window_ptr->display();
@@ -270,7 +358,7 @@ bool Game :: run(void)
     }
     
     return this->quit_game;
-}   /*  */
+}   /* run() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -286,7 +374,9 @@ bool Game :: run(void)
 
 Game :: ~Game(void)
 {
+    //  1. clean up attributes
     delete this->hex_map_ptr;
+    delete this->context_menu_ptr;
     
     std::cout << "Game at " << this << " destroyed" << std::endl;
     

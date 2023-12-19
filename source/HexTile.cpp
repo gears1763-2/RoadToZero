@@ -254,6 +254,122 @@ bool HexTile :: __isClicked(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __handleKeyPressEvents(void)
+///
+/// \brief Helper method to handle key press events.
+///
+
+void HexTile :: __handleKeyPressEvents(void)
+{
+    switch (this->event_ptr->key.code) {
+        case (sf::Keyboard::Escape): {
+            this->is_selected = false;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+
+    return;
+}   /* __handleKeyPressEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn HexTile :: __handleMouseButtonEvents(void)
+///
+/// \brief Helper method to handle mouse button events.
+///
+
+void HexTile :: __handleMouseButtonEvents(void)
+{
+    switch (this->event_ptr->mouseButton.button) {
+        case (sf::Mouse::Left): {
+            if (this->__isClicked()) {
+                std::cout << "Tile (" << this->position_x << ", " <<
+                    this->position_y << ") was selected" << std::endl;
+                
+                this->is_selected = true;
+            }
+            
+            else {
+                this->is_selected = false;
+            }
+            
+            break;
+        }
+        
+        
+        case (sf::Mouse::Right): {
+            this->is_selected = false;
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendTileSelectedMessage(void)
+///
+/// \brief Helper method to format and send message on tile selection.
+///
+
+void HexTile :: __sendTileSelectedMessage(void)
+{
+    //...
+    
+    return;
+}   /* __sendTileSelectedMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendTileStateMessage(void)
+///
+/// \brief Helper method to format and send tile state message.
+///
+
+void HexTile :: __sendTileStateMessage(void)
+{
+    //...
+    
+    return;
+}   /* __sendTileStateMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -578,50 +694,11 @@ void HexTile :: assess(void)
 void HexTile :: processEvent(void)
 {
     if (this->event_ptr->type == sf::Event::KeyPressed) {
-        switch (this->event_ptr->key.code) {
-            case (sf::Keyboard::Escape): {
-                this->is_selected = false;
-            }
-            
-            
-            default: {
-                // do nothing!
-                
-                break;
-            }
-        }
+        this->__handleKeyPressEvents();
     }
     
-    
     if (this->event_ptr->type == sf::Event::MouseButtonPressed) {
-        this->is_selected = false;
-        
-        switch (this->event_ptr->mouseButton.button) {
-            case (sf::Mouse::Left): {
-                if (this->__isClicked()) {
-                    std::cout << "Tile (" << this->position_x << ", " <<
-                        this->position_y << ") was selected" << std::endl;
-                    
-                    this->is_selected = true;
-                }
-                
-                break;
-            }
-            
-            
-            case (sf::Mouse::Right): {
-                this->is_selected = false;
-                
-                break;
-            }
-            
-            
-            default: {
-                // do nothing!
-                
-                break;
-            }
-        }
+        this->__handleMouseButtonEvents();
     }
     
     return;
@@ -634,17 +711,17 @@ void HexTile :: processEvent(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexTile :: processFrame(void)
+/// \fn void HexTile :: processMessage(void)
 ///
-/// \brief Method to process HexTile. To be called once per frame.
+/// \brief Method to process HexTile. To be called once per message.
 ///
 
-void HexTile :: processFrame(void)
+void HexTile :: processMessage(void)
 {
     //...
     
     return;
-}   /* processFrame() */
+}   /* processMessage() */
 
 // ---------------------------------------------------------------------------------- //
 

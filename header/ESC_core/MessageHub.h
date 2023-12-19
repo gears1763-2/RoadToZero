@@ -64,15 +64,18 @@ class MessageHub {
         //  2. methods
         MessageHub(void);
         
+        bool hasTraffic(void);
+        
         void addChannel(std::string);
         void removeChannel(std::string);
         
         void sendMessage(Message);
+        
         bool isEmpty(std::string);
         Message receiveMessage(std::string);
+        void popMessage(std::string);
         
-        void process(void);
-        
+        void clearMessages(void);
         void clear(void);
         ~MessageHub(void);
     

@@ -65,6 +65,9 @@ const std::vector<double> TILE_RESOURCE_CUMULATIVE_PROBABILITIES = {
     1.00   // GOOD
 }; ///< Cumulative probabilities for each tile resource (to support procedural generation).
 
+const std::string TILE_SELECTED_CHANNEL = "TILE SELECTED CHANNEL"; ///< A message channel for tile selection messages
+const std::string TILE_STATE_CHANNEL = "TILE STATE CHANNEL"; ///< A message channel for tile state messages.
+
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //
 
 
@@ -79,6 +82,14 @@ const sf::Color MONOCHROME_TEXT_AMBER(255, 176, 0); ///< The base colour of old 
 const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old monochrome text (red).
 
 // ======== END CONTEXTMENU CONSTANTS =============================================== //
+
+
+
+// ======== GAME CONSTANTS =================================================== //
+
+const std::string GAME_CHANNEL = "GAME CHANNEL"; ///< A message channel for game messages.
+
+// ======== END GAME CONSTANTS =================================================== //
 
 
 #endif  /* CONSTANTS_H */

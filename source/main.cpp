@@ -84,6 +84,7 @@ int main(int argc, char** argv)
     }
     
     //  4. clean up
+    render_window_ptr->close();
     delete render_window_ptr;
     
     return 0;

@@ -47,6 +47,10 @@ class Game {
         void __processEvent(void);
         void __processMessage(void);
         
+        void __sendGameStateMessage(void);
+        
+        void __insufficientCreditsAlarm(void);
+        
         void __drawFrameClockOverlay(void);
         void __drawHUD(void);
         void __draw(void);
@@ -61,12 +65,12 @@ class Game {
         unsigned long long int frame; ///< The current frame of the game.
         double time_since_start_s; ///< The time elapsed [s] since the start of the game.
         
-        unsigned int year; ///< Current game year.
-        unsigned int month; ///< Current game month.
-        unsigned int population; ///< Current population.
-        unsigned int credits; ///< Current balance of credits.
-        unsigned int demand_MWh; ///< Current energy demand [MWh].
-        unsigned int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
+        int year; ///< Current game year.
+        int month; ///< Current game month.
+        int population; ///< Current population.
+        int credits; ///< Current balance of credits.
+        int demand_MWh; ///< Current energy demand [MWh].
+        int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
         
         sf::Clock clock; ///< The game clock.
         sf::Event event; ///< The game events class.

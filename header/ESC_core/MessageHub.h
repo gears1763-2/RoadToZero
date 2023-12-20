@@ -33,9 +33,9 @@ struct Message {
     std::string channel = ""; ///< A string identifying the appropriate channel for this message.
     std::string subject = ""; ///< A string describing the message subject.
     
-    std::vector<bool> bool_payload_vec = {}; ///< A vector <bool> payload.
-    std::vector<int> int_payload_vec = {}; ///< A vector <int> payload.
-    std::vector<double> double_payload_vec = {}; ///< A vector <double> payload.
+    std::map<std::string, bool> bool_payload = {}; ///< A boolean payload.
+    std::map<std::string, int> int_payload = {}; ///< A vector payload.
+    std::map<std::string, double> double_payload = {}; ///< A vector payload.
     std::string string_payload = ""; ///< A string payload.
 };  /* Message */
 

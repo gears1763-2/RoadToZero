@@ -34,6 +34,7 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     assets_manager_ptr->loadFont("assets/fonts/DroidSansMono.ttf", "DroidSansMono");
     assets_manager_ptr->loadFont("assets/fonts/Glass_TTY_VT220.ttf", "Glass_TTY_VT220");
     
+    
     //  2. load tile sheets
     assets_manager_ptr->loadTexture(
         "assets/tile_sheets/pine_tree_64x64_1.png",
@@ -58,6 +59,13 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     assets_manager_ptr->loadTexture(
         "assets/tile_sheets/water_shimmer_64x64_1.png",
         "water_shimmer_64x64_1"
+    );
+    
+    
+    //  3. load sounds
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-apartment-buzzer-bell-press-932.ogg",
+        "insufficient credits"
     );
     
     return;

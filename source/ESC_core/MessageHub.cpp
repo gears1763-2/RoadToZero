@@ -111,6 +111,8 @@ void MessageHub :: addChannel(std::string channel)
     //  2. add channel to map
     this->message_map[channel] = {};
     
+    std::cout << "Channel " << channel << " added to message hub" << std::endl;
+    
     return;
 }   /* addChannel() */
 
@@ -147,6 +149,8 @@ void MessageHub :: removeChannel(std::string channel)
     this->message_map[channel].clear();
     this->message_map.erase(channel);
     
+    std::cout << "Channel " << channel << " removed from message hub" << std::endl;
+    
     return;
 }   /* removeChannel() */
 
@@ -159,7 +163,8 @@ void MessageHub :: removeChannel(std::string channel)
 ///
 /// \fn void MessageHub :: sendMessage(Message message)
 ///
-/// \brief Method to send a message to the message map.
+/// \brief Method to send a message to the message map. Channels are implemented
+///     in a first in, first out manner (i.e. message queue).
 ///
 /// \param message The message to be sent.
 ///
@@ -235,11 +240,12 @@ bool MessageHub :: isEmpty(std::string channel)
 ///
 /// \fn Message MessageHub :: receiveMessage(std::string channel)
 ///
-/// \brief Method to receive the latest message in the given channel.
+/// \brief Method to receive the first message in the channel. Channels are implemented
+///     in a first in, first out manner (i.e. message queue).
 ///
 /// \param channel The key for the message channel being received from.
 ///
-/// \return The latest message in the given channel.
+/// \return The first message in the given channel.
 ///
 
 Message MessageHub :: receiveMessage(std::string channel)
@@ -271,7 +277,7 @@ Message MessageHub :: receiveMessage(std::string channel)
     }
     
     //  3. receive message
-    Message message = this->message_map[channel].back();
+    Message message = this->message_map[channel].front();
     
     return message;
 }   /* receiveMessage() */
@@ -285,7 +291,8 @@ Message MessageHub :: receiveMessage(std::string channel)
 ///
 /// \fn void MessageHub :: popMessage(std::string channel)
 ///
-/// \brief Method to pop latest message off of the given channel.
+/// \brief Method to pop first message off of the given channel. Channels are
+///     implemented in a first in, first out manner (i.e. message queue).
 ///
 /// \param channel The key for the message channel being popped.
 ///
@@ -319,7 +326,7 @@ void MessageHub :: popMessage(std::string channel)
     }
     
     //  3. pop message
-    this->message_map[channel].pop_back();
+    this->message_map[channel].pop_front();
     
     return;
 }   /* popMessage() */

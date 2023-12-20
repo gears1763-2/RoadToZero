@@ -66,6 +66,7 @@ class TileImprovement {
     public:
         //  1. attributes
         int frame; ///< The current frame of this object.
+        int credits; ///< The current balance of credits.
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.

@@ -717,6 +717,7 @@ void ContextMenu :: __sendQuitGameMessage(void)
     
     this->message_hub_ptr->sendMessage(quit_game_message);
     
+    std::cout << "Quit game message sent by " << this << std::endl;
     return;
 }   /* __sendQuitGameMessage() */
 
@@ -741,6 +742,7 @@ void ContextMenu :: __sendRestartGameMessage(void)
     
     this->message_hub_ptr->sendMessage(restart_game_message);
     
+    std::cout << "Restart game message sent by " << this << std::endl;
     return;
 }   /* __sendRestartGameMessage() */
 
@@ -861,6 +863,9 @@ void ContextMenu :: processMessage(void)
                 
                 if (no_tile_selected_message.subject == "no tile selected") {
                     this->__setConsoleState(ConsoleState :: READY);
+                    
+                    std::cout << "No tile selected message received by " << this <<
+                        std::endl;
                     this->message_hub_ptr->popMessage(NO_TILE_SELECTED_CHANNEL);
                 }
             }
@@ -873,6 +878,8 @@ void ContextMenu :: processMessage(void)
                 
                 if (tile_state_message.subject == "tile state") {
                     this->console_string = tile_state_message.string_payload;
+                    
+                    std::cout << "Tile state message received by " << this << std::endl;
                     this->message_hub_ptr->popMessage(TILE_STATE_CHANNEL);
                 }
             }
@@ -894,6 +901,9 @@ void ContextMenu :: processMessage(void)
                 
                 if (tile_selected_message.subject == "tile selected") {
                     this->__setConsoleState(ConsoleState :: TILE);
+                    
+                    std::cout << "Tile selected message received by " << this <<
+                        std::endl;
                     this->message_hub_ptr->popMessage(TILE_SELECTED_CHANNEL);
                 }
             }

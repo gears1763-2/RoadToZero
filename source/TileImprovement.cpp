@@ -142,6 +142,7 @@ TileImprovement :: TileImprovement(
     
     //  1.2. public
     this->frame = 0;
+    this->credits = 0;
     
     this->position_x = position_x;
     this->position_y = position_y;

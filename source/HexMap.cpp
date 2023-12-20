@@ -1011,6 +1011,7 @@ void HexMap :: __sendNoTileSelectedMessage(void)
     
     this->message_hub_ptr->sendMessage(no_tile_selected_message);
     
+    std::cout << "No tile selected message sent by " << this << std::endl;
     return;
 }   /* __sendNoTileSelectedMessage() */
 

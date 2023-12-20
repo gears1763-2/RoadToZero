@@ -91,6 +91,11 @@ class HexTile {
         std::string __getTileImprovementSubstring(void);
         std::string __getTileOptionsSubstring(void);
         void __sendTileStateMessage(void);
+        
+        void __sendGameStateRequest(void);
+        
+        void __sendCreditsSpentMessage(int);
+        void __sendInsufficientCreditsMessage(void);
     
     
     public:
@@ -108,6 +113,7 @@ class HexTile {
         TileImprovement* tile_improvement_ptr; ///< A pointer to the improvement for this tile.
         
         int frame; ///< The current frame of this object.
+        int credits; ///< The current balance of credits.
         
         double position_x; ///< The x position of the tile.
         double position_y; ///< The y position of the tile.

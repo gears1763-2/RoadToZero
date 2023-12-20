@@ -139,7 +139,7 @@ void HexTile :: __setUpResourceChipSprite(void)
     
     this->resource_chip_sprite.setPosition(this->position_x, this->position_y);
     
-    this->resource_chip_sprite.setFillColor(sf::Color(175, 175, 175, 250));
+    this->resource_chip_sprite.setFillColor(RESOURCE_CHIP_GREY);
     
     return;
 }   /* __setUpResourceChip() */
@@ -275,18 +275,42 @@ bool HexTile :: __isClicked(void)
 
 void HexTile :: __handleKeyPressEvents(void)
 {
-    switch (this->event_ptr->key.code) {
-        case (sf::Keyboard::Escape): {
-            this->is_selected = false;
-        }
-        
-        
-        default: {
-            // do nothing!
+    if (this->event_ptr->key.code == sf::Keyboard::Escape) {
+        this->is_selected = false;
+    }
+    
+    if (this->is_selected) {
+        switch (this->event_ptr->key.code) {
+            case (sf::Keyboard::A): {
+                if (this->resource_assessed) {
+                    std::cout << "Cannot assess resource: already assessed" <<
+                        std::endl;
+                }
+                
+                else if (this->credits < RESOURCE_ASSESSMENT_COST) {
+                    std::cout << "Cannot assess resource: insufficient credits (need "
+                        << RESOURCE_ASSESSMENT_COST << " K)" << std::endl;
+                        
+                    this->__sendInsufficientCreditsMessage();
+                }
+                
+                else {
+                    this->assess();
+                    this->__sendCreditsSpentMessage(RESOURCE_ASSESSMENT_COST);
+                    this->__sendGameStateRequest();
+                }
+                
+                break;
+            }
             
-            break;
+            default: {
+                // do nothing!
+                
+                break;
+            }
         }
     }
+    
 
     return;
 }   /* __handleKeyPressEvents() */
@@ -315,6 +339,7 @@ void HexTile :: __handleMouseButtonEvents(void)
                 
                 this->__sendTileSelectedMessage();
                 this->__sendTileStateMessage();
+                this->__sendGameStateRequest();
             }
             
             else {
@@ -542,8 +567,26 @@ std::string HexTile :: __getTileOptionsSubstring(void)
     std::string options_substring                = "     **** TILE OPTIONS ****     \n";
     options_substring                           += "                                \n";
     
-    if ((not this->has_improvement) and (not this->settlement_built)) {
+    if (
+        (not this->has_improvement) and
+        (not this->settlement_built) and 
+        (this->tile_type != TileType :: OCEAN) and
+        (this->tile_type != TileType :: LAKE)
+    ) {
         options_substring                       += "[B]:  BUILD SETTLEMENT          ";
+    }
+    
+    else if (not this->has_improvement) {
+        switch (this->tile_type) {
+            //...
+            
+            
+            default: {
+                // do nothing!
+                
+                break;
+            }
+        }
     }
     
     return options_substring;
@@ -588,8 +631,89 @@ void HexTile :: __sendTileStateMessage(void)
     
     this->message_hub_ptr->sendMessage(tile_state_message);
     
+    std::cout << "Tile state message sent by " << this << std::endl;
     return;
 }   /* __sendTileStateMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendGameStateRequest(void)
+///
+/// \brief Helper method to format and send a game state request (message).
+///
+
+void HexTile :: __sendGameStateRequest(void)
+{
+    Message game_state_request;
+    
+    game_state_request.channel = GAME_CHANNEL;
+    game_state_request.subject = "state request";
+    
+    this->message_hub_ptr->sendMessage(game_state_request);
+    
+    std::cout << "Game state request message sent by " << this << std::endl;
+    return;
+}   /* __sendGameStateRequest() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendCreditsSpentMessage(int credits_spent)
+///
+/// \brief Helper method to format and send a credits spent message.
+///
+/// \param credits_spent The number of credits that were spent.
+///
+
+void HexTile :: __sendCreditsSpentMessage(int credits_spent)
+{
+    Message credits_spent_message;
+    
+    credits_spent_message.channel = GAME_CHANNEL;
+    credits_spent_message.subject = "credits spent";
+    
+    credits_spent_message.int_payload["credits spent"] = credits_spent;
+    
+    this->message_hub_ptr->sendMessage(credits_spent_message);
+    
+    std::cout << "Credits spent (" << credits_spent << ") message sent by " << this
+        << std::endl;
+    return;
+}   /* __sendCreditsSpentMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendInsufficientCreditsMessage(void)
+///
+/// \brief Helper method to format and send an insufficient credits message.
+///
+
+void HexTile :: __sendInsufficientCreditsMessage(void)
+{
+    Message insufficient_credits_message;
+    
+    insufficient_credits_message.channel = GAME_CHANNEL;
+    insufficient_credits_message.subject = "insufficient credits";
+    
+    this->message_hub_ptr->sendMessage(insufficient_credits_message);
+    
+    std::cout << "Insufficient credits message sent by " << this << std::endl;
+    
+    return;
+}   /* __sendInsufficientCreditsMessage() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -657,6 +781,7 @@ HexTile :: HexTile(
     this->tile_improvement_ptr = NULL;
     
     this->frame = 0;
+    this->credits = 0;
     
     this->position_x = position_x;
     this->position_y = position_y;
@@ -1056,7 +1181,27 @@ void HexTile :: processMessage(void)
     }
     
     //  2. process HexTile messages
-    //...
+    if (this->is_selected) {
+        if (not this->message_hub_ptr->isEmpty(GAME_STATE_CHANNEL)) {
+            Message game_state_message = this->message_hub_ptr->receiveMessage(
+                GAME_STATE_CHANNEL
+            );
+            
+            if (game_state_message.subject == "game state") {
+                this->credits = game_state_message.int_payload["credits"];
+                
+                if (this->tile_improvement_ptr != NULL) {
+                    this->tile_improvement_ptr->credits = this->credits;
+                }
+                
+                std::cout << "Game state message received by " << this << std::endl;
+                this->message_hub_ptr->popMessage(GAME_STATE_CHANNEL);
+            }
+        }
+        
+        std::cout << "Current credits (HexTile): " << this->credits << " K" <<
+            std::endl;
+    }
     
     return;
 }   /* processMessage() */

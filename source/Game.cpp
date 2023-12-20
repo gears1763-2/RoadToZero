@@ -159,6 +159,39 @@ void Game :: __processEvent(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __sendGameStateMessage(void)
+///
+/// \brief Helper method to format and send a game state message.
+///
+
+void Game :: __sendGameStateMessage(void)
+{
+    Message game_state_message;
+    
+    game_state_message.channel = GAME_STATE_CHANNEL;
+    game_state_message.subject = "game state";
+    
+    game_state_message.int_payload["year"] = this->year;
+    game_state_message.int_payload["month"] = this->month;
+    game_state_message.int_payload["population"] = this->population;
+    game_state_message.int_payload["credits"] = this->credits;
+    game_state_message.int_payload["demand_MWh"] = this->demand_MWh;
+    game_state_message.int_payload["cumulative_emissions_tonnes"] =
+        this->cumulative_emissions_tonnes;
+    
+    this->message_hub.sendMessage(game_state_message);
+    
+    std::cout << "Game state message sent by " << this << std::endl;
+    return;
+}   /* __sendGameStateMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __processMessage(void)
 ///
 /// \brief Helper method to process Game. To be called once per message.
@@ -172,17 +205,145 @@ void Game :: __processMessage(void)
         if (game_channel_message.subject == "quit game") {
             this->quit_game = true;
             this->game_loop_broken = true;
+            
+            std::cout << "Quit game message received by " << this << std::endl;
             this->message_hub.popMessage(GAME_CHANNEL);
         }
         
         if (game_channel_message.subject == "restart game") {
             this->game_loop_broken = true;
+            
+            std::cout << "Restart game message received by " << this << std::endl;
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
+        
+        if (game_channel_message.subject == "state request") {
+            std::cout << "Game state request message received by " << this << std::endl;
+            
+            this->__sendGameStateMessage();
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
+        
+        if (game_channel_message.subject == "credits spent") {
+            this->credits -= game_channel_message.int_payload["credits spent"];
+            
+            std::cout << "Credits spent message (" << 
+                game_channel_message.int_payload["credits spent"] << ") received by "
+                << this << std::endl;
+                
+            std::cout << "Current credits (Game): " << this->credits << " K" <<
+                std::endl;
+                
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
+        
+        if (game_channel_message.subject == "insufficient credits") {
+            std::cout << "Insufficient credits message received by " << this <<
+                std::endl;
+            
+            this->__insufficientCreditsAlarm();
+                
             this->message_hub.popMessage(GAME_CHANNEL);
         }
     }
     
     return;
 }   /* __processMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __insufficientCreditsAlarm(void)
+///
+/// \brief Helper method to sound and display and insufficient credits alarm.
+///
+
+void Game :: __insufficientCreditsAlarm(void)
+{
+    //  1. sound buzzer
+    this->assets_manager_ptr->getSound("insufficient credits")->play();
+    
+    //  2. construct alarm text and backing rectangle
+    sf::Text insufficient_credits_text(
+        "INSUFFICIENT CREDITS",
+        (*(this->assets_manager_ptr->getFont("DroidSansMono"))),
+        32
+    );
+    
+    insufficient_credits_text.setOrigin(
+        insufficient_credits_text.getLocalBounds().width / 2,
+        insufficient_credits_text.getLocalBounds().height / 2
+    );
+    
+    insufficient_credits_text.setPosition(400, GAME_HEIGHT / 2);
+    
+    sf::RectangleShape backing_rectangle(
+        sf::Vector2f(
+            1.1 * insufficient_credits_text.getLocalBounds().width,
+            1.5 * insufficient_credits_text.getLocalBounds().height
+        )
+    );
+    
+    backing_rectangle.setFillColor(RESOURCE_CHIP_GREY);
+    
+    backing_rectangle.setOrigin(
+        backing_rectangle.getLocalBounds().width / 2,
+        backing_rectangle.getLocalBounds().height / 2
+    );
+    
+    backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
+    
+    //  3. blocking display loop (~3 seconds)
+    bool red_flag = true;
+    int alarm_frame = 0;
+    double time_since_alarm_s = 0;
+    
+    sf::Clock alarm_clock;
+    
+    while (alarm_frame < 2.5 * FRAMES_PER_SECOND) {
+        time_since_alarm_s = alarm_clock.getElapsedTime().asSeconds();
+
+        if (time_since_alarm_s >= (alarm_frame + 1) * SECONDS_PER_FRAME) {
+            this->render_window_ptr->clear();
+            
+            this->hex_map_ptr->draw();
+            this->context_menu_ptr->draw();
+            this->__draw();
+            
+            if (alarm_frame % 20 == 0) {
+                if (red_flag) {
+                    red_flag = false;
+                }
+                
+                else {
+                    red_flag = true;
+                }
+            }
+            
+            if (red_flag) {
+                insufficient_credits_text.setFillColor(MONOCHROME_TEXT_RED);
+            }
+            
+            else {
+                insufficient_credits_text.setFillColor(sf::Color(255, 255, 255));
+            }
+            
+            this->render_window_ptr->draw(backing_rectangle);
+            this->render_window_ptr->draw(insufficient_credits_text);
+            
+            this->render_window_ptr->display();
+            
+            alarm_frame++;
+            this->frame++;
+        }
+    }
+
+    return;
+}   /* __insufficientCreditsAlarm( */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -361,7 +522,7 @@ Game :: Game(
     this->month = (years_since_epoch - (int)years_since_epoch) * 12 + 1;
     
     this->population = 0;
-    this->credits = 0;
+    this->credits = 250;
     this->demand_MWh = 0;
     this->cumulative_emissions_tonnes = 0;
 
@@ -382,6 +543,7 @@ Game :: Game(
     
     //  2. add message channel(s)
     this->message_hub.addChannel(GAME_CHANNEL);
+    this->message_hub.addChannel(GAME_STATE_CHANNEL);
     
     std::cout << "Game constructed at " << this << std::endl;
     

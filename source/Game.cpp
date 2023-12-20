@@ -179,6 +179,56 @@ void Game :: __sendGameStateMessage(void)
     game_state_message.int_payload["cumulative_emissions_tonnes"] =
         this->cumulative_emissions_tonnes;
     
+    switch (this->game_phase) {
+        case (GamePhase :: BUILD_SETTLEMENT): {
+            game_state_message.string_payload["game phase"] = "build settlement";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: SYSTEM_MANAGEMENT): {
+            game_state_message.string_payload["game phase"] = "system management";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_EMISSIONS): {
+            game_state_message.string_payload["game phase"] = "loss emissions";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_DEMAND): {
+            game_state_message.string_payload["game phase"] = "loss demand";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_CREDITS): {
+            game_state_message.string_payload["game phase"] = "loss credits";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: VICTORY): {
+            game_state_message.string_payload["game phase"] = "victory";
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
     this->message_hub.sendMessage(game_state_message);
     
     std::cout << "Game state message sent by " << this << std::endl;
@@ -245,6 +295,42 @@ void Game :: __processMessage(void)
                 
             this->message_hub.popMessage(GAME_CHANNEL);
         }
+        
+        if (game_channel_message.subject == "update game phase") {
+            std::cout << "Update game phase message received by " << this << std::endl;
+            
+            if (
+                game_channel_message.string_payload["game phase"] == "system management"
+            ) {
+                this->game_phase = GamePhase :: SYSTEM_MANAGEMENT;
+            }
+            
+            else if (
+                game_channel_message.string_payload["game phase"] == "loss emissions"
+            ) {
+                this->game_phase = GamePhase :: LOSS_EMISSIONS;
+            }
+            
+            else if (
+                game_channel_message.string_payload["game phase"] == "loss demand"
+            ) {
+                this->game_phase = GamePhase :: LOSS_DEMAND;
+            }
+            
+            else if (
+                game_channel_message.string_payload["game phase"] == "loss credits"
+            ) {
+                this->game_phase = GamePhase :: LOSS_CREDITS;
+            }
+            
+            else if (
+                game_channel_message.string_payload["game phase"] == "victory"
+            ) {
+                this->game_phase = GamePhase :: VICTORY;
+            }
+            
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
     }
     
     return;
@@ -297,7 +383,7 @@ void Game :: __insufficientCreditsAlarm(void)
     
     backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
     
-    //  3. blocking display loop (~3 seconds)
+    //  3. display loop (blocking ~3 seconds)
     bool red_flag = true;
     int alarm_frame = 0;
     double time_since_alarm_s = 0;
@@ -508,6 +594,8 @@ Game :: Game(
     this->assets_manager_ptr = assets_manager_ptr;
     
     //  1.2. public
+    this->game_phase = GamePhase :: BUILD_SETTLEMENT;
+    
     this->quit_game = false;
     this->game_loop_broken = false;
     this->show_frame_clock_overlay = false;
@@ -522,7 +610,7 @@ Game :: Game(
     this->month = (years_since_epoch - (int)years_since_epoch) * 12 + 1;
     
     this->population = 0;
-    this->credits = 250;
+    this->credits = 500;
     this->demand_MWh = 0;
     this->cumulative_emissions_tonnes = 0;
 

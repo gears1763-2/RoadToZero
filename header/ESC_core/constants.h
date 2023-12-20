@@ -74,6 +74,8 @@ const std::string TILE_SELECTED_CHANNEL = "TILE SELECTED CHANNEL"; ///< A messag
 const std::string NO_TILE_SELECTED_CHANNEL = "NO TILE SELECTED CHANNEL"; ///< A message channel for no tile selected messages.
 const std::string TILE_STATE_CHANNEL = "TILE STATE CHANNEL"; ///< A message channel for tile state messages.
 
+const std::string HEX_MAP_CHANNEL = "HEX MAP CHANNEL"; ///< A message channel for hex map messages.
+
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //
 
 
@@ -96,6 +98,7 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 1500; ///< The CO2-equivalent mass of emissions that would result from burning 1,000,000 L of diesel fuel.
 
 const int RESOURCE_ASSESSMENT_COST = 20; ///< The cost of doing a resource assessment.
+const int BUILD_SETTLEMENT_COST = 250; ///< The cost of building a settlement.
 
 const double CO2E_KG_PER_LITRE_DIESEL = 3.1596; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
 

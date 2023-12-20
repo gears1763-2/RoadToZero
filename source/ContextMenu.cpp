@@ -525,6 +525,8 @@ void ContextMenu :: __setConsoleString(void)
             this->console_string                += "[ESC]:        MENU              \n";
             this->console_string                += "[LEFT CLICK]: TILE INFO/OPTIONS \n";
             this->console_string                += "                                \n";
+            this->console_string                += "[ENTER]:  END TURN              \n";
+            this->console_string                += "                                \n";
             this->console_string                += "READY.                          ";
             
             break;
@@ -877,7 +879,7 @@ void ContextMenu :: processMessage(void)
                 );
                 
                 if (tile_state_message.subject == "tile state") {
-                    this->console_string = tile_state_message.string_payload;
+                    this->console_string = tile_state_message.string_payload["console string"];
                     
                     std::cout << "Tile state message received by " << this << std::endl;
                     this->message_hub_ptr->popMessage(TILE_STATE_CHANNEL);

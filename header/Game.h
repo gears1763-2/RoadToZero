@@ -24,6 +24,23 @@
 
 
 ///
+/// \enum GamePhase
+///
+/// \brief An enumeration of the various game phases.
+///
+
+enum GamePhase {
+    BUILD_SETTLEMENT, ///< The settlement building phase.
+    SYSTEM_MANAGEMENT, ///< The system management phase (main phase of play).
+    LOSS_EMISSIONS, ///< A loss due to excessive emissions.
+    LOSS_DEMAND, ///< A loss due to failing to meet the demand.
+    LOSS_CREDITS, ///< A loss due to running out of credits.
+    VICTORY, ///< A victory (12 consecutive months of zero emissions).
+    N_GAME_PHASES ///< A simple hack to get the number of elements in GamePhase.
+};  /* GamePhase */
+
+
+///
 /// \class Game
 ///
 /// \brief A class which acts as the central class for the game, by containing all other
@@ -58,6 +75,8 @@ class Game {
     
     public:
         //  1. attributes
+        GamePhase game_phase; ///< The current phase of the game.
+        
         bool quit_game; ///< Boolean indicating whether to quit (true) or create a new Game instance (false).
         bool game_loop_broken; ///< Boolean indicating whether or not the game loop is broken.
         bool show_frame_clock_overlay; ///< Boolean indicating whether or not to show frame and clock overlay.

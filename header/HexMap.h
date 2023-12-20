@@ -64,6 +64,8 @@ class HexMap {
         void __handleMouseButtonEvents(void);
         
         void __sendNoTileSelectedMessage(void);
+        
+        void __assessNeighbours(HexTile*);
     
     
     public:

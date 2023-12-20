@@ -49,7 +49,7 @@ enum TileImprovementType {
 ///
 
 class TileImprovement {
-    private:
+    protected:
         //  1. attributes
         sf::Event* event_ptr; ///< A pointer to the event class.
         sf::RenderWindow* render_window_ptr; ///< A pointer to the render window.
@@ -65,11 +65,15 @@ class TileImprovement {
     
     public:
         //  1. attributes
+        TileImprovementType tile_improvement_type; ///< The type of the tile improvement.
+        
         int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
+        
+        std::string game_phase; ///< The current phase of the game.
         
         sf::Sprite tile_improvement_sprite_static; ///< A static sprite, for decorating the tile.
         std::vector<sf::Sprite> tile_improvement_sprite_animated; ///< An animated sprite, for the ContextMenu visual screen.

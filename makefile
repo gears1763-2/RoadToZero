@@ -106,6 +106,18 @@ $(OBJ_TILEIMPROVEMENT): $(SRC_TILEIMPROVEMENT)
 
 
 
+#### ==== Settlement ==== ####
+
+SRC_SETTLEMENT = source/Settlement.cpp
+OBJ_SETTLEMENT = object/Settlement.o
+
+$(OBJ_SETTLEMENT): $(SRC_SETTLEMENT)
+	$(CXX) $(CXXFLAGS) -c $(SRC_SETTLEMENT) -o $(OBJ_SETTLEMENT)
+
+#### ==== END Settlement ==== ####
+
+
+
 #### ==== HexTile ==== ####
 
 SRC_HEXTILE = source/HexTile.cpp
@@ -160,6 +172,7 @@ OBJ_ALL = $(OBJ_GAME) \
           $(OBJ_CONTEXTMENU) \
           $(OBJ_HEXMAP) \
           $(OBJ_HEXTILE) \
+          $(OBJ_SETTLEMENT) \
           $(OBJ_TILEIMPROVEMENT) \
           $(OBJ_ASSETSMANAGER) \
           $(OBJ_MESSAGEHUB) \

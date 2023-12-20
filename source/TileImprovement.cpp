@@ -133,7 +133,7 @@ TileImprovement :: TileImprovement(
 {
     //  1. set attributes
     
-    //  1.1. private
+    //  1.1. protected
     this->event_ptr = event_ptr;
     this->render_window_ptr = render_window_ptr;
     
@@ -146,6 +146,8 @@ TileImprovement :: TileImprovement(
     
     this->position_x = position_x;
     this->position_y = position_y;
+    
+    this->game_phase = "build settlement";
     
     std::cout << "TileImprovement constructed at " << this << std::endl;
     

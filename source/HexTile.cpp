@@ -234,6 +234,56 @@ void HexTile :: __setResourceText(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexTile :: __setUpMagnifyingGlassSprite(void)
+///
+/// \brief Helper method to set up and position magnifying glass sprite.
+///
+
+void HexTile :: __setUpMagnifyingGlassSprite(void)
+{
+    this->magnifying_glass_sprite.setTexture(
+        *(this->assets_manager_ptr->getTexture("magnifying_glass_64x64_1"))
+    );
+    
+    this->magnifying_glass_sprite.setOrigin(
+        this->magnifying_glass_sprite.getLocalBounds().width / 2,
+        this->magnifying_glass_sprite.getLocalBounds().height / 2
+    );
+    
+    this->magnifying_glass_sprite.setPosition(
+        this->position_x,
+        this->position_y
+    );
+    
+    return;
+}   /* __setUpMagnifyingGlassSprite() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __clearDecoration(void)
+///
+/// \brief Helper method to clear tile decoration.
+///
+
+void HexTile :: __clearDecoration(void)
+{
+    this->decoration_cleared = true;
+    
+    return;
+}   /* __clearDecoration() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn bool HexTile :: __isClicked(void)
 ///
 /// \brief Helper method to determine if tile was clicked on.
@@ -279,9 +329,49 @@ void HexTile :: __handleKeyPressEvents(void)
         this->is_selected = false;
     }
     
-    if (this->is_selected) {
-        switch (this->event_ptr->key.code) {
-            case (sf::Keyboard::A): {
+    if (not this->is_selected) {
+        return;
+    }
+    
+    
+    if (this->game_phase == "build settlement") {
+        if (
+            (this->tile_type != TileType :: OCEAN) and
+            (this->tile_type != TileType :: LAKE)
+        ) {
+            if (this->event_ptr->key.code == sf::Keyboard::B) {
+                this->__clearDecoration();
+                
+                this->tile_improvement_ptr = new Settlement(
+                    this->position_x,
+                    this->position_y,
+                    this->event_ptr,
+                    this->render_window_ptr,
+                    this->assets_manager_ptr,
+                    this->message_hub_ptr
+                );
+                
+                this->has_improvement = true;
+                
+                this->assess();
+                this->__sendAssessNeighboursMessage();
+                
+                this->__sendUpdateGamePhaseMessage("system management");
+                this->__sendCreditsSpentMessage(BUILD_SETTLEMENT_COST);
+                this->__sendGameStateRequest();
+            }
+        }
+    }
+    
+    
+    else if (this->game_phase == "system management") {
+        if (this->has_improvement) {
+            //...
+        }
+        
+        
+        else if (not this->resource_assessed) {
+            if (this->event_ptr->key.code == sf::Keyboard::A) {
                 if (this->resource_assessed) {
                     std::cout << "Cannot assess resource: already assessed" <<
                         std::endl;
@@ -299,18 +389,19 @@ void HexTile :: __handleKeyPressEvents(void)
                     this->__sendCreditsSpentMessage(RESOURCE_ASSESSMENT_COST);
                     this->__sendGameStateRequest();
                 }
-                
-                break;
-            }
-            
-            default: {
-                // do nothing!
-                
-                break;
             }
         }
+        
+        
+        else if (not this->decoration_cleared) {
+            //...
+        }
+        
+        
+        else {
+            //...
+        }
     }
-    
 
     return;
 }   /* __handleKeyPressEvents() */
@@ -500,7 +591,39 @@ std::string HexTile :: __getTileResourceSubstring(void)
     
     if (this->resource_assessed) {
         switch (this->tile_resource) {
-            //...
+            case (TileResource :: POOR): {
+                resource_substring += "POOR\n";
+                
+                break;
+            }
+            
+            
+            case (TileResource ::BELOW_AVERAGE): {
+                resource_substring += "BELOW AVERAGE\n";
+                
+                break;
+            }
+            
+            
+            case (TileResource :: AVERAGE): {
+                resource_substring += "AVERAGE\n";
+                
+                break;
+            }
+            
+            
+            case (TileResource :: ABOVE_AVERAGE): {
+                resource_substring += "ABOVE AVERAGE\n";
+                
+                break;
+            }
+            
+            
+            case (TileResource :: GOOD): {
+                resource_substring += "GOOD\n";
+                
+                break;
+            }
             
             
             default: {
@@ -512,7 +635,7 @@ std::string HexTile :: __getTileResourceSubstring(void)
     }
     
     else {
-        resource_substring += "[A]: ASSESS\n";
+        resource_substring += "???\n";
     }
     
     return resource_substring;
@@ -537,7 +660,20 @@ std::string HexTile :: __getTileImprovementSubstring(void)
     std::string improvement_substring = "TILE IMPROVEMENT:  ";
     
     if (this->has_improvement) {
-        //...
+        switch(this->tile_improvement_ptr->tile_improvement_type) {
+            case (TileImprovementType :: SETTLEMENT): {
+                improvement_substring += "SETTLEMENT\n";
+                
+                break;
+            }
+            
+            
+            default: {
+                improvement_substring += "???\n";
+                
+                break;
+            }
+        }
     }
     
     else {
@@ -567,26 +703,49 @@ std::string HexTile :: __getTileOptionsSubstring(void)
     std::string options_substring                = "     **** TILE OPTIONS ****     \n";
     options_substring                           += "                                \n";
     
-    if (
-        (not this->has_improvement) and
-        (not this->settlement_built) and 
-        (this->tile_type != TileType :: OCEAN) and
-        (this->tile_type != TileType :: LAKE)
-    ) {
-        options_substring                       += "[B]:  BUILD SETTLEMENT          ";
+    if (this->game_phase == "build settlement") {
+        if (
+            (this->tile_type != TileType :: OCEAN) and
+            (this->tile_type != TileType :: LAKE)
+        ) {
+            options_substring += "[B]:  BUILD SETTLEMENT (";
+            options_substring += std::to_string(BUILD_SETTLEMENT_COST);
+            options_substring += " K)";
+        }
     }
     
-    else if (not this->has_improvement) {
-        switch (this->tile_type) {
+    
+    else if (this->game_phase == "system management") {
+        if (this->has_improvement) {
             //...
-            
-            
-            default: {
-                // do nothing!
-                
-                break;
-            }
         }
+        
+        
+        else if (not this->resource_assessed) {
+            options_substring += "[A]:  ASSESS RESOURCE (";
+            options_substring += std::to_string(RESOURCE_ASSESSMENT_COST);
+            options_substring += " K)\n";
+        }
+        
+        
+        else if (not this->decoration_cleared) {
+            //...
+        }
+        
+        
+        else {
+            //...
+        }
+    }
+    
+    
+    else if (this->game_phase == "victory") {
+        options_substring                       += "       **** VICTORY ****        \n";
+    }
+    
+    
+    else {
+        options_substring                       += "        **** LOSS ****          \n";
     }
     
     return options_substring;
@@ -613,21 +772,21 @@ void HexTile :: __sendTileStateMessage(void)
     
     
     //                   32 char x 17 line console "--------------------------------\n";
-    std::string string_payload                   = "      **** TILE INFO ****       \n";
-    string_payload                              += "                                \n";
+    std::string console_string                   = "      **** TILE INFO ****       \n";
+    console_string                              += "                                \n";
     
-    string_payload                              += this->__getTileCoordsSubstring();
-    string_payload                              += "                                \n";
+    console_string                              += this->__getTileCoordsSubstring();
+    console_string                              += "                                \n";
     
-    string_payload                              += this->__getTileTypeSubstring();
-    string_payload                              += this->__getTileResourceSubstring();
-    string_payload                              += this->__getTileImprovementSubstring();
-    string_payload                              += "                                \n";
+    console_string                              += this->__getTileTypeSubstring();
+    console_string                              += this->__getTileResourceSubstring();
+    console_string                              += this->__getTileImprovementSubstring();
+    console_string                              += "                                \n";
 
-    string_payload                              += this->__getTileOptionsSubstring();
+    console_string                              += this->__getTileOptionsSubstring();
     
     
-    tile_state_message.string_payload = string_payload;
+    tile_state_message.string_payload["console string"] = console_string;
     
     this->message_hub_ptr->sendMessage(tile_state_message);
     
@@ -636,6 +795,33 @@ void HexTile :: __sendTileStateMessage(void)
 }   /* __sendTileStateMessage() */
 
 // ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendAssessNeighboursMessage(void)
+///
+/// \brief Helper method to format and send assess neighbours message.
+///
+
+void HexTile :: __sendAssessNeighboursMessage(void)
+{
+    Message assess_neighbours_message;
+    
+    assess_neighbours_message.channel = HEX_MAP_CHANNEL;
+    assess_neighbours_message.subject = "assess neighbours";
+    
+    this->message_hub_ptr->sendMessage(assess_neighbours_message);
+    
+    std::cout << "Assess neighbours message sent by " << this << std::endl;
+    
+    return;
+}   /* __sendAssessNeighboursMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
 
 
 // ---------------------------------------------------------------------------------- //
@@ -658,6 +844,36 @@ void HexTile :: __sendGameStateRequest(void)
     std::cout << "Game state request message sent by " << this << std::endl;
     return;
 }   /* __sendGameStateRequest() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __sendUpdateGamePhaseMessage(void)
+///
+/// \brief Helper method to format and send update game phase message.
+///
+/// \param game_phase The updated game phase.
+///
+
+void HexTile :: __sendUpdateGamePhaseMessage(std::string game_phase)
+{
+    Message update_game_phase_message;
+    
+    update_game_phase_message.channel = GAME_CHANNEL;
+    update_game_phase_message.subject = "update game phase";
+    
+    update_game_phase_message.string_payload["game phase"] = game_phase;
+    
+    this->message_hub_ptr->sendMessage(update_game_phase_message);
+    
+    std::cout << "Update game phase message sent by " << this << std::endl;
+    
+    return;
+}   /* __sendUpdateGamePhaseMessage() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -774,10 +990,11 @@ HexTile :: HexTile(
     this->show_node = false;
     this->show_resource = false;
     this->resource_assessed = false;
+    this->resource_assessment = false;
     this->is_selected = false;
     
+    this->decoration_cleared = false;
     this->has_improvement = false;
-    this->settlement_built = false;
     this->tile_improvement_ptr = NULL;
     
     this->frame = 0;
@@ -789,12 +1006,15 @@ HexTile :: HexTile(
     this->major_radius = 32;
     this->minor_radius = (sqrt(3) / 2) * this->major_radius;
     
+    this->game_phase = "build settlement";
+    
     //  2. set up and position drawable attributes
     this->__setUpNodeSprite();
     this->__setUpTileSprite();
     this->__setUpSelectOutlineSprite();
     this->__setUpResourceChipSprite();
     this->__setResourceText();
+    this->__setUpMagnifyingGlassSprite();
     
     //  3. set tile type and resource (default to none type and average)
     this->setTileType(TileType :: NONE_TYPE);
@@ -1124,6 +1344,10 @@ void HexTile :: toggleResourceOverlay(void)
 void HexTile :: assess(void)
 {
     this->resource_assessed = true;
+    this->resource_assessment = true;
+    
+    this->assets_manager_ptr->getSound("resource assessment")->play();
+    
     this->__setResourceText();
     this->__sendTileStateMessage();
     
@@ -1189,12 +1413,15 @@ void HexTile :: processMessage(void)
             
             if (game_state_message.subject == "game state") {
                 this->credits = game_state_message.int_payload["credits"];
+                this->game_phase = game_state_message.string_payload["game phase"];
                 
                 if (this->tile_improvement_ptr != NULL) {
                     this->tile_improvement_ptr->credits = this->credits;
+                    this->tile_improvement_ptr->game_phase = this->game_phase;
                 }
                 
                 std::cout << "Game state message received by " << this << std::endl;
+                this->__sendTileStateMessage();
                 this->message_hub_ptr->popMessage(GAME_STATE_CHANNEL);
             }
         }
@@ -1230,15 +1457,22 @@ void HexTile :: draw(void)
     }
     
     //  3. draw tile decoration
-    this->render_window_ptr->draw(this->tile_decoration_sprite);
+    if (not this->decoration_cleared) {
+        this->render_window_ptr->draw(this->tile_decoration_sprite);
+    }
     
-    //  4. draw resource
+    //  4. draw tile improvement
+    if (this->has_improvement) {
+        this->tile_improvement_ptr->draw();
+    }
+    
+    //  5. draw resource
     if (this->show_resource) {
         this->render_window_ptr->draw(this->resource_chip_sprite);
         this->render_window_ptr->draw(this->resource_text);
     }
     
-    //  5. draw selection outline
+    //  6. draw selection outline
     if (this->is_selected) {
         sf::Color outline_colour = this->select_outline_sprite.getOutlineColor();
         
@@ -1248,6 +1482,23 @@ void HexTile :: draw(void)
         this->select_outline_sprite.setOutlineColor(outline_colour);
         
         this->render_window_ptr->draw(this->select_outline_sprite);
+    }
+    
+    //  7. draw resource assessment notification
+    if (this->resource_assessment) {
+        int alpha = this->magnifying_glass_sprite.getColor().a;
+        
+        alpha -= 3;
+        if (alpha < 0) {
+            alpha = 0;
+            this->resource_assessment = false;
+        }
+        
+        this->magnifying_glass_sprite.setColor(
+            sf::Color(255, 255, 255, alpha)
+        );
+        
+        this->render_window_ptr->draw(this->magnifying_glass_sprite);
     }
     
     this->frame++;

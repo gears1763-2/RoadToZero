@@ -1017,6 +1017,31 @@ void HexMap :: __sendNoTileSelectedMessage(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __assessNeighbours(HexTile* hex_ptr)
+///
+/// \brief Helper method to assess all neighbours of the given tile.
+///
+/// \param Pointer to the tile whose neighbours are to be assessed.
+///
+
+void HexMap :: __assessNeighbours(HexTile* hex_ptr)
+{
+    std::vector<HexTile*> neighbours_vec = this->__getNeighboursVector(hex_ptr);
+    
+    for (size_t i = 0; i < neighbours_vec.size(); i++) {
+        neighbours_vec[i]->assess();
+    }
+    
+    return;
+}   /* __assessNeighbours() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -1087,6 +1112,7 @@ HexMap :: HexMap(
     this->message_hub_ptr->addChannel(TILE_SELECTED_CHANNEL);
     this->message_hub_ptr->addChannel(NO_TILE_SELECTED_CHANNEL);
     this->message_hub_ptr->addChannel(TILE_STATE_CHANNEL);
+    this->message_hub_ptr->addChannel(HEX_MAP_CHANNEL);
     
     std::cout << "HexMap constructed at " << this << std::endl;
     
@@ -1243,7 +1269,19 @@ void HexMap :: processMessage(void)
     }
     
     //  2. process HexMap messages
-    //...
+    if (not this->message_hub_ptr->isEmpty(HEX_MAP_CHANNEL)) {
+        Message hex_map_message = this->message_hub_ptr->receiveMessage(
+            HEX_MAP_CHANNEL
+        );
+        
+        if (hex_map_message.subject == "assess neighbours") {
+            HexTile* hex_ptr = this->__getSelectedTile();
+            this->__assessNeighbours(hex_ptr);
+            
+            std::cout << "Assess neighbours message received by " << this << std::endl;
+            this->message_hub_ptr->popMessage(HEX_MAP_CHANNEL);
+        }
+    }
     
     return;
 }   /* processMessage() */

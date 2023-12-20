@@ -61,11 +61,26 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "water_shimmer_64x64_1"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/brick_house_64x64_1.png",
+        "brick_house_64x64_1"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/magnifying_glass_64x64_1.png",
+        "magnifying_glass_64x64_1"
+    );
+    
     
     //  3. load sounds
     assets_manager_ptr->loadSound(
         "assets/audio/samples/mixkit-apartment-buzzer-bell-press-932.ogg",
         "insufficient credits"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-sci-fi-click-900.ogg",
+        "resource assessment"
     );
     
     return;

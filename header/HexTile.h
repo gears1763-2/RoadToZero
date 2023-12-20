@@ -19,7 +19,7 @@
 #define HEXTILE_H
 
 
-#include "TileImprovement.h"
+#include "Settlement.h"
 
 
 ///
@@ -77,6 +77,9 @@ class HexTile {
         void __setUpSelectOutlineSprite(void);
         void __setUpResourceChipSprite(void);
         void __setResourceText(void);
+        void __setUpMagnifyingGlassSprite(void);
+        
+        void __clearDecoration(void);
         
         bool __isClicked(void);
         
@@ -91,8 +94,10 @@ class HexTile {
         std::string __getTileImprovementSubstring(void);
         std::string __getTileOptionsSubstring(void);
         void __sendTileStateMessage(void);
+        void __sendAssessNeighboursMessage(void);
         
         void __sendGameStateRequest(void);
+        void __sendUpdateGamePhaseMessage(std::string);
         
         void __sendCreditsSpentMessage(int);
         void __sendInsufficientCreditsMessage(void);
@@ -106,9 +111,10 @@ class HexTile {
         bool show_node; ///< A boolean which indicates whether or not to show the tile node.
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
+        bool resource_assessment; ///< A boolean which triggers a resource assessment notification.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         
-        bool settlement_built; ///< A boolean which indicates if a settlement has been built yet or not.
+        bool decoration_cleared; ///< A boolean which indicates if the tile decoration has been cleared.
         bool has_improvement; ///< A boolean which indicates if tile has improvement or not.
         TileImprovement* tile_improvement_ptr; ///< A pointer to the improvement for this tile.
         
@@ -121,12 +127,16 @@ class HexTile {
         double major_radius; ///< The radius of the smallest bounding circle.
         double minor_radius; ///< The radius of the largest inscribed circle.
         
+        std::string game_phase; ///< The current phase of the game.
+        
         sf::CircleShape node_sprite; ///< A circle shape to mark the tile node.
         sf::ConvexShape tile_sprite; ///< A convex shape which represents the tile.
         sf::ConvexShape select_outline_sprite; ///< A convex shape which outlines the tile when selected.
         sf::CircleShape resource_chip_sprite; ///< A circle shape which represents a resource chip.
+        
         sf::Text resource_text; ///< A text representation of the resource.
         sf::Sprite tile_decoration_sprite; ///< A tile decoration sprite.
+        sf::Sprite magnifying_glass_sprite; ///< A magnifying glass sprite.
         
         
         //  2. methods

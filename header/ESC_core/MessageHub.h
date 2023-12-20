@@ -36,7 +36,7 @@ struct Message {
     std::map<std::string, bool> bool_payload = {}; ///< A boolean payload.
     std::map<std::string, int> int_payload = {}; ///< A vector payload.
     std::map<std::string, double> double_payload = {}; ///< A vector payload.
-    std::string string_payload = ""; ///< A string payload.
+    std::map<std::string, std::string> string_payload = {}; ///< A string payload.
 };  /* Message */
 
 

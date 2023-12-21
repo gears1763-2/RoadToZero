@@ -98,7 +98,9 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 1500; ///< The CO2-equivalent mass of emissions that would result from burning 1,000,000 L of diesel fuel.
 
 const int RESOURCE_ASSESSMENT_COST = 20; ///< The cost of doing a resource assessment.
+
 const int BUILD_SETTLEMENT_COST = 250; ///< The cost of building a settlement.
+const int STARTING_POPULATION = 100; ///< The starting population of a settlement.
 
 const double CO2E_KG_PER_LITRE_DIESEL = 3.1596; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
 

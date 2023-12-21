@@ -83,7 +83,10 @@ class ContextMenu {
         //  1. attributes
         ConsoleState console_state; ///< The current state of the console screen.
         
+        bool console_string_changed; ///< Boolean which indicates if console string just changed.
         bool game_menu_up; ///< Indicates whether or not the game menu is up.
+        
+        size_t console_substring_idx; ///< The current final index of the console string draw.
         
         int frame; ///< The current frame of this object.
         

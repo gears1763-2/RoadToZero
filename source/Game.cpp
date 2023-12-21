@@ -303,6 +303,8 @@ void Game :: __processMessage(void)
                 game_channel_message.string_payload["game phase"] == "system management"
             ) {
                 this->game_phase = GamePhase :: SYSTEM_MANAGEMENT;
+                this->population = STARTING_POPULATION;
+                this->turn++;
             }
             
             else if (
@@ -391,9 +393,15 @@ void Game :: __insufficientCreditsAlarm(void)
     sf::Clock alarm_clock;
     
     while (alarm_frame < 2.5 * FRAMES_PER_SECOND) {
+        
+        
         time_since_alarm_s = alarm_clock.getElapsedTime().asSeconds();
 
         if (time_since_alarm_s >= (alarm_frame + 1) * SECONDS_PER_FRAME) {
+            while (this->render_window_ptr->pollEvent(this->event)) {
+                // do nothing!
+            }
+            
             this->render_window_ptr->clear();
             
             this->hex_map_ptr->draw();
@@ -484,7 +492,7 @@ void Game :: __drawFrameClockOverlay(void)
 
 void Game :: __drawHUD(void)
 {
-    //  1. first line
+    //  1. first line (top)
     std::string HUD_string = "YEAR: ";
     HUD_string += std::to_string(this->year);
     
@@ -518,7 +526,7 @@ void Game :: __drawHUD(void)
     this->render_window_ptr->draw(HUD_text);
     
     
-    //  2. second line
+    //  2. second line (top)
     HUD_string = "CUMULATIVE EMISSIONS: ";
     HUD_string += std::to_string(this->cumulative_emissions_tonnes);
     HUD_string += " tonnes (CO2e)";
@@ -532,6 +540,72 @@ void Game :: __drawHUD(void)
     HUD_text.setPosition(
         (800 - HUD_text.getLocalBounds().width) / 2,
         35
+    );
+    
+    this->render_window_ptr->draw(HUD_text);
+    
+    
+    //  3. third line (bottom)
+    HUD_string = "GAME PHASE: ";
+    
+    switch (this->game_phase) {
+        case (GamePhase :: BUILD_SETTLEMENT): {
+            HUD_string += "BUILD SETTLEMENT";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: SYSTEM_MANAGEMENT): {
+            HUD_string += "SYSTEM MANAGEMENT";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_EMISSIONS): {
+            HUD_string += "LOSS (EMISSIONS)";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_DEMAND): {
+            HUD_string += "LOSS (DEMAND)";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_CREDITS): {
+            HUD_string += "LOSS (CREDITS)";
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: VICTORY): {
+            HUD_string += "VICTORY";
+            
+            break;
+        }
+        
+        
+        default: {
+            HUD_string += "???";
+            
+            break;
+        }
+    }
+    
+    HUD_string += "    TURN: ";
+    HUD_string += std::to_string(this->turn);
+    
+    HUD_text.setString(HUD_string);
+    
+    HUD_text.setPosition(
+        (800 - HUD_text.getLocalBounds().width) / 2,
+        GAME_HEIGHT - 35
     );
     
     this->render_window_ptr->draw(HUD_text);

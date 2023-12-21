@@ -70,6 +70,7 @@ class HexMap {
     
     public:
         //  1. attributes
+        bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool tile_selected; ///< A boolean which indicates if a tile is currently selected.
         
         int n_layers; ///< The number of layers in the hex map.

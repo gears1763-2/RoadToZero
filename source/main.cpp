@@ -83,6 +83,21 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "resource assessment"
     );
     
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-interface-click-1126.ogg",
+        "console string print"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-video-game-retro-click-237.ogg",
+        "resource overlay toggle on"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-video-game-retro-click-237_REVERSED.ogg",
+        "resource overlay toggle off"
+    );
+    
     return;
 }   /* loadAssets() */
 

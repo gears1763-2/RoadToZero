@@ -481,6 +481,9 @@ void ContextMenu :: __setConsoleState(ConsoleState console_state)
 
 void ContextMenu :: __setConsoleString(void)
 {
+    this->console_string_changed = true;
+    this->console_substring_idx = 0;
+    
     this->console_string.clear();
     
     switch (this->console_state) {
@@ -522,8 +525,9 @@ void ContextMenu :: __setConsoleString(void)
             this->console_string                += "                                \n";
             this->console_string                += "[TAB]:  TOGGLE RESOURCE OVERLAY \n";
             this->console_string                += "                                \n";
-            this->console_string                += "[ESC]:        MENU              \n";
-            this->console_string                += "[LEFT CLICK]: TILE INFO/OPTIONS \n";
+            this->console_string                += "[ESC]:         MENU             \n";
+            this->console_string                += "[LEFT CLICK]:  TILE INFO/OPTIONS\n";
+            this->console_string                += "[RIGHT CLICK]: CLEAR SELECTION  \n";
             this->console_string                += "                                \n";
             this->console_string                += "[ENTER]:  END TURN              \n";
             this->console_string                += "                                \n";
@@ -532,7 +536,7 @@ void ContextMenu :: __setConsoleString(void)
             break;
         }
     }
-    
+
     return;
 }   /* __setConsoleString() */
 
@@ -551,12 +555,36 @@ void ContextMenu :: __setConsoleString(void)
 void ContextMenu :: __drawConsoleText(void)
 {
     //  1. set up console text (drawable)
-    sf::Text console_text(
-        this->console_string,
-        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
-        16
-    );
+    sf::Text console_text;
     
+    if (this->console_string_changed) {
+        this->assets_manager_ptr->getSound("console string print")->play();
+        
+        console_text.setString(this->console_string.substr(0, this->console_substring_idx));
+
+        this->console_substring_idx++;
+        
+        while (
+            this->console_string.substr(0, this->console_substring_idx).back() == ' '
+        ) {
+            this->console_substring_idx++;
+            
+            if (this->console_substring_idx >= this->console_string.size()) {
+                break;
+            }
+        }
+        
+        if (this->console_substring_idx >= this->console_string.size()) {
+            this->console_string_changed = false;
+        }
+    }
+    
+    else {
+        console_text.setString(this->console_string);
+    }
+    
+    console_text.setFont(*(this->assets_manager_ptr->getFont("Glass_TTY_VT220")));
+    console_text.setCharacterSize(16);
     console_text.setFillColor(MONOCHROME_TEXT_GREEN);
         
     console_text.setPosition(
@@ -797,6 +825,7 @@ ContextMenu :: ContextMenu(
     this->console_state = ConsoleState :: NONE_STATE;
     this->__setConsoleState(ConsoleState :: READY);
     
+    this->console_string_changed = true;
     this->game_menu_up = false;
     
     this->frame = 0;
@@ -880,6 +909,9 @@ void ContextMenu :: processMessage(void)
                 
                 if (tile_state_message.subject == "tile state") {
                     this->console_string = tile_state_message.string_payload["console string"];
+                    
+                    this->console_string_changed = true;
+                    this->console_substring_idx = 0;
                     
                     std::cout << "Tile state message received by " << this << std::endl;
                     this->message_hub_ptr->popMessage(TILE_STATE_CHANNEL);

@@ -1090,6 +1090,7 @@ HexMap :: HexMap(
     this->message_hub_ptr = message_hub_ptr;
     
     //  1.2. public
+    this->show_resource = false;
     this->tile_selected = false;
     
     this->frame = 0;
@@ -1189,6 +1190,16 @@ void HexMap :: toggleResourceOverlay(void)
         ) {
             hex_map_iter_y->second->toggleResourceOverlay();
         }
+    }
+    
+    if (this->show_resource) {
+        this->show_resource = false;
+        this->assets_manager_ptr->getSound("resource overlay toggle off")->play();
+    }
+    
+    else {
+        this->show_resource = true;
+        this->assets_manager_ptr->getSound("resource overlay toggle on")->play();
     }
     
     return;

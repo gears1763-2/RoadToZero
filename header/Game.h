@@ -91,6 +91,8 @@ class Game {
         int demand_MWh; ///< Current energy demand [MWh].
         int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
         
+        int turn = 0; ///< The current game turn.
+        
         sf::Clock clock; ///< The game clock.
         sf::Event event; ///< The game events class.
         

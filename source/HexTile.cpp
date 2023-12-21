@@ -198,7 +198,7 @@ void HexTile :: __setResourceText(void)
             }
             
             default: {
-                this->resource_text.setString("?");
+                this->resource_text.setString("");
                 
                 break;
             }
@@ -206,7 +206,7 @@ void HexTile :: __setResourceText(void)
     }
     
     else {
-        this->resource_text.setString("?");
+        this->resource_text.setString("");
     }
     
     this->resource_text.setCharacterSize(20);
@@ -358,6 +358,7 @@ void HexTile :: __handleKeyPressEvents(void)
                 
                 this->__sendUpdateGamePhaseMessage("system management");
                 this->__sendCreditsSpentMessage(BUILD_SETTLEMENT_COST);
+                this->__sendTileStateMessage();
                 this->__sendGameStateRequest();
             }
         }
@@ -387,6 +388,7 @@ void HexTile :: __handleKeyPressEvents(void)
                 else {
                     this->assess();
                     this->__sendCreditsSpentMessage(RESOURCE_ASSESSMENT_COST);
+                    this->__sendTileStateMessage();
                     this->__sendGameStateRequest();
                 }
             }

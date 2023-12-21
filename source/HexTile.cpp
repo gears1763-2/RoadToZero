@@ -407,7 +407,7 @@ void HexTile :: __setUpDieselGeneratorBuildOption(void)
     diesel_generator_string            += "CAPACITY: 100 kW\n";
     diesel_generator_string            += "COST:     ";
     diesel_generator_string            += std::to_string(DIESEL_GENERATOR_BUILD_COST);
-    diesel_generator_string            += " K\n\n";
+    diesel_generator_string            += " K\n\n\n";
     diesel_generator_string            += "BUILD:    [D]   \n";
     
     //  3. call general method
@@ -423,22 +423,24 @@ void HexTile :: __setUpDieselGeneratorBuildOption(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexTile :: __setUpWindTurbineBuildOption(void)
+/// \fn void HexTile :: __setUpWindTurbineBuildOption(bool is_lake, bool is_ocean)
 ///
 /// \brief Helper method to set up and position the wind turbine build option.
 ///
-/// \param is_lake If being built on a lake.
+/// \param is_lake If being built on a lake tile.
+///
+/// \param is_ocean If being built on an ocean tile.
 ///
 
-void HexTile :: __setUpWindTurbineBuildOption(bool is_lake)
+void HexTile :: __setUpWindTurbineBuildOption(bool is_lake, bool is_ocean)
 {
     //  1. set up option sprite(s)
-    std::string texture_key = ""; //<--- "wind turbine"
+    std::string texture_key = "wind turbine";
     
     //  2. set up option string (up to 16 chars wide)
     int build_cost = WIND_TURBINE_BUILD_COST;
-    if (is_lake) {
-        build_cost *= 2;
+    if (is_lake or is_ocean) {
+        build_cost *= WIND_TURBINE_WATER_BUILD_MULTIPLIER;
     }
     
     //                                    "----------------\n"
@@ -452,8 +454,11 @@ void HexTile :: __setUpWindTurbineBuildOption(bool is_lake)
     if (is_lake) {
         wind_turbine_string += "\n** LAKE BUILD **\n\n";
     }
+    else if (is_ocean) {
+        wind_turbine_string += "\n* OCEAN BUILD * \n\n";
+    }
     else {
-        wind_turbine_string += "\n\n";
+        wind_turbine_string += "\n\n\n";
     }
     
     wind_turbine_string                += "BUILD:    [W]   \n";
@@ -471,7 +476,7 @@ void HexTile :: __setUpWindTurbineBuildOption(bool is_lake)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void HexTile :: __setUpSolarPVBuildOption(void)
+/// \fn void HexTile :: __setUpSolarPVBuildOption(bool is_lake)
 ///
 /// \brief Helper method to set up and position the solar PV array build option.
 ///
@@ -481,12 +486,12 @@ void HexTile :: __setUpWindTurbineBuildOption(bool is_lake)
 void HexTile :: __setUpSolarPVBuildOption(bool is_lake)
 {
     //  1. set up option sprite(s)
-    std::string texture_key = ""; //<--- "solar PV array"
+    std::string texture_key = "solar PV array";
     
     //  2. set up option string (up to 16 chars wide)
     int build_cost = SOLAR_PV_BUILD_COST;
     if (is_lake) {
-        build_cost *= 2;
+        build_cost *= SOLAR_PV_WATER_BUILD_MULTIPLIER;
     }
     
     //                                    "----------------\n"
@@ -501,7 +506,7 @@ void HexTile :: __setUpSolarPVBuildOption(bool is_lake)
         solar_PV_string += "\n** LAKE BUILD **\n\n";
     }
     else {
-        solar_PV_string += "\n\n";
+        solar_PV_string += "\n\n\n";
     }
     
     solar_PV_string                    += "BUILD:    [S]   \n";
@@ -527,7 +532,7 @@ void HexTile :: __setUpSolarPVBuildOption(bool is_lake)
 void HexTile :: __setUpTidalTurbineBuildOption(void)
 {
     //  1. set up option sprite(s)
-    std::string texture_key = ""; //<--- "tidal turbine"
+    std::string texture_key = "tidal turbine";
     
     //  2. set up option string (up to 16 chars wide)
     //                                    "----------------\n"
@@ -536,7 +541,7 @@ void HexTile :: __setUpTidalTurbineBuildOption(void)
     tidal_turbine_string               += "CAPACITY: 100 kW\n";
     tidal_turbine_string               += "COST:     ";
     tidal_turbine_string               += std::to_string(TIDAL_TURBINE_BUILD_COST);
-    tidal_turbine_string               += " K\n\n";
+    tidal_turbine_string               += " K\n\n\n";
     tidal_turbine_string               += "BUILD:    [T]   \n";
     
     //  3. call general method
@@ -560,7 +565,7 @@ void HexTile :: __setUpTidalTurbineBuildOption(void)
 void HexTile :: __setUpWaveEnergyConverterBuildOption(void)
 {
     //  1. set up option sprite(s)
-    std::string texture_key = ""; //<--- "wave energy converter"
+    std::string texture_key = "wave energy converter";
     
     //  2. set up option string (up to 16 chars wide)
     //                                            "----------------\n"
@@ -569,8 +574,8 @@ void HexTile :: __setUpWaveEnergyConverterBuildOption(void)
     wave_energy_converter_string               += "CAPACITY: 100 kW\n";
     wave_energy_converter_string               += "COST:     ";
     wave_energy_converter_string               += std::to_string(WAVE_ENERGY_CONVERTER_BUILD_COST);
-    wave_energy_converter_string               += " K\n\n";
-    wave_energy_converter_string               += "BUILD:    [W]   \n";
+    wave_energy_converter_string               += " K\n\n\n";
+    wave_energy_converter_string               += "BUILD:    [A]   \n";
     
     //  3. call general method
     this->__setUpBuildOption(texture_key, wave_energy_converter_string);
@@ -593,7 +598,7 @@ void HexTile :: __setUpWaveEnergyConverterBuildOption(void)
 void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
 {
     //  1. set up option sprite(s)
-    std::string texture_key = ""; //<--- "energy storage system"
+    std::string texture_key = "energy storage system";
     
     //  2. set up option string (up to 16 chars wide)
     //                                            "----------------\n"
@@ -602,7 +607,7 @@ void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
     energy_storage_system_string               += "CAPCTY:  500 kWh\n";
     energy_storage_system_string               += "COST:     ";
     energy_storage_system_string               += std::to_string(ENERGY_STORAGE_SYSTEM_BUILD_COST);
-    energy_storage_system_string               += " K\n\n";
+    energy_storage_system_string               += " K\n\n\n";
     energy_storage_system_string               += "BUILD:    [E]   \n";
     
     //  3. call general method
@@ -678,6 +683,7 @@ void HexTile :: __setUpBuildMenu(void)
         
         
         case (TileType :: OCEAN): {
+            this->__setUpWindTurbineBuildOption(false, true);
             this->__setUpTidalTurbineBuildOption();
             this->__setUpWaveEnergyConverterBuildOption();
             

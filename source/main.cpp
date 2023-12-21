@@ -86,6 +86,31 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "diesel generator"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/solar_PV_64x64_1.png",
+        "solar PV array"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/wind_turbine_64x64_2.png",
+        "wind turbine"
+    );
+    
+     assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/energy_storage_system_64x64_1.png",
+        "energy storage system"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/tidal_turbine_64x64_2.png",
+        "tidal turbine"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/wave_energy_converter_64x64_2.png",
+        "wave energy converter"
+    );
+    
     
     //  3. load sounds
     assets_manager_ptr->loadSound(

@@ -82,7 +82,7 @@ class HexTile {
         
         void __setUpBuildOption(std::string, std::string);
         void __setUpDieselGeneratorBuildOption(void);
-        void __setUpWindTurbineBuildOption(bool=false);
+        void __setUpWindTurbineBuildOption(bool=false, bool=false);
         void __setUpSolarPVBuildOption(bool=false);
         void __setUpTidalTurbineBuildOption(void);
         void __setUpWaveEnergyConverterBuildOption(void);

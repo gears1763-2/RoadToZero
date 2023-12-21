@@ -68,6 +68,7 @@ class TileImprovement {
         TileImprovementType tile_improvement_type; ///< The type of the tile improvement.
         
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
+        bool just_built; ///< A boolean which indicates that the improvement was just built.
         
         int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
@@ -76,6 +77,7 @@ class TileImprovement {
         double position_y; ///< The y position of the tile improvement.
         
         std::string game_phase; ///< The current phase of the game.
+        std::string tile_improvement_string; ///< A string representation of the tile improvement type.
         
         sf::Sprite tile_improvement_sprite_static; ///< A static sprite, for decorating the tile.
         std::vector<sf::Sprite> tile_improvement_sprite_animated; ///< An animated sprite, for the ContextMenu visual screen.

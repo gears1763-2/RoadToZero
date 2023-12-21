@@ -142,6 +142,7 @@ TileImprovement :: TileImprovement(
     
     //  1.2. public
     this->is_selected = true;
+    this->just_built = true;
     
     this->frame = 0;
     this->credits = 0;
@@ -215,7 +216,37 @@ void TileImprovement :: processMessage(void)
 
 void TileImprovement :: draw(void)
 {
-    //...
+    int alpha = this->tile_improvement_sprite_static.getColor().a;
+    
+    alpha += 0.04 * FRAMES_PER_SECOND;
+    
+    this->tile_improvement_sprite_static.setColor(
+        sf::Color(255, 255, 255, alpha)
+    );
+    
+    this->tile_improvement_sprite_static.move(0, 25 * SECONDS_PER_FRAME);
+    
+    std::cout << "TileImprovement :: draw()  " << alpha << 
+        "  ,  " << this->tile_improvement_sprite_static.getPosition().y << std::endl;
+    
+    if (
+        (alpha >= 255) or
+        (this->tile_improvement_sprite_static.getPosition().y >= this->position_y + 12)
+    ) {
+        this->tile_improvement_sprite_static.setColor(
+            sf::Color(255, 255, 255, 255)
+        );
+        
+        this->tile_improvement_sprite_static.setPosition(
+            this->position_x,
+            this->position_y + 12
+        );
+        
+        this->just_built = false;
+        this->assets_manager_ptr->getSound("place improvement")->play();
+    }
+    
+    this->render_window_ptr->draw(this->tile_improvement_sprite_static);
     
     this->frame++;
     return;

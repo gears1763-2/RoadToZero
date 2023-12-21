@@ -89,6 +89,9 @@ class HexTile {
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         
+        void __openBuildMenu(void);
+        void __closeBuildMenu(void);
+        
         void __sendTileSelectedMessage(void);
         
         std::string __getTileCoordsSubstring(void);
@@ -121,6 +124,8 @@ class HexTile {
         bool decoration_cleared; ///< A boolean which indicates if the tile decoration has been cleared.
         bool has_improvement; ///< A boolean which indicates if tile has improvement or not.
         TileImprovement* tile_improvement_ptr; ///< A pointer to the improvement for this tile.
+        
+        bool build_menu_open; ///< A boolean which indicates if the tile build menu is open.
         
         size_t explosion_frame; ///< The current frame of the explosion animation.
         

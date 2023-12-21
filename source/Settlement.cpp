@@ -43,7 +43,11 @@ void Settlement :: __setUpTileImprovementSpriteStatic(void)
     
     this->tile_improvement_sprite_static.setPosition(
         this->position_x,
-        this->position_y + 12
+        this->position_y - 32
+    );
+    
+    this->tile_improvement_sprite_static.setColor(
+        sf::Color(255, 255, 255, 0)
     );
     
     return;
@@ -187,6 +191,8 @@ TileImprovement(
     
     this->smoke_sprite_list = {};
     
+    this->tile_improvement_string = "SETTLEMENT";
+    
     this->__setUpTileImprovementSpriteStatic();
     
     std::cout << "Settlement constructed at " << this << std::endl;
@@ -253,11 +259,18 @@ void Settlement :: processMessage(void)
 
 void Settlement :: draw(void)
 {
-    //  1. draw static sprite and chimney smoke effects
+    //  1. if just built, call base method and return
+    if (this->just_built) {
+        TileImprovement :: draw();
+        
+        return;
+    }
+    
+    //  2. draw static sprite and chimney smoke effects
     this->render_window_ptr->draw(this->tile_improvement_sprite_static);
     
     std::list<sf::Sprite>::iterator iter = this->smoke_sprite_list.begin();
-    
+
     double alpha = 255;
     
     while (iter != this->smoke_sprite_list.end()) {

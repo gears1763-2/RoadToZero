@@ -118,6 +118,11 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "clear non-mountains tile"
     );
     
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-electronic-retro-block-hit-2185.ogg",
+        "place improvement"
+    );
+    
     return;
 }   /* loadAssets() */
 

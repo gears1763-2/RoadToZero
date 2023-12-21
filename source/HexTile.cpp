@@ -534,7 +534,9 @@ void HexTile :: __handleKeyPressEvents(void)
         
         
         else {
-            //...
+            if (this->event_ptr->key.code == sf::Keyboard::B) {
+                this->__openBuildMenu();
+            }
         }
     }
 
@@ -592,6 +594,44 @@ void HexTile :: __handleMouseButtonEvents(void)
     
     return;
 }   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __openBuildMenu(void)
+///
+/// \brief Helper method to open the tile improvement build menu.
+///
+
+void HexTile :: __openBuildMenu(void)
+{
+    //...
+    
+    return;
+}   /* __openBuildMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __closeBuildMenu(void)
+///
+/// \brief Helper method to close the tile improvement build menu.
+///
+
+void HexTile :: __closeBuildMenu(void)
+{
+    //...
+    
+    return;
+}   /* __closeBuildMenu() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -795,20 +835,8 @@ std::string HexTile :: __getTileImprovementSubstring(void)
     std::string improvement_substring = "TILE IMPROVEMENT:  ";
     
     if (this->has_improvement) {
-        switch(this->tile_improvement_ptr->tile_improvement_type) {
-            case (TileImprovementType :: SETTLEMENT): {
-                improvement_substring += "SETTLEMENT\n";
-                
-                break;
-            }
-            
-            
-            default: {
-                improvement_substring += "???\n";
-                
-                break;
-            }
-        }
+        improvement_substring += this->tile_improvement_ptr->tile_improvement_string;
+        improvement_substring += "\n";
     }
     
     else {
@@ -852,7 +880,10 @@ std::string HexTile :: __getTileOptionsSubstring(void)
     
     else if (this->game_phase == "system management") {
         if (this->has_improvement) {
-            //...
+            /*
+            options_substring.clear();
+            options_substring = this->tile_improvement_ptr->getTileOptionsSubstring();
+            */
         }
         
         
@@ -905,7 +936,7 @@ std::string HexTile :: __getTileOptionsSubstring(void)
         
         
         else {
-            //...
+            options_substring += "[B]: OPEN BUILD MENU\n";
         }
     }
     
@@ -950,7 +981,11 @@ void HexTile :: __sendTileStateMessage(void)
     console_string                              += "                                \n";
     
     console_string                              += this->__getTileTypeSubstring();
-    console_string                              += this->__getTileResourceSubstring();
+    
+    if (not this->has_improvement) {
+        console_string                          += this->__getTileResourceSubstring();
+    }
+    
     console_string                              += this->__getTileImprovementSubstring();
     console_string                              += "                                \n";
 
@@ -1168,6 +1203,8 @@ HexTile :: HexTile(
     this->decoration_cleared = false;
     this->has_improvement = false;
     this->tile_improvement_ptr = NULL;
+    
+    this->build_menu_open = false;
     
     this->explosion_frame = 0;
     
@@ -1638,7 +1675,9 @@ void HexTile :: draw(void)
     
     //  4. draw tile improvement
     if (this->has_improvement) {
-        this->tile_improvement_ptr->draw();
+        if (not this->tile_improvement_ptr->just_built) {
+            this->tile_improvement_ptr->draw();
+        }
     }
     
     //  5. draw resource
@@ -1676,7 +1715,7 @@ void HexTile :: draw(void)
         this->render_window_ptr->draw(this->magnifying_glass_sprite);
     }
     
-    //  8. draw explosion
+    //  8. draw explosion, then settlement placement
     if (this->draw_explosion) {
         this->render_window_ptr->draw(this->explosion_sprite_reel[this->explosion_frame]);
         
@@ -1686,6 +1725,12 @@ void HexTile :: draw(void)
         
         if (this->explosion_frame >= this->explosion_sprite_reel.size()) {
             this->draw_explosion = false;
+        }
+    }
+    
+    else if (this->has_improvement) {
+        if (this->tile_improvement_ptr->just_built) {
+            this->tile_improvement_ptr->draw();
         }
     }
     

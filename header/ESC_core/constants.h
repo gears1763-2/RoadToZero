@@ -77,7 +77,7 @@ const std::string TILE_STATE_CHANNEL = "TILE STATE CHANNEL"; ///< A message chan
 const std::string HEX_MAP_CHANNEL = "HEX MAP CHANNEL"; ///< A message channel for hex map messages.
 
 const int CLEAR_FOREST_COST = 40; ///< The cost of clearing a forest tile.
-const int CLEAR_MOUNTAINS_COST = 100; ///< The cost of clearing a mountains tile.
+const int CLEAR_MOUNTAINS_COST = 250; ///< The cost of clearing a mountains tile.
 const int CLEAR_PLAINS_COST = 20; ///< The cost of clearing a plains tile.
 
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //

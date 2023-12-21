@@ -1333,7 +1333,7 @@ void HexMap :: draw(void)
     //  4. draw resource overlay text indication
     if (this->show_resource) {
         sf::Text resource_overlay_text(
-            "**** RESOURCE OVERLAY ****",
+            "**** RENEWABLE RESOURCE OVERLAY ****",
             *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
             16
         );

@@ -81,6 +81,11 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "steam / smoke"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/diesel_generator_64x64_2.png",
+        "diesel generator"
+    );
+    
     
     //  3. load sounds
     assets_manager_ptr->loadSound(
@@ -121,6 +126,16 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     assets_manager_ptr->loadSound(
         "assets/audio/samples/mixkit-electronic-retro-block-hit-2185.ogg",
         "place improvement"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-video-game-lock-2851_REVERSED.ogg",
+        "build menu open"
+    );
+    
+        assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-video-game-lock-2851.ogg",
+        "build menu close"
     );
     
     return;

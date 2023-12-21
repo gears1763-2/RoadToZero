@@ -226,9 +226,6 @@ void TileImprovement :: draw(void)
     
     this->tile_improvement_sprite_static.move(0, 25 * SECONDS_PER_FRAME);
     
-    std::cout << "TileImprovement :: draw()  " << alpha << 
-        "  ,  " << this->tile_improvement_sprite_static.getPosition().y << std::endl;
-    
     if (
         (alpha >= 255) or
         (this->tile_improvement_sprite_static.getPosition().y >= this->position_y + 12)

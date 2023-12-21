@@ -303,6 +303,415 @@ void HexTile :: __setUpTileExplosionReel(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexTile :: __setUpBuildOption(
+///         std::string texture_key,
+///         std::string option_string
+///     )
+///
+/// \brief Helper method to set up and postion the sprite and text for a build option.
+///
+/// \param texture_key The key for the appropriate illustration asset for the build
+///     option.
+///
+/// \param option_string A string for the build option.
+///
+
+void HexTile :: __setUpBuildOption(
+    std::string texture_key,
+    std::string option_string
+)
+{
+    size_t n_options = this->build_menu_options_vec.size();
+    
+    //  1. set up option sprite(s)
+    this->build_menu_options_vec.push_back({});
+    
+    if (not texture_key.empty()) {
+        sf::Sprite texture_sheet(
+            *(this->assets_manager_ptr->getTexture(texture_key))
+        );
+        
+        int sheet_height = texture_sheet.getLocalBounds().height;
+        int n_subrects = sheet_height / 64;
+        
+        for (int i = 0; i < n_subrects; i++) {
+            this->build_menu_options_vec.back().push_back(
+                sf::Sprite(
+                    *(this->assets_manager_ptr->getTexture(texture_key)),
+                    sf::IntRect(0, i * 64, 64, 64)
+                )
+            );
+            
+            this->build_menu_options_vec.back().back().setOrigin(
+                this->build_menu_options_vec.back().back().getLocalBounds().width / 2,
+                this->build_menu_options_vec.back().back().getLocalBounds().height
+            );
+            
+            this->build_menu_options_vec.back().back().setPosition(
+                400 - 300 + 75 + n_options * 150,
+                400 - 32
+            );
+        }
+    }
+    
+    else {
+        this->build_menu_options_vec.back().push_back(sf::Sprite());
+    }
+    
+    
+    //  2. set up option text
+    this->build_menu_options_text_vec.push_back(
+        sf::Text(
+            option_string,
+            *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
+            16
+        )
+    );
+    
+    this->build_menu_options_text_vec.back().setOrigin(
+        this->build_menu_options_text_vec.back().getLocalBounds().width / 2,
+        0
+    );
+    
+    this->build_menu_options_text_vec.back().setPosition(
+        400 - 300 + 75 + n_options * 150,
+        400 - 16 - 4
+    );
+    
+    this->build_menu_options_text_vec.back().setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    return;
+}   /* __setUpBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpDieselGeneratorBuildOption(void)
+///
+/// \brief Helper method to set up and position the diesel generator build option.
+///
+
+void HexTile :: __setUpDieselGeneratorBuildOption(void)
+{
+    //  1. set up option sprite(s)
+    std::string texture_key = "diesel generator";
+    
+    //  2. set up option string (up to 16 chars wide)
+    //                                    "----------------\n"
+    std::string diesel_generator_string = "DIESEL GENERATOR\n";
+    diesel_generator_string            += "                \n";
+    diesel_generator_string            += "CAPACITY: 100 kW\n";
+    diesel_generator_string            += "COST:     ";
+    diesel_generator_string            += std::to_string(DIESEL_GENERATOR_BUILD_COST);
+    diesel_generator_string            += " K\n\n";
+    diesel_generator_string            += "BUILD:    [D]   \n";
+    
+    //  3. call general method
+    this->__setUpBuildOption(texture_key, diesel_generator_string);
+    
+    return;
+}   /* __setUpDieselGeneratorBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpWindTurbineBuildOption(void)
+///
+/// \brief Helper method to set up and position the wind turbine build option.
+///
+/// \param is_lake If being built on a lake.
+///
+
+void HexTile :: __setUpWindTurbineBuildOption(bool is_lake)
+{
+    //  1. set up option sprite(s)
+    std::string texture_key = ""; //<--- "wind turbine"
+    
+    //  2. set up option string (up to 16 chars wide)
+    int build_cost = WIND_TURBINE_BUILD_COST;
+    if (is_lake) {
+        build_cost *= 2;
+    }
+    
+    //                                    "----------------\n"
+    std::string wind_turbine_string     = "  WIND TURBINE  \n";
+    wind_turbine_string                += "                \n";
+    wind_turbine_string                += "CAPACITY: 100 kW\n";
+    wind_turbine_string                += "COST:     ";
+    wind_turbine_string                += std::to_string(build_cost);
+    wind_turbine_string                += " K";
+    
+    if (is_lake) {
+        wind_turbine_string += "\n** LAKE BUILD **\n\n";
+    }
+    else {
+        wind_turbine_string += "\n\n";
+    }
+    
+    wind_turbine_string                += "BUILD:    [W]   \n";
+    
+    //  3. call general method
+    this->__setUpBuildOption(texture_key, wind_turbine_string);
+    
+    return;
+}   /* __setUpWindTurbineBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpSolarPVBuildOption(void)
+///
+/// \brief Helper method to set up and position the solar PV array build option.
+///
+/// \param is_lake If being built on a lake.
+///
+
+void HexTile :: __setUpSolarPVBuildOption(bool is_lake)
+{
+    //  1. set up option sprite(s)
+    std::string texture_key = ""; //<--- "solar PV array"
+    
+    //  2. set up option string (up to 16 chars wide)
+    int build_cost = SOLAR_PV_BUILD_COST;
+    if (is_lake) {
+        build_cost *= 2;
+    }
+    
+    //                                    "----------------\n"
+    std::string solar_PV_string         = " SOLAR PV ARRAY \n";
+    solar_PV_string                    += "                \n";
+    solar_PV_string                    += "CAPACITY: 100 kW\n";
+    solar_PV_string                    += "COST:     ";
+    solar_PV_string                    += std::to_string(build_cost);
+    solar_PV_string                    += " K";
+    
+    if (is_lake) {
+        solar_PV_string += "\n** LAKE BUILD **\n\n";
+    }
+    else {
+        solar_PV_string += "\n\n";
+    }
+    
+    solar_PV_string                    += "BUILD:    [S]   \n";
+    
+    //  3. call general method
+    this->__setUpBuildOption(texture_key, solar_PV_string);
+    
+    return;
+}   /* __setUpSolarPVBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpTidalTurbineBuildOption(void)
+///
+/// \brief Helper method to set up and position the tidal turbine build option.
+///
+
+void HexTile :: __setUpTidalTurbineBuildOption(void)
+{
+    //  1. set up option sprite(s)
+    std::string texture_key = ""; //<--- "tidal turbine"
+    
+    //  2. set up option string (up to 16 chars wide)
+    //                                    "----------------\n"
+    std::string tidal_turbine_string    = " TIDAL TURBINE  \n";
+    tidal_turbine_string               += "                \n";
+    tidal_turbine_string               += "CAPACITY: 100 kW\n";
+    tidal_turbine_string               += "COST:     ";
+    tidal_turbine_string               += std::to_string(TIDAL_TURBINE_BUILD_COST);
+    tidal_turbine_string               += " K\n\n";
+    tidal_turbine_string               += "BUILD:    [T]   \n";
+    
+    //  3. call general method
+    this->__setUpBuildOption(texture_key, tidal_turbine_string);
+    
+    return;
+}   /* __setUpTidalTurbineBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpWaveEnergyConverterBuildOption(void)
+///
+/// \brief Helper method to set up and position the wave energy converter build option.
+///
+
+void HexTile :: __setUpWaveEnergyConverterBuildOption(void)
+{
+    //  1. set up option sprite(s)
+    std::string texture_key = ""; //<--- "wave energy converter"
+    
+    //  2. set up option string (up to 16 chars wide)
+    //                                            "----------------\n"
+    std::string wave_energy_converter_string    = "WAVE ENERGY CVTR\n";
+    wave_energy_converter_string               += "                \n";
+    wave_energy_converter_string               += "CAPACITY: 100 kW\n";
+    wave_energy_converter_string               += "COST:     ";
+    wave_energy_converter_string               += std::to_string(WAVE_ENERGY_CONVERTER_BUILD_COST);
+    wave_energy_converter_string               += " K\n\n";
+    wave_energy_converter_string               += "BUILD:    [W]   \n";
+    
+    //  3. call general method
+    this->__setUpBuildOption(texture_key, wave_energy_converter_string);
+    
+    return;
+}   /* __setUpWaveEnergyConverterBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
+///
+/// \brief Helper method to set up and position the wave energy converter build option.
+///
+
+void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
+{
+    //  1. set up option sprite(s)
+    std::string texture_key = ""; //<--- "energy storage system"
+    
+    //  2. set up option string (up to 16 chars wide)
+    //                                            "----------------\n"
+    std::string energy_storage_system_string    = " ENERGY STORAGE \n";
+    energy_storage_system_string               += "                \n";
+    energy_storage_system_string               += "CAPCTY:  500 kWh\n";
+    energy_storage_system_string               += "COST:     ";
+    energy_storage_system_string               += std::to_string(ENERGY_STORAGE_SYSTEM_BUILD_COST);
+    energy_storage_system_string               += " K\n\n";
+    energy_storage_system_string               += "BUILD:    [E]   \n";
+    
+    //  3. call general method
+    this->__setUpBuildOption(texture_key, energy_storage_system_string);
+    
+    return;
+}   /* __setUpEnergyStorageSystemBuildOption() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setUpBuildMenu(void)
+///
+/// \brief Helper method to set up and place build menu assets (drawable).
+///
+
+void HexTile :: __setUpBuildMenu(void)
+{
+    this->build_menu_options_vec.clear();
+    this->build_menu_options_text_vec.clear();
+    
+    //  1. set up and place build menu backing and text
+    this->build_menu_backing.setSize(sf::Vector2f(600, 256));
+    this->build_menu_backing.setOrigin(300, 128);
+    this->build_menu_backing.setPosition(400, 400);
+    this->build_menu_backing.setFillColor(MONOCHROME_SCREEN_BACKGROUND);
+    this->build_menu_backing.setOutlineColor(MENU_FRAME_GREY);
+    this->build_menu_backing.setOutlineThickness(4);
+    
+    this->build_menu_backing_text.setString("**** BUILD MENU ****");
+    this->build_menu_backing_text.setFont(
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
+    );
+    this->build_menu_backing_text.setCharacterSize(16);
+    this->build_menu_backing_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    this->build_menu_backing_text.setOrigin(
+        this->build_menu_backing_text.getLocalBounds().width / 2, 0
+    );
+    this->build_menu_backing_text.setPosition(400, 400 - 128 + 4);
+    
+    //  2. set up and place build menu option sprites and text
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            this->__setUpDieselGeneratorBuildOption();
+            this->__setUpSolarPVBuildOption();
+            this->__setUpWindTurbineBuildOption();
+            this->__setUpEnergyStorageSystemBuildOption();
+            
+            break;
+        }
+        
+        
+        case (TileType :: LAKE): {
+            this->__setUpSolarPVBuildOption(true);
+            this->__setUpWindTurbineBuildOption(true);
+            
+            break;
+        }
+        
+        
+        case (TileType :: MOUNTAINS): {
+            this->__setUpDieselGeneratorBuildOption();
+            this->__setUpSolarPVBuildOption();
+            this->__setUpWindTurbineBuildOption();
+            this->__setUpEnergyStorageSystemBuildOption();
+            
+            break;
+        }
+        
+        
+        case (TileType :: OCEAN): {
+            this->__setUpTidalTurbineBuildOption();
+            this->__setUpWaveEnergyConverterBuildOption();
+            
+            break;
+        }
+        
+        
+        case (TileType :: PLAINS): {
+            this->__setUpDieselGeneratorBuildOption();
+            this->__setUpSolarPVBuildOption();
+            this->__setUpWindTurbineBuildOption();
+            this->__setUpEnergyStorageSystemBuildOption();
+            
+            break;
+        }
+        
+        
+        default: {
+            //...
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* __setUpBuildMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: __setIsSelected(bool is_selected)
 ///
 /// \brief Helper method to set the is selected attribute (of tile and improvement).
@@ -316,6 +725,10 @@ void HexTile :: __setIsSelected(bool is_selected)
     
     if (this->tile_improvement_ptr != NULL) {
         this->tile_improvement_ptr->is_selected = is_selected;
+    }
+    
+    if ((not is_selected) and this->build_menu_open) {
+        this->__closeBuildMenu();
     }
     
     return;
@@ -422,9 +835,13 @@ void HexTile :: __handleKeyPressEvents(void)
         this->__setIsSelected(false);
     }
     
+    
     if (not this->is_selected) {
         return;
     }
+    
+    
+    //if (this->build_menu_open) {}
     
     
     if (this->game_phase == "build settlement") {
@@ -483,7 +900,11 @@ void HexTile :: __handleKeyPressEvents(void)
         }
         
         
-        else if (not this->decoration_cleared) {
+        else if (
+            (not this->decoration_cleared) and
+            (this->tile_type != TileType :: OCEAN) and
+            (this->tile_type != TileType :: LAKE)
+        ) {
             if (this->event_ptr->key.code == sf::Keyboard::C) {
                 int clear_cost = 0;
                 
@@ -533,7 +954,11 @@ void HexTile :: __handleKeyPressEvents(void)
         }
         
         
-        else {
+        else if (
+            (this->decoration_cleared) or
+            (this->tile_type == TileType :: OCEAN) or
+            (this->tile_type == TileType :: LAKE)
+        ) {
             if (this->event_ptr->key.code == sf::Keyboard::B) {
                 this->__openBuildMenu();
             }
@@ -609,7 +1034,14 @@ void HexTile :: __handleMouseButtonEvents(void)
 
 void HexTile :: __openBuildMenu(void)
 {
+    if (this->build_menu_open) {
+        return;
+    }
+    
     //...
+    
+    this->build_menu_open = true;
+    this->assets_manager_ptr->getSound("build menu open")->play();
     
     return;
 }   /* __openBuildMenu() */
@@ -628,7 +1060,14 @@ void HexTile :: __openBuildMenu(void)
 
 void HexTile :: __closeBuildMenu(void)
 {
+    if (not this->build_menu_open) {
+        return;
+    }
+    
     //...
+    
+    this->build_menu_open = false;
+    this->assets_manager_ptr->getSound("build menu close")->play();
     
     return;
 }   /* __closeBuildMenu() */
@@ -894,48 +1333,51 @@ std::string HexTile :: __getTileOptionsSubstring(void)
         }
         
         
-        else if (not this->decoration_cleared) {
-            if (
-                (this->tile_type != TileType :: OCEAN) and
-                (this->tile_type != TileType :: LAKE)
-            ) {
-                options_substring += "[C]:  CLEAR TILE (";
-                
-                switch (this->tile_type) {
-                    case (TileType :: FOREST): {
-                        options_substring += std::to_string(CLEAR_FOREST_COST);
-                        
-                        break;
-                    }
+        else if (
+            (not this->decoration_cleared) and
+            (this->tile_type != TileType :: OCEAN) and
+            (this->tile_type != TileType :: LAKE)
+        ) {
+            options_substring += "[C]:  CLEAR TILE (";
+            
+            switch (this->tile_type) {
+                case (TileType :: FOREST): {
+                    options_substring += std::to_string(CLEAR_FOREST_COST);
                     
-                    
-                    case (TileType :: MOUNTAINS): {
-                        options_substring += std::to_string(CLEAR_MOUNTAINS_COST);
-                        
-                        break;
-                    }
-                    
-                    
-                    case (TileType :: PLAINS): {
-                        options_substring += std::to_string(CLEAR_PLAINS_COST);
-                        
-                        break;
-                    }
-                    
-                    
-                    default: {
-                        //do nothing!
-                        
-                        break;
-                    }
+                    break;
                 }
                 
-                options_substring += " K)\n";
+                
+                case (TileType :: MOUNTAINS): {
+                    options_substring += std::to_string(CLEAR_MOUNTAINS_COST);
+                    
+                    break;
+                }
+                
+                
+                case (TileType :: PLAINS): {
+                    options_substring += std::to_string(CLEAR_PLAINS_COST);
+                    
+                    break;
+                }
+                
+                
+                default: {
+                    //do nothing!
+                    
+                    break;
+                }
             }
+            
+            options_substring += " K)\n";
         }
         
         
-        else {
+        else if (
+            (this->decoration_cleared) or
+            (this->tile_type == TileType :: OCEAN) or
+            (this->tile_type == TileType :: LAKE)
+        ) {
             options_substring += "[B]: OPEN BUILD MENU\n";
         }
     }
@@ -1290,6 +1732,8 @@ void HexTile :: setTileType(TileType tile_type)
             break;
         }
     }
+    
+    this->__setUpBuildMenu();
     
     return;
 }   /* setTileType(TileType) */
@@ -1731,6 +2175,19 @@ void HexTile :: draw(void)
     else if (this->has_improvement) {
         if (this->tile_improvement_ptr->just_built) {
             this->tile_improvement_ptr->draw();
+        }
+    }
+    
+    //  9. build menu
+    if (this->build_menu_open) {
+        this->render_window_ptr->draw(this->build_menu_backing);
+        this->render_window_ptr->draw(this->build_menu_backing_text);
+        
+        for (size_t i = 0; i < this->build_menu_options_vec.size(); i++) {
+            for (size_t j = 0; j < this->build_menu_options_vec[i].size(); j++) {
+                this->render_window_ptr->draw(this->build_menu_options_vec[i][j]);
+            }
+            this->render_window_ptr->draw(this->build_menu_options_text_vec[i]);
         }
     }
     

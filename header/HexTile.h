@@ -80,6 +80,15 @@ class HexTile {
         void __setUpMagnifyingGlassSprite(void);
         void __setUpTileExplosionReel(void);
         
+        void __setUpBuildOption(std::string, std::string);
+        void __setUpDieselGeneratorBuildOption(void);
+        void __setUpWindTurbineBuildOption(bool=false);
+        void __setUpSolarPVBuildOption(bool=false);
+        void __setUpTidalTurbineBuildOption(void);
+        void __setUpWaveEnergyConverterBuildOption(void);
+        void __setUpEnergyStorageSystemBuildOption(void);
+        void __setUpBuildMenu(void);
+        
         void __setIsSelected(bool);
         
         void __clearDecoration(void);
@@ -150,6 +159,11 @@ class HexTile {
         sf::Sprite magnifying_glass_sprite; ///< A magnifying glass sprite.
         
         std::vector<sf::Sprite> explosion_sprite_reel; ///< A reel of sprites for a tile explosion animation.
+        
+        sf::RectangleShape build_menu_backing; ///< A backing for the tile build menu.
+        sf::Text build_menu_backing_text; ///< A text label for the build menu.
+        std::vector<std::vector<sf::Sprite>> build_menu_options_vec; ///< A vector of sprites for illustrating the tile build options.
+        std::vector<sf::Text> build_menu_options_text_vec; ///< A vector of text for the tile build options.
         
         
         //  2. methods

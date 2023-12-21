@@ -9,8 +9,9 @@
 ***SEE LICENSE TERMS***
 
 
-This is a 3X game that aims to teach players about integrating renewable energy
-production and storage assets into a microgrid over the long term.
+This is a 3X (eXplore, eXpand, eXploit) game that aims to teach players about
+integrating renewable energy production and storage assets, over the long term, into an
+isolated microgrid (in this case, a remote settlement).
 
 --------
 

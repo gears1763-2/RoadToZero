@@ -78,6 +78,9 @@ class HexTile {
         void __setUpResourceChipSprite(void);
         void __setResourceText(void);
         void __setUpMagnifyingGlassSprite(void);
+        void __setUpTileExplosionReel(void);
+        
+        void __setIsSelected(bool);
         
         void __clearDecoration(void);
         
@@ -113,10 +116,13 @@ class HexTile {
         bool resource_assessed; ///< A boolean which indicates whether or not the resource has been assessed.
         bool resource_assessment; ///< A boolean which triggers a resource assessment notification.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
+        bool draw_explosion; ///< A boolean which indicates whether or not to draw a tile explosion.
         
         bool decoration_cleared; ///< A boolean which indicates if the tile decoration has been cleared.
         bool has_improvement; ///< A boolean which indicates if tile has improvement or not.
         TileImprovement* tile_improvement_ptr; ///< A pointer to the improvement for this tile.
+        
+        size_t explosion_frame; ///< The current frame of the explosion animation.
         
         int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
@@ -137,6 +143,8 @@ class HexTile {
         sf::Text resource_text; ///< A text representation of the resource.
         sf::Sprite tile_decoration_sprite; ///< A tile decoration sprite.
         sf::Sprite magnifying_glass_sprite; ///< A magnifying glass sprite.
+        
+        std::vector<sf::Sprite> explosion_sprite_reel; ///< A reel of sprites for a tile explosion animation.
         
         
         //  2. methods

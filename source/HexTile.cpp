@@ -265,6 +265,69 @@ void HexTile :: __setUpMagnifyingGlassSprite(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexTile :: __setUpTileExplosionReel(void)
+///
+/// \brief Helper method to set up tile explosion sprite reel.
+///
+
+void HexTile :: __setUpTileExplosionReel(void)
+{
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            this->explosion_sprite_reel.push_back(
+                sf::Sprite(
+                    *(this->assets_manager_ptr->getTexture("tile clear explosion")),
+                    sf::IntRect(j * 64, i * 64, 64, 64)
+                )
+            );
+            
+            this->explosion_sprite_reel.back().setOrigin(
+                this->explosion_sprite_reel.back().getLocalBounds().width / 2,
+                this->explosion_sprite_reel.back().getLocalBounds().height / 2
+            );
+            
+            this->explosion_sprite_reel.back().setPosition(
+                this->position_x,
+                this->position_y
+            );
+        }
+    }
+    
+    return;
+}   /* __setUpTileExplosionReel() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __setIsSelected(bool is_selected)
+///
+/// \brief Helper method to set the is selected attribute (of tile and improvement).
+///
+/// \param is_selected The value to set the is selected attribute to.
+///
+
+void HexTile :: __setIsSelected(bool is_selected)
+{
+    this->is_selected = is_selected;
+    
+    if (this->tile_improvement_ptr != NULL) {
+        this->tile_improvement_ptr->is_selected = is_selected;
+    }
+    
+    return;
+}   /* __toggleIsSelected() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: __clearDecoration(void)
 ///
 /// \brief Helper method to clear tile decoration.
@@ -273,6 +336,36 @@ void HexTile :: __setUpMagnifyingGlassSprite(void)
 void HexTile :: __clearDecoration(void)
 {
     this->decoration_cleared = true;
+    this->draw_explosion = true;
+    
+    switch (this->tile_type) {
+        case (TileType :: FOREST): {
+            this->assets_manager_ptr->getSound("clear non-mountains tile")->play();
+            
+            break;
+        }
+        
+        
+        case (TileType :: MOUNTAINS): {
+            this->assets_manager_ptr->getSound("clear mountains tile")->play();
+            
+            break;
+        }
+        
+        
+        case (TileType :: PLAINS): {
+            this->assets_manager_ptr->getSound("clear non-mountains tile")->play();
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
     
     return;
 }   /* __clearDecoration() */
@@ -326,7 +419,7 @@ bool HexTile :: __isClicked(void)
 void HexTile :: __handleKeyPressEvents(void)
 {
     if (this->event_ptr->key.code == sf::Keyboard::Escape) {
-        this->is_selected = false;
+        this->__setIsSelected(false);
     }
     
     if (not this->is_selected) {
@@ -373,12 +466,7 @@ void HexTile :: __handleKeyPressEvents(void)
         
         else if (not this->resource_assessed) {
             if (this->event_ptr->key.code == sf::Keyboard::A) {
-                if (this->resource_assessed) {
-                    std::cout << "Cannot assess resource: already assessed" <<
-                        std::endl;
-                }
-                
-                else if (this->credits < RESOURCE_ASSESSMENT_COST) {
+                if (this->credits < RESOURCE_ASSESSMENT_COST) {
                     std::cout << "Cannot assess resource: insufficient credits (need "
                         << RESOURCE_ASSESSMENT_COST << " K)" << std::endl;
                         
@@ -396,7 +484,52 @@ void HexTile :: __handleKeyPressEvents(void)
         
         
         else if (not this->decoration_cleared) {
-            //...
+            if (this->event_ptr->key.code == sf::Keyboard::C) {
+                int clear_cost = 0;
+                
+                switch (this->tile_type) {
+                    case (TileType :: FOREST): {
+                        clear_cost = CLEAR_FOREST_COST;
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileType :: MOUNTAINS): {
+                        clear_cost = CLEAR_MOUNTAINS_COST;
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileType :: PLAINS): {
+                        clear_cost = CLEAR_PLAINS_COST;
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                if (this->credits < clear_cost) {
+                    std::cout << "Cannot clear tile: insufficient credits (need "
+                        << clear_cost << " K)" << std::endl;
+                        
+                    this->__sendInsufficientCreditsMessage();
+                }
+                
+                else {
+                    this->__clearDecoration();
+                    this->__sendCreditsSpentMessage(clear_cost);
+                    this->__sendTileStateMessage();
+                    this->__sendGameStateRequest();
+                }
+            }
         }
         
         
@@ -428,7 +561,7 @@ void HexTile :: __handleMouseButtonEvents(void)
                 std::cout << "Tile (" << this->position_x << ", " <<
                     this->position_y << ") was selected" << std::endl;
                 
-                this->is_selected = true;
+                this->__setIsSelected(true);
                 
                 this->__sendTileSelectedMessage();
                 this->__sendTileStateMessage();
@@ -436,7 +569,7 @@ void HexTile :: __handleMouseButtonEvents(void)
             }
             
             else {
-                this->is_selected = false;
+                this->__setIsSelected(false);
             }
             
             break;
@@ -444,7 +577,7 @@ void HexTile :: __handleMouseButtonEvents(void)
         
         
         case (sf::Mouse::Right): {
-            this->is_selected = false;
+            this->__setIsSelected(false);
             
             break;
         }
@@ -731,7 +864,43 @@ std::string HexTile :: __getTileOptionsSubstring(void)
         
         
         else if (not this->decoration_cleared) {
-            //...
+            if (
+                (this->tile_type != TileType :: OCEAN) and
+                (this->tile_type != TileType :: LAKE)
+            ) {
+                options_substring += "[C]:  CLEAR TILE (";
+                
+                switch (this->tile_type) {
+                    case (TileType :: FOREST): {
+                        options_substring += std::to_string(CLEAR_FOREST_COST);
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileType :: MOUNTAINS): {
+                        options_substring += std::to_string(CLEAR_MOUNTAINS_COST);
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileType :: PLAINS): {
+                        options_substring += std::to_string(CLEAR_PLAINS_COST);
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        //do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                options_substring += " K)\n";
+            }
         }
         
         
@@ -994,10 +1163,13 @@ HexTile :: HexTile(
     this->resource_assessed = false;
     this->resource_assessment = false;
     this->is_selected = false;
+    this->draw_explosion = false;
     
     this->decoration_cleared = false;
     this->has_improvement = false;
     this->tile_improvement_ptr = NULL;
+    
+    this->explosion_frame = 0;
     
     this->frame = 0;
     this->credits = 0;
@@ -1017,6 +1189,7 @@ HexTile :: HexTile(
     this->__setUpResourceChipSprite();
     this->__setResourceText();
     this->__setUpMagnifyingGlassSprite();
+    this->__setUpTileExplosionReel();
     
     //  3. set tile type and resource (default to none type and average)
     this->setTileType(TileType :: NONE_TYPE);
@@ -1490,7 +1663,7 @@ void HexTile :: draw(void)
     if (this->resource_assessment) {
         int alpha = this->magnifying_glass_sprite.getColor().a;
         
-        alpha -= 3;
+        alpha -= 0.05 * FRAMES_PER_SECOND;
         if (alpha < 0) {
             alpha = 0;
             this->resource_assessment = false;
@@ -1501,6 +1674,19 @@ void HexTile :: draw(void)
         );
         
         this->render_window_ptr->draw(this->magnifying_glass_sprite);
+    }
+    
+    //  8. draw explosion
+    if (this->draw_explosion) {
+        this->render_window_ptr->draw(this->explosion_sprite_reel[this->explosion_frame]);
+        
+        if (this->frame % (FRAMES_PER_SECOND / 10) == 0) {
+            this->explosion_frame++;
+        }
+        
+        if (this->explosion_frame >= this->explosion_sprite_reel.size()) {
+            this->draw_explosion = false;
+        }
     }
     
     this->frame++;

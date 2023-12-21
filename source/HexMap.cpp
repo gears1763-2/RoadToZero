@@ -1330,7 +1330,25 @@ void HexMap :: draw(void)
         selected_tile_ptr->draw();
     }
     
-    //  4. draw glass screen
+    //  4. draw resource overlay text indication
+    if (this->show_resource) {
+        sf::Text resource_overlay_text(
+            "**** RESOURCE OVERLAY ****",
+            *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
+            16
+        );
+        
+        resource_overlay_text.setPosition(
+            (800 - resource_overlay_text.getLocalBounds().width) / 2,
+            GAME_HEIGHT - 70
+        );
+        
+        resource_overlay_text.setFillColor(MONOCHROME_TEXT_GREEN);
+        
+        this->render_window_ptr->draw(resource_overlay_text);
+    }
+    
+    //  5. draw glass screen
     glass_screen_colour = this->glass_screen.getFillColor();
     glass_screen_colour.a = 40;
     this->glass_screen.setFillColor(glass_screen_colour);

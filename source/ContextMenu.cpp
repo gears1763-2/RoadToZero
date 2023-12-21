@@ -565,7 +565,8 @@ void ContextMenu :: __drawConsoleText(void)
         this->console_substring_idx++;
         
         while (
-            this->console_string.substr(0, this->console_substring_idx).back() == ' '
+            (this->console_string.substr(0, this->console_substring_idx).back() == ' ') or
+            (this->console_string.substr(0, this->console_substring_idx).back() == '\n')
         ) {
             this->console_substring_idx++;
             

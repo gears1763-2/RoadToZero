@@ -408,7 +408,7 @@ void Game :: __insufficientCreditsAlarm(void)
             this->context_menu_ptr->draw();
             this->__draw();
             
-            if (alarm_frame % 20 == 0) {
+            if (alarm_frame % (FRAMES_PER_SECOND / 3) == 0) {
                 if (red_flag) {
                     red_flag = false;
                 }

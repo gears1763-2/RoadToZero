@@ -67,6 +67,8 @@ class TileImprovement {
         //  1. attributes
         TileImprovementType tile_improvement_type; ///< The type of the tile improvement.
         
+        bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
+        
         int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
         

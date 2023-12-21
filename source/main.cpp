@@ -71,6 +71,16 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "magnifying_glass_64x64_1"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/exp2_0.png",
+        "tile clear explosion"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/emissions_8x8_2.png",
+        "steam / smoke"
+    );
+    
     
     //  3. load sounds
     assets_manager_ptr->loadSound(
@@ -96,6 +106,16 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     assets_manager_ptr->loadSound(
         "assets/audio/samples/mixkit-video-game-retro-click-237_REVERSED.ogg",
         "resource overlay toggle off"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-explosion-with-rocks-debris-1703.ogg",
+        "clear mountains tile"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-arcade-game-explosion-2759.ogg",
+        "clear non-mountains tile"
     );
     
     return;

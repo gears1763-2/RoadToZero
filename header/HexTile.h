@@ -152,7 +152,7 @@ class HexTile {
         
         size_t explosion_frame; ///< The current frame of the explosion animation.
         
-        int frame; ///< The current frame of this object.
+        unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
         
         double position_x; ///< The x position of the tile.

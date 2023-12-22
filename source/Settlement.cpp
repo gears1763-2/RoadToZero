@@ -187,7 +187,7 @@ TileImprovement(
     this->smoke_da = 1e-8 * SECONDS_PER_FRAME;
     this->smoke_dx = 5 * SECONDS_PER_FRAME;
     this->smoke_dy = -10 * SECONDS_PER_FRAME;
-    this->smoke_prob = 8 * SECONDS_PER_FRAME;
+    this->smoke_prob = 2 * SECONDS_PER_FRAME;
     
     this->smoke_sprite_list = {};
     

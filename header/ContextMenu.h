@@ -88,7 +88,7 @@ class ContextMenu {
         
         size_t console_substring_idx; ///< The current final index of the console string draw.
         
-        int frame; ///< The current frame of this object.
+        unsigned long long int frame; ///< The current frame of this object.
         
         double position_x; ///< The position of the object.
         double position_y; ///< The position of the object.

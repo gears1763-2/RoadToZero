@@ -114,12 +114,27 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     
     //  3. load sounds
     assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-magical-coin-win-1936.ogg",
+        "coin ring"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-positive-notification-951.ogg",
+        "positive notification"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-sci-fi-click-900.ogg",
+        "sci-fi click"
+    );
+    
+    assets_manager_ptr->loadSound(
         "assets/audio/samples/mixkit-apartment-buzzer-bell-press-932.ogg",
         "insufficient credits"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-sci-fi-click-900.ogg",
+        "assets/audio/samples/mixkit-data-scanner-2487.ogg",
         "resource assessment"
     );
     
@@ -168,6 +183,63 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "splash"
     );
     
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/505316__nuncaconoci__diesel.ogg",
+        "diesel running"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/33460__pempi__320d_2.ogg",
+        "diesel start"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/132724__andy_gardner__wind-turbine-blades.ogg",
+        "wind turbine running"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/58416__darren1979__oceanwaves.ogg",
+        "ocean waves"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/369927__mephisto_egmont__water-flowing-in-tubes.ogg",
+        "water flow"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/647663__jotraing__electric-train-motor-idle-loop-new-generation-rollingstock.ogg",
+        "energy storage system idle"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-epic-futuristic-movie-accent-2913.ogg",
+        "game title screen"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-calm-park-with-people-and-children.ogg",
+        "people and children"
+    );
+    
+    
+    //  4. load tracks
+    assets_manager_ptr->loadTrack(
+        "assets/audio/tracks/TreeStarMoon_Dobranoc.ogg",
+        "Tree Star Moon - Dobranoc"
+    );
+    
+    assets_manager_ptr->loadTrack(
+        "assets/audio/tracks/TreeStarMoon_Lighthouse.ogg",
+        "Tree Star Moon - Lighthouse"
+    );
+    
+    assets_manager_ptr->loadTrack(
+        "assets/audio/tracks/TreeStarMoon_SkyFarm.ogg",
+        "Tree Star Moon - Sky Farm"
+    );
+    
     return;
 }   /* loadAssets() */
 
@@ -211,6 +283,7 @@ int main(int argc, char** argv)
     
     //  3. start game loop
     bool quit_game = false;
+    assets_manager.playTrack();
     
     while (not quit_game) {
         Game game(render_window_ptr, &assets_manager);

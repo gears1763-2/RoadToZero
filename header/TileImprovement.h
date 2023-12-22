@@ -72,7 +72,7 @@ class TileImprovement {
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         bool just_built; ///< A boolean which indicates that the improvement was just built.
         
-        int frame; ///< The current frame of this object.
+        unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
         
         double position_x; ///< The x position of the tile improvement.

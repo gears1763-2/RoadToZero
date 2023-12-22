@@ -434,6 +434,12 @@ void Game :: __insufficientCreditsAlarm(void)
             alarm_frame++;
             this->frame++;
         }
+        
+        // check track status, move to next if stopped
+        if (this->assets_manager_ptr->getTrackStatus() == sf::SoundSource::Stopped) {
+            this->assets_manager_ptr->nextTrack();
+            this->assets_manager_ptr->playTrack();
+        }
     }
 
     return;
@@ -769,6 +775,13 @@ bool Game :: run(void)
             //  6.4. increment frame
             this->frame++;
         }
+        
+        // check track status, move to next if stopped
+        if (this->assets_manager_ptr->getTrackStatus() == sf::SoundSource::Stopped) {
+            this->assets_manager_ptr->nextTrack();
+            this->assets_manager_ptr->playTrack();
+        }
+        
     }
     
     return this->quit_game;

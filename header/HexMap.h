@@ -75,7 +75,7 @@ class HexMap {
         
         int n_layers; ///< The number of layers in the hex map.
         int n_tiles; ///< The number of tiles in the hex map.
-        int frame; ///< The current frame of this object.
+        unsigned long long int frame; ///< The current frame of this object.
         
         double position_x; ///< The x position of the hex map's origin (i.e. central) tile.
         double position_y; ///< The y position of the hex map's origin (i.e. central) tile.

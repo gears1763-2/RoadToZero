@@ -731,6 +731,23 @@ void HexTile :: __setIsSelected(bool is_selected)
     
     if (this->tile_improvement_ptr != NULL) {
         this->tile_improvement_ptr->is_selected = is_selected;
+        
+        if (is_selected) {
+            switch (this->tile_improvement_ptr->tile_improvement_type) {
+                case (TileImprovementType :: SETTLEMENT): {
+                    this->assets_manager_ptr->getSound("people and children")->play();
+                    
+                    break;
+                }
+                
+                
+                default: {
+                    // do nothing!
+                    
+                    break;
+                }
+            }
+        }
     }
     
     if ((not is_selected) and this->build_menu_open) {
@@ -1931,16 +1948,11 @@ void HexTile :: __sendTileStateMessage(void)
     console_string                              += "                                \n";
     
     console_string                              += this->__getTileTypeSubstring();
-    
-    if (not this->has_improvement) {
-        console_string                          += this->__getTileResourceSubstring();
-    }
-    
+    console_string                              += this->__getTileResourceSubstring();
     console_string                              += this->__getTileImprovementSubstring();
     console_string                              += "                                \n";
 
     console_string                              += this->__getTileOptionsSubstring();
-    
     
     tile_state_message.string_payload["console string"] = console_string;
     

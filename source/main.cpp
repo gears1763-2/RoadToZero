@@ -8,6 +8,40 @@
  */
 
 
+/*
+ *   **** 3-Clause BSD License ****
+ *   ref: https://opensource.org/license/bsd-3-clause/
+ *
+ *
+ *   Copyright 2023 - [ESC] Interactive (Anthony Truelove MASc, P.Eng.)
+ *
+ *   Redistribution and use in source and binary forms, with or without modification, are
+ *   permitted provided that the following conditions are met:
+ *
+ *   1. Redistributions of source code must retain the above copyright notice, this list of
+ *   conditions and the following disclaimer.
+ *
+ *   2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *   of conditions and the following disclaimer in the documentation and/or other materials
+ *   provided with the distribution.
+ *
+ *   3. Neither the name of the copyright holder nor the names of its contributors may be
+ *   used to endorse or promote products derived from this software without specific prior
+ *   written permission.
+ *
+ *   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY
+ *   EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ *   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+ *   THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ *   OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ *   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+ *   TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+
 ///
 /// \file main.cpp
 ///
@@ -37,206 +71,206 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     
     //  2. load tile sheets
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/pine_tree_64x64_1.png",
+        "assets/tile_sheets/pine_tree_64x64_1_CC-BY.png",
         "pine_tree_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/wheat_64x64_1.png",
+        "assets/tile_sheets/wheat_64x64_1_CC-BY.png",
         "wheat_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/mountain_64x64_1.png",
+        "assets/tile_sheets/mountain_64x64_1_CC-BY.png",
         "mountain_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/water_waves_64x64_1.png",
+        "assets/tile_sheets/water_waves_64x64_1_CC-BY.png",
         "water_waves_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/water_shimmer_64x64_1.png",
+        "assets/tile_sheets/water_shimmer_64x64_1_CC-BY.png",
         "water_shimmer_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/brick_house_64x64_1.png",
+        "assets/tile_sheets/brick_house_64x64_1_CC-BY.png",
         "brick_house_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/magnifying_glass_64x64_1.png",
+        "assets/tile_sheets/magnifying_glass_64x64_1_CC-BY.png",
         "magnifying_glass_64x64_1"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/exp2_0.png",
+        "assets/tile_sheets/exp2_0_CC0.png",
         "tile clear explosion"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/emissions_8x8_2.png",
-        "steam / smoke"
+        "assets/tile_sheets/emissions_8x8_1_CC-BY.png",
+        "emissions"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/diesel_generator_64x64_2.png",
+        "assets/tile_sheets/diesel_generator_64x64_2_CC-BY.png",
         "diesel generator"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/solar_PV_64x64_1.png",
+        "assets/tile_sheets/solar_PV_64x64_1_CC-BY.png",
         "solar PV array"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/wind_turbine_64x64_2.png",
+        "assets/tile_sheets/wind_turbine_64x64_2_CC-BY.png",
         "wind turbine"
     );
     
      assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/energy_storage_system_64x64_1.png",
+        "assets/tile_sheets/energy_storage_system_64x64_1_CC-BY.png",
         "energy storage system"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/tidal_turbine_64x64_2.png",
+        "assets/tile_sheets/tidal_turbine_64x64_2_CC-BY.png",
         "tidal turbine"
     );
     
     assets_manager_ptr->loadTexture(
-        "assets/tile_sheets/wave_energy_converter_64x64_2.png",
+        "assets/tile_sheets/wave_energy_converter_64x64_2_CC-BY.png",
         "wave energy converter"
     );
     
     
     //  3. load sounds
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-magical-coin-win-1936.ogg",
+        "assets/audio/samples/mixkit-magical-coin-win-1936_MixkitFree.ogg",
         "coin ring"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-positive-notification-951.ogg",
+        "assets/audio/samples/mixkit-positive-notification-951_MixkitFree.ogg",
         "positive notification"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-sci-fi-click-900.ogg",
+        "assets/audio/samples/mixkit-sci-fi-click-900_MixkitFree.ogg",
         "sci-fi click"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-apartment-buzzer-bell-press-932.ogg",
+        "assets/audio/samples/mixkit-apartment-buzzer-bell-press-932_MixkitFree.ogg",
         "insufficient credits"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-data-scanner-2487.ogg",
+        "assets/audio/samples/mixkit-data-scanner-2487_MixkitFree.ogg",
         "resource assessment"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-interface-click-1126.ogg",
+        "assets/audio/samples/mixkit-interface-click-1126_MixkitFree.ogg",
         "console string print"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-video-game-retro-click-237.ogg",
+        "assets/audio/samples/mixkit-video-game-retro-click-237_MixkitFree.ogg",
         "resource overlay toggle on"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-video-game-retro-click-237_REVERSED.ogg",
+        "assets/audio/samples/mixkit-video-game-retro-click-237_REVERSED_MixkitFree.ogg",
         "resource overlay toggle off"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-explosion-with-rocks-debris-1703.ogg",
+        "assets/audio/samples/mixkit-explosion-with-rocks-debris-1703_MixkitFree.ogg",
         "clear mountains tile"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-arcade-game-explosion-2759.ogg",
+        "assets/audio/samples/mixkit-arcade-game-explosion-2759_MixkitFree.ogg",
         "clear non-mountains tile"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-electronic-retro-block-hit-2185.ogg",
+        "assets/audio/samples/mixkit-electronic-retro-block-hit-2185_MixkitFree.ogg",
         "place improvement"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-video-game-lock-2851_REVERSED.ogg",
+        "assets/audio/samples/mixkit-video-game-lock-2851_REVERSED_MixkitFree.ogg",
         "build menu open"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-video-game-lock-2851.ogg",
+        "assets/audio/samples/mixkit-video-game-lock-2851_MixkitFree.ogg",
         "build menu close"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-jump-into-the-water-1180.ogg",
+        "assets/audio/samples/mixkit-jump-into-the-water-1180_MixkitFree.ogg",
         "splash"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/505316__nuncaconoci__diesel.ogg",
+        "assets/audio/samples/505316__nuncaconoci__diesel_CC0.ogg",
         "diesel running"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/33460__pempi__320d_2.ogg",
+        "assets/audio/samples/33460__pempi__320d_2_CC-BY.ogg",
         "diesel start"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/132724__andy_gardner__wind-turbine-blades.ogg",
+        "assets/audio/samples/132724__andy_gardner__wind-turbine-blades_CC-BY.ogg",
         "wind turbine running"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/58416__darren1979__oceanwaves.ogg",
+        "assets/audio/samples/58416__darren1979__oceanwaves_CC-SAMPLING.ogg",
         "ocean waves"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/369927__mephisto_egmont__water-flowing-in-tubes.ogg",
+        "assets/audio/samples/369927__mephisto_egmont__water-flowing-in-tubes_CC-BY.ogg",
         "water flow"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/647663__jotraing__electric-train-motor-idle-loop-new-generation-rollingstock.ogg",
+        "assets/audio/samples/647663__jotraing__electric-train-motor-idle-loop-new-generation-rollingstock_CC0.ogg",
         "energy storage system idle"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-epic-futuristic-movie-accent-2913.ogg",
+        "assets/audio/samples/mixkit-epic-futuristic-movie-accent-2913_MixkitFree.ogg",
         "game title screen"
     );
     
     assets_manager_ptr->loadSound(
-        "assets/audio/samples/mixkit-calm-park-with-people-and-children.ogg",
+        "assets/audio/samples/mixkit-calm-park-with-people-and-children_MixkitFree.ogg",
         "people and children"
     );
     
     
     //  4. load tracks
     assets_manager_ptr->loadTrack(
-        "assets/audio/tracks/TreeStarMoon_Dobranoc.ogg",
+        "assets/audio/tracks/TreeStarMoon_Dobranoc_CC0.ogg",
         "Tree Star Moon - Dobranoc"
     );
     
     assets_manager_ptr->loadTrack(
-        "assets/audio/tracks/TreeStarMoon_Lighthouse.ogg",
+        "assets/audio/tracks/TreeStarMoon_Lighthouse_CC0.ogg",
         "Tree Star Moon - Lighthouse"
     );
     
     assets_manager_ptr->loadTrack(
-        "assets/audio/tracks/TreeStarMoon_SkyFarm.ogg",
+        "assets/audio/tracks/TreeStarMoon_SkyFarm_CC0.ogg",
         "Tree Star Moon - Sky Farm"
     );
     

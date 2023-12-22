@@ -1,17 +1,24 @@
 # Road to Zero
 
-    [ESC] Interactive
+    (C) 2023 - [ESC] Interactive
     
     Anthony Truelove MASc, P.Eng.
-    email:   gears1763@tutanota.com
+    email:   gears1763@tutanota.com, gears1763@gmail.com
     github:  gears1763-2
-
-***SEE LICENSE TERMS***
 
 
 This is a 3X (i.e. eXplore, eXpand, eXploit) game that aims to teach players about
 integrating renewable energy production and storage assets, over the long term, into an
-isolated microgrid (in this case, a remote settlement).
+isolated microgrid (in this case, a remote island settlement).
+
+--------
+
+
+## Licensing
+
+  * This software and the associated documentation files are released under a 3-Clause BSD License (a.k.a. "New BSD License" or "Modified BSD License"). See the enclosed `LICENSE.MD` for terms and conditions.
+  
+  * The assets (i.e., textures, sounds, music, etc.) associated with this software are governed by their own individual licenses. See the `0_*_refs_licenses` files in `assets/...` for details.
 
 --------
 
@@ -25,6 +32,10 @@ isolated microgrid (in this case, a remote settlement).
 
 ## Key Features
 
+  * [...]
+  
+  * [...]
+  
   * [...]
 
 --------
@@ -61,7 +72,7 @@ assuming you are set up to do so (i.e., `doxygen` installed, etc.).
 
 ## SFML Version
 
-Road to Zero was developed using SFML 2.5.1.
+Road to Zero was developed using SFML 2.5.1. See <https://www.sfml-dev.org/>.
 
 --------
 

@@ -1,6 +1,4 @@
 /*
- *  RoadToZero
- *
  *  [ESC] Interactive
  *
  *  Header file for various testing utilities.

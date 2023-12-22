@@ -1,4 +1,4 @@
-# Road to Zero
+# Road to Zero - The Microgrid Management Game
 
     (C) 2023 - [ESC] Interactive
     
@@ -8,8 +8,9 @@
 
 
 This is a 3X (i.e. eXplore, eXpand, eXploit) game that aims to teach players about
-integrating renewable energy production and storage assets, over the long term, into an
-isolated microgrid (in this case, a remote island settlement).
+integrating renewable energy production and storage assets into an isolated microgrid
+(in this case, a remote island settlement), and then managing their operations over
+the long term.
 
 --------
 

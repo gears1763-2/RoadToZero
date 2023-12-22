@@ -1,5 +1,5 @@
 /*
- *  RoadToZero
+ *  Road To Zero - The Microgrid Management Game
  *
  *  [ESC] Interactive
  *

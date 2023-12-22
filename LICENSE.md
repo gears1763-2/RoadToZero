@@ -1,4 +1,4 @@
-# Road to Zero
+# Road to Zero - The Microgrid Management Game
 
     (C) 2023 - [ESC] Interactive
     

@@ -1,6 +1,4 @@
 /*
- *  RoadToZero
- *
  *  [ESC] Interactive
  *
  *  Header file which simply cites the doxygen tool.

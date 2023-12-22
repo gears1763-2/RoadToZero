@@ -1,6 +1,4 @@
 /*
- *  RoadToZero
- *
  *  [ESC] Interactive
  *
  *  Implementation file for various testing utilities.

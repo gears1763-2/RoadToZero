@@ -47,6 +47,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## Assets
 
 With respect to the assets (i.e., textures, sounds, music, etc.) associated with this
-software, each sub-directory of `assets/` has its own `0_*_refs_licenses` file which
+software, each sub-directory of `assets/` has its own `0_*_refs_licenses.md` file which
 provides the license details for each individual asset. Refer to those files for further
-details.
+information.

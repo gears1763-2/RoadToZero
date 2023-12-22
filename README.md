@@ -18,7 +18,7 @@ isolated microgrid (in this case, a remote island settlement).
 
   * This software and the associated documentation files are released under a 3-Clause BSD License (a.k.a. "New BSD License" or "Modified BSD License"). See the enclosed `LICENSE.MD` for terms and conditions.
   
-  * The assets (i.e., textures, sounds, music, etc.) associated with this software are governed by their own individual licenses. See the `0_*_refs_licenses` files in `assets/...` for details.
+  * The assets (i.e., textures, sounds, music, etc.) associated with this software are governed by their own individual licenses. See the `0_*_refs_licenses.md` files in `assets/...` for details.
 
 --------
 

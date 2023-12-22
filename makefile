@@ -118,6 +118,78 @@ $(OBJ_SETTLEMENT): $(SRC_SETTLEMENT)
 
 
 
+#### ==== DieselGenerator ==== ####
+
+SRC_DIESELGENERATOR = source/DieselGenerator.cpp
+OBJ_DIESELGENERATOR = object/DieselGenerator.o
+
+$(OBJ_DIESELGENERATOR): $(SRC_DIESELGENERATOR)
+	$(CXX) $(CXXFLAGS) -c $(SRC_DIESELGENERATOR) -o $(OBJ_DIESELGENERATOR)
+
+#### ==== END DieselGenerator ==== ####
+
+
+
+#### ==== SolarPV ==== ####
+
+SRC_SOLARPV = source/SolarPV.cpp
+OBJ_SOLARPV = object/SolarPV.o
+
+$(OBJ_SOLARPV): $(SRC_SOLARPV)
+	$(CXX) $(CXXFLAGS) -c $(SRC_SOLARPV) -o $(OBJ_SOLARPV)
+
+#### ==== END SolarPV ==== ####
+
+
+
+#### ==== WindTurbine ==== ####
+
+SRC_WINDTURBINE = source/WindTurbine.cpp
+OBJ_WINDTURBINE = object/WindTurbine.o
+
+$(OBJ_WINDTURBINE): $(SRC_WINDTURBINE)
+	$(CXX) $(CXXFLAGS) -c $(SRC_WINDTURBINE) -o $(OBJ_WINDTURBINE)
+
+#### ==== END WindTurbine ==== ####
+
+
+
+#### ==== TidalTurbine ==== ####
+
+SRC_TIDALTURBINE = source/TidalTurbine.cpp
+OBJ_TIDALTURBINE = object/TidalTurbine.o
+
+$(OBJ_TIDALTURBINE): $(SRC_TIDALTURBINE)
+	$(CXX) $(CXXFLAGS) -c $(SRC_TIDALTURBINE) -o $(OBJ_TIDALTURBINE)
+
+#### ==== END TidalTurbine ==== ####
+
+
+
+#### ==== WaveEnergyConverter ==== ####
+
+SRC_WAVEENERGYCONVERTER = source/WaveEnergyConverter.cpp
+OBJ_WAVEENERGYCONVERTER = object/WaveEnergyConverter.o
+
+$(OBJ_WAVEENERGYCONVERTER): $(SRC_WAVEENERGYCONVERTER)
+	$(CXX) $(CXXFLAGS) -c $(SRC_WAVEENERGYCONVERTER) -o $(OBJ_WAVEENERGYCONVERTER)
+
+#### ==== END WaveEnergyConverter ==== ####
+
+
+
+#### ==== EnergyStorageSystem ==== ####
+
+SRC_ENERGYSTORAGESYSTEM = source/EnergyStorageSystem.cpp
+OBJ_ENERGYSTORAGESYSTEM = object/EnergyStorageSystem.o
+
+$(OBJ_ENERGYSTORAGESYSTEM): $(SRC_ENERGYSTORAGESYSTEM)
+	$(CXX) $(CXXFLAGS) -c $(SRC_ENERGYSTORAGESYSTEM) -o $(OBJ_ENERGYSTORAGESYSTEM)
+
+#### ==== END EnergyStorageSystem ==== ####
+
+
+
 #### ==== HexTile ==== ####
 
 SRC_HEXTILE = source/HexTile.cpp
@@ -172,6 +244,12 @@ OBJ_ALL = $(OBJ_GAME) \
           $(OBJ_CONTEXTMENU) \
           $(OBJ_HEXMAP) \
           $(OBJ_HEXTILE) \
+          $(OBJ_DIESELGENERATOR) \
+          $(OBJ_SOLARPV) \
+          $(OBJ_WINDTURBINE) \
+          $(OBJ_TIDALTURBINE) \
+          $(OBJ_WAVEENERGYCONVERTER) \
+          $(OBJ_ENERGYSTORAGESYSTEM) \
           $(OBJ_SETTLEMENT) \
           $(OBJ_TILEIMPROVEMENT) \
           $(OBJ_ASSETSMANAGER) \

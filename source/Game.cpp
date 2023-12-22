@@ -684,7 +684,7 @@ Game :: Game(
     this->month = (years_since_epoch - (int)years_since_epoch) * 12 + 1;
     
     this->population = 0;
-    this->credits = 500;
+    this->credits = STARTING_CREDITS;
     this->demand_MWh = 0;
     this->cumulative_emissions_tonnes = 0;
 

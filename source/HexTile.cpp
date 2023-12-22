@@ -702,7 +702,7 @@ void HexTile :: __setUpBuildMenu(void)
         
         
         default: {
-            //...
+            // do nothing!
             
             break;
         }
@@ -837,17 +837,209 @@ bool HexTile :: __isClicked(void)
 
 void HexTile :: __handleKeyPressEvents(void)
 {
-    if (this->event_ptr->key.code == sf::Keyboard::Escape) {
-        this->__setIsSelected(false);
-    }
-    
-    
     if (not this->is_selected) {
         return;
     }
     
     
-    //if (this->build_menu_open) {}
+    if (this->event_ptr->key.code == sf::Keyboard::Escape) {
+        this->__setIsSelected(false);
+    }
+    
+    
+    if (this->build_menu_open) {
+        switch (this->tile_type) {
+            case (TileType :: FOREST): {
+                switch (this->event_ptr->key.code) {
+                    case (sf::Keyboard::D): {
+                        this->__buildDieselGenerator();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::S): {
+                        this->__buildSolarPV();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::W): {
+                        this->__buildWindTurbine();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::E): {
+                        this->__buildEnergyStorage();
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                break;
+            }
+            
+            
+            case (TileType :: LAKE): {
+                switch (this->event_ptr->key.code) {
+                    case (sf::Keyboard::S): {
+                        this->__buildSolarPV();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::W): {
+                        this->__buildWindTurbine();
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                break;
+            }
+            
+            
+            case (TileType :: MOUNTAINS): {
+                switch (this->event_ptr->key.code) {
+                    case (sf::Keyboard::D): {
+                        this->__buildDieselGenerator();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::S): {
+                        this->__buildSolarPV();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::W): {
+                        this->__buildWindTurbine();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::E): {
+                        this->__buildEnergyStorage();
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                break;
+            }
+            
+            
+            case (TileType :: OCEAN): {
+                switch (this->event_ptr->key.code) {
+                    case (sf::Keyboard::W): {
+                        this->__buildWindTurbine();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::T): {
+                        this->__buildTidalTurbine();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::A): {
+                        this->__buildWaveEnergyConverter();
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                break;
+            }
+            
+            
+            case (TileType :: PLAINS): {
+                switch (this->event_ptr->key.code) {
+                    case (sf::Keyboard::D): {
+                        this->__buildDieselGenerator();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::S): {
+                        this->__buildSolarPV();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::W): {
+                        this->__buildWindTurbine();
+                        
+                        break;
+                    }
+                    
+                    
+                    case (sf::Keyboard::E): {
+                        this->__buildEnergyStorage();
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+                
+                break;
+            }
+            
+            
+            default: {
+                //do nothing!
+                
+                break;
+            }
+        }
+    }
     
     
     if (this->game_phase == "build settlement") {
@@ -856,26 +1048,7 @@ void HexTile :: __handleKeyPressEvents(void)
             (this->tile_type != TileType :: LAKE)
         ) {
             if (this->event_ptr->key.code == sf::Keyboard::B) {
-                this->__clearDecoration();
-                
-                this->tile_improvement_ptr = new Settlement(
-                    this->position_x,
-                    this->position_y,
-                    this->event_ptr,
-                    this->render_window_ptr,
-                    this->assets_manager_ptr,
-                    this->message_hub_ptr
-                );
-                
-                this->has_improvement = true;
-                
-                this->assess();
-                this->__sendAssessNeighboursMessage();
-                
-                this->__sendUpdateGamePhaseMessage("system management");
-                this->__sendCreditsSpentMessage(BUILD_SETTLEMENT_COST);
-                this->__sendTileStateMessage();
-                this->__sendGameStateRequest();
+                this->__buildSettlement();
             }
         }
     }
@@ -883,7 +1056,7 @@ void HexTile :: __handleKeyPressEvents(void)
     
     else if (this->game_phase == "system management") {
         if (this->has_improvement) {
-            //...
+            // will be caught by this->tile_improvement_ptr->processEvent();
         }
         
         
@@ -1044,8 +1217,6 @@ void HexTile :: __openBuildMenu(void)
         return;
     }
     
-    //...
-    
     this->build_menu_open = true;
     this->assets_manager_ptr->getSound("build menu open")->play();
     
@@ -1070,13 +1241,344 @@ void HexTile :: __closeBuildMenu(void)
         return;
     }
     
-    //...
-    
     this->build_menu_open = false;
     this->assets_manager_ptr->getSound("build menu close")->play();
     
     return;
 }   /* __closeBuildMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+///
+/// \fn void HexTile :: __buildSettlement(void)
+///
+/// \brief Helper method to build a settlement on this tile.
+///
+
+void HexTile :: __buildSettlement(void)
+{
+    if (this->credits < BUILD_SETTLEMENT_COST) {
+        std::cout << "Cannot build settlement: insufficient credits (need "
+            << BUILD_SETTLEMENT_COST << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+                
+    this->__clearDecoration();
+                
+    this->tile_improvement_ptr = new Settlement(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    
+    this->assess();
+    this->__sendAssessNeighboursMessage();
+    
+    this->__sendUpdateGamePhaseMessage("system management");
+    this->__sendCreditsSpentMessage(BUILD_SETTLEMENT_COST);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildSettlement() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __buildDieselGenerator(void)
+///
+/// \brief Helper method to build a diesel generator on this tile.
+///
+
+void HexTile :: __buildDieselGenerator(void)
+{
+    int build_cost = DIESEL_GENERATOR_BUILD_COST;
+    
+    if (this->credits < build_cost) {
+        std::cout << "Cannot build diesel generator: insufficient credits (need "
+            << build_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->tile_improvement_ptr = new DieselGenerator(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    this->__closeBuildMenu();
+    
+    this->__sendCreditsSpentMessage(build_cost);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildDieselGenerator() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __buildSolarPV(void)
+///
+/// \brief Helper method to build a solar PV array on this tile.
+///
+
+void HexTile :: __buildSolarPV(void)
+{
+    int build_cost = SOLAR_PV_BUILD_COST;
+    
+    if (this->tile_type == TileType :: LAKE) {
+        build_cost *= SOLAR_PV_WATER_BUILD_MULTIPLIER;
+    }
+    
+    if (this->credits < build_cost) {
+        std::cout << "Cannot build solar PV array: insufficient credits (need "
+            << build_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->tile_improvement_ptr = new SolarPV(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    this->__closeBuildMenu();
+    
+    if (this->tile_type == TileType :: LAKE) {
+        this->decoration_cleared = true;
+        this->assets_manager_ptr->getSound("splash")->play();
+    }
+    
+    this->__sendCreditsSpentMessage(build_cost);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildSolarPV() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __buildWindTurbine(void)
+///
+/// \brief Helper method to build a wind turbine on this tile.
+///
+
+void HexTile :: __buildWindTurbine(void)
+{
+    int build_cost = WIND_TURBINE_BUILD_COST;
+    
+    if (
+        (this->tile_type == TileType :: LAKE) or
+        (this->tile_type == TileType :: OCEAN)
+    ) {
+        build_cost *= WIND_TURBINE_WATER_BUILD_MULTIPLIER;
+    }
+    
+    if (this->credits < build_cost) {
+        std::cout << "Cannot build wind turbine: insufficient credits (need "
+            << build_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->tile_improvement_ptr = new WindTurbine(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    this->__closeBuildMenu();
+    
+    if (
+        (this->tile_type == TileType :: LAKE) or
+        (this->tile_type == TileType :: OCEAN)
+    ) {
+        this->decoration_cleared = true;
+        this->assets_manager_ptr->getSound("splash")->play();
+    }
+    
+    this->__sendCreditsSpentMessage(build_cost);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildWindTurbine() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __buildTidalTurbine(void)
+///
+/// \brief Helper method to build a tidal turbine on this tile.
+///
+
+void HexTile :: __buildTidalTurbine(void)
+{
+    int build_cost = TIDAL_TURBINE_BUILD_COST;
+    
+    if (this->credits < build_cost) {
+        std::cout << "Cannot build tidal turbine: insufficient credits (need "
+            << build_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->tile_improvement_ptr = new TidalTurbine(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    this->decoration_cleared = true;
+    this->assets_manager_ptr->getSound("splash")->play();
+    this->__closeBuildMenu();
+    
+    this->__sendCreditsSpentMessage(build_cost);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildTidalTurbine() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __buildWaveEnergyConverter(void)
+///
+/// \brief Helper method to build a wave energy converter on this tile.
+///
+
+void HexTile :: __buildWaveEnergyConverter(void)
+{
+    int build_cost = WAVE_ENERGY_CONVERTER_BUILD_COST;
+    
+    if (this->credits < build_cost) {
+        std::cout << "Cannot build wave energy converter: insufficient credits (need "
+            << build_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->tile_improvement_ptr = new WaveEnergyConverter(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    this->decoration_cleared = true;
+    this->assets_manager_ptr->getSound("splash")->play();
+    this->__closeBuildMenu();
+    
+    this->__sendCreditsSpentMessage(build_cost);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildWaveEnergyConverter() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexTile :: __buildEnergyStorage(void)
+///
+/// \brief Helper method to build an energy storage system on this tile.
+///
+
+void HexTile :: __buildEnergyStorage(void)
+{
+    int build_cost = ENERGY_STORAGE_SYSTEM_BUILD_COST;
+    
+    if (this->credits < build_cost) {
+        std::cout << "Cannot build energy storage system: insufficient credits (need "
+            << build_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->tile_improvement_ptr = new EnergyStorageSystem(
+        this->position_x,
+        this->position_y,
+        this->event_ptr,
+        this->render_window_ptr,
+        this->assets_manager_ptr,
+        this->message_hub_ptr
+    );
+    
+    this->has_improvement = true;
+    this->__closeBuildMenu();
+    
+    this->__sendCreditsSpentMessage(build_cost);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __buildEnergyStorage() */
 
 // ---------------------------------------------------------------------------------- //
 

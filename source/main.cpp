@@ -158,9 +158,14 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "build menu open"
     );
     
-        assets_manager_ptr->loadSound(
+    assets_manager_ptr->loadSound(
         "assets/audio/samples/mixkit-video-game-lock-2851.ogg",
         "build menu close"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-jump-into-the-water-1180.ogg",
+        "splash"
     );
     
     return;

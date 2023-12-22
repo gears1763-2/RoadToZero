@@ -19,7 +19,13 @@
 #define HEXTILE_H
 
 
+#include "DieselGenerator.h"
+#include "EnergyStorageSystem.h"
 #include "Settlement.h"
+#include "SolarPV.h"
+#include "TidalTurbine.h"
+#include "WaveEnergyConverter.h"
+#include "WindTurbine.h"
 
 
 ///
@@ -100,6 +106,14 @@ class HexTile {
         
         void __openBuildMenu(void);
         void __closeBuildMenu(void);
+        
+        void __buildSettlement(void);
+        void __buildDieselGenerator(void);
+        void __buildSolarPV(void);
+        void __buildWindTurbine(void);
+        void __buildTidalTurbine(void);
+        void __buildWaveEnergyConverter(void);
+        void __buildEnergyStorage(void);
         
         void __sendTileSelectedMessage(void);
         

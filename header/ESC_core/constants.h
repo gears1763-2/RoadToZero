@@ -108,6 +108,8 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 
 // ======== GAME CONSTANTS =================================================== //
 
+const int STARTING_CREDITS = 99999; ///< The starting balance of credits.
+
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 1500; ///< The CO2-equivalent mass of emissions that would result from burning 1,000,000 L of diesel fuel.
 
 const int RESOURCE_ASSESSMENT_COST = 20; ///< The cost of doing a resource assessment.

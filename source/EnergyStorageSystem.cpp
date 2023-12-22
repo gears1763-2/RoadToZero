@@ -1,0 +1,291 @@
+/*
+ *  RoadToZero
+ *
+ *  [ESC] Interactive
+ *
+ *  Implementation file for the EnergyStorageSystem class.
+ *
+ */
+
+
+///
+/// \file EnergyStorageSystem.cpp
+///
+/// \brief Implementation file for the EnergyStorageSystem class.
+///
+/// A base class for the tile improvement hierarchy.
+///
+
+
+#include "../header/EnergyStorageSystem.h"
+
+
+// ======== PRIVATE ================================================================= //
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void EnergyStorageSystem :: __setUpTileImprovementSpriteStatic(void)
+///
+/// \brief Helper method to set up tile improvement sprite (static).
+///
+
+void EnergyStorageSystem :: __setUpTileImprovementSpriteStatic(void)
+{
+    this->tile_improvement_sprite_static.setTexture(
+        *(this->assets_manager_ptr->getTexture("energy storage system"))
+    );
+    
+    this->tile_improvement_sprite_static.setOrigin(
+        this->tile_improvement_sprite_static.getLocalBounds().width / 2,
+        this->tile_improvement_sprite_static.getLocalBounds().height
+    );
+    
+    this->tile_improvement_sprite_static.setPosition(
+        this->position_x,
+        this->position_y - 32
+    );
+    
+    this->tile_improvement_sprite_static.setColor(
+        sf::Color(255, 255, 255, 0)
+    );
+    
+    return;
+}   /* __setUpTileImprovementSpriteStatic() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void EnergyStorageSystem :: __handleKeyPressEvents(void)
+///
+/// \brief Helper method to handle key press events.
+///
+
+void EnergyStorageSystem :: __handleKeyPressEvents(void)
+{
+    switch (this->event_ptr->key.code) {
+        //...
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+
+    return;
+}   /* __handleKeyPressEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn EnergyStorageSystem :: __handleMouseButtonEvents(void)
+///
+/// \brief Helper method to handle mouse button events.
+///
+
+void EnergyStorageSystem :: __handleMouseButtonEvents(void)
+{
+    switch (this->event_ptr->mouseButton.button) {
+        case (sf::Mouse::Left): {
+            //...
+            
+            break;
+        }
+        
+        
+        case (sf::Mouse::Right): {
+            //...
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    return;
+}   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+// ======== END PRIVATE ============================================================= //
+
+
+
+// ======== PUBLIC ================================================================== //
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn EnergyStorageSystem :: EnergyStorageSystem(
+///         double position_x,
+///         double position_y,
+///         sf::Event* event_ptr,
+///         sf::RenderWindow* render_window_ptr,
+///         AssetsManager* assets_manager_ptr,
+///         MessageHub* message_hub_ptr
+///     )
+///
+/// \brief Constructor for the EnergyStorageSystem class.
+///
+/// Ref: \cite hexagon\n
+///
+/// \param position_x The x position of the tile.
+///
+/// \param position_y The y position of the tile.
+///
+/// \param event_ptr Pointer to the event class.
+///
+/// \param render_window_ptr Pointer to the render window.
+///
+/// \param assets_manager_ptr Pointer to the assets manager.
+///
+/// \param message_hub_ptr Pointer to the message hub.
+///
+
+EnergyStorageSystem :: EnergyStorageSystem(
+    double position_x,
+    double position_y,
+    sf::Event* event_ptr,
+    sf::RenderWindow* render_window_ptr,
+    AssetsManager* assets_manager_ptr,
+    MessageHub* message_hub_ptr
+) :
+TileImprovement(
+    position_x,
+    position_y,
+    event_ptr,
+    render_window_ptr,
+    assets_manager_ptr,
+    message_hub_ptr
+)
+{
+    //  1. set attributes
+    
+    //  1.1. private
+    //...
+    
+    //  1.2. public
+    this->tile_improvement_type = TileImprovementType :: ENERGY_STORAGE_SYSTEM;
+    
+    this->is_running = false;
+    
+    this->tile_improvement_string = "ENERGY STORAGE";
+    
+    this->__setUpTileImprovementSpriteStatic();
+    
+    std::cout << "EnergyStorageSystem constructed at " << this << std::endl;
+    
+    return;
+}   /* EnergyStorageSystem() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void EnergyStorageSystem :: processEvent(void)
+///
+/// \brief Method to process EnergyStorageSystem. To be called once per event.
+///
+
+void EnergyStorageSystem :: processEvent(void)
+{
+    if (this->event_ptr->type == sf::Event::KeyPressed) {
+        this->__handleKeyPressEvents();
+    }
+    
+    if (this->event_ptr->type == sf::Event::MouseButtonPressed) {
+        this->__handleMouseButtonEvents();
+    }
+    
+    return;
+}   /* processEvent() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void EnergyStorageSystem :: processMessage(void)
+///
+/// \brief Method to process EnergyStorageSystem. To be called once per message.
+///
+
+void EnergyStorageSystem :: processMessage(void)
+{
+    //...
+    
+    return;
+}   /* processMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void EnergyStorageSystem :: draw(void)
+///
+/// \brief Method to draw the hex tile to the render window. To be called once per
+///     frame.
+///
+
+void EnergyStorageSystem :: draw(void)
+{
+    //  1. if just built, call base method and return
+    if (this->just_built) {
+        TileImprovement :: draw();
+        
+        return;
+    }
+    
+    
+    //  1. draw static sprite
+    this->render_window_ptr->draw(this->tile_improvement_sprite_static);
+    
+    this->frame++;
+    return;
+}   /* draw() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn EnergyStorageSystem :: ~EnergyStorageSystem(void)
+///
+/// \brief Destructor for the EnergyStorageSystem class.
+///
+
+EnergyStorageSystem :: ~EnergyStorageSystem(void)
+{
+    std::cout << "EnergyStorageSystem at " << this << " destroyed" << std::endl;
+    
+    return;
+}   /* ~EnergyStorageSystem() */
+
+// ---------------------------------------------------------------------------------- //
+
+// ======== END PUBLIC ============================================================== //

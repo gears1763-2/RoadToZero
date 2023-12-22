@@ -216,34 +216,116 @@ void TileImprovement :: processMessage(void)
 
 void TileImprovement :: draw(void)
 {
-    int alpha = this->tile_improvement_sprite_static.getColor().a;
+    if (this->tile_improvement_sprite_static.getTexture() != NULL) {
+        int alpha = this->tile_improvement_sprite_static.getColor().a;
     
-    alpha += 0.04 * FRAMES_PER_SECOND;
-    
-    this->tile_improvement_sprite_static.setColor(
-        sf::Color(255, 255, 255, alpha)
-    );
-    
-    this->tile_improvement_sprite_static.move(0, 25 * SECONDS_PER_FRAME);
-    
-    if (
-        (alpha >= 255) or
-        (this->tile_improvement_sprite_static.getPosition().y >= this->position_y + 12)
-    ) {
+        alpha += 0.04 * FRAMES_PER_SECOND;
+        
         this->tile_improvement_sprite_static.setColor(
-            sf::Color(255, 255, 255, 255)
+            sf::Color(255, 255, 255, alpha)
         );
         
-        this->tile_improvement_sprite_static.setPosition(
-            this->position_x,
-            this->position_y + 12
-        );
+        this->tile_improvement_sprite_static.move(0, 25 * SECONDS_PER_FRAME);
         
-        this->just_built = false;
-        this->assets_manager_ptr->getSound("place improvement")->play();
+        if (
+            (alpha >= 255) or
+            (this->tile_improvement_sprite_static.getPosition().y >= this->position_y + 12)
+        ) {
+            this->tile_improvement_sprite_static.setColor(
+                sf::Color(255, 255, 255, 255)
+            );
+            
+            this->tile_improvement_sprite_static.setPosition(
+                this->position_x,
+                this->position_y + 12
+            );
+            
+            this->just_built = false;
+            this->assets_manager_ptr->getSound("place improvement")->play();
+        }
+        
+        this->render_window_ptr->draw(this->tile_improvement_sprite_static);
     }
     
-    this->render_window_ptr->draw(this->tile_improvement_sprite_static);
+    
+    else {
+        int alpha = 0;
+        
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            alpha = this->tile_improvement_sprite_animated[i].getColor().a;
+            
+            alpha += 0.04 * FRAMES_PER_SECOND;
+            
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(255, 255, 255, alpha)
+            );
+            
+            this->tile_improvement_sprite_animated[i].move(0, 25 * SECONDS_PER_FRAME);
+            
+            if (
+                (alpha >= 255) or
+                (this->tile_improvement_sprite_animated[i].getPosition().y >= this->position_y + 12)
+            ) {
+                this->tile_improvement_sprite_animated[i].setColor(
+                    sf::Color(255, 255, 255, 255)
+                );
+                
+                this->tile_improvement_sprite_animated[i].setPosition(
+                    this->position_x,
+                    this->position_y + 12
+                );
+            }
+            
+            this->render_window_ptr->draw(this->tile_improvement_sprite_animated[i]);
+        }
+        
+        if (
+            (alpha >= 255) or
+            (this->tile_improvement_sprite_animated[0].getPosition().y >= this->position_y + 12)
+        ) {
+            this->just_built = false;
+            this->assets_manager_ptr->getSound("place improvement")->play();
+            
+            switch (this->tile_improvement_type) {
+                case (TileImprovementType :: WIND_TURBINE): {
+                    for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+                        this->tile_improvement_sprite_animated[i].setOrigin(32, 32);
+                        this->tile_improvement_sprite_animated[i].move(0, -32);
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (TileImprovementType :: TIDAL_TURBINE): {
+                    for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+                        this->tile_improvement_sprite_animated[i].setOrigin(32, 45);
+                        this->tile_improvement_sprite_animated[i].move(0, -19);
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (TileImprovementType :: WAVE_ENERGY_CONVERTER): {
+                    for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+                        this->tile_improvement_sprite_animated[i].setOrigin(32, 32);
+                        this->tile_improvement_sprite_animated[i].move(0, -32);
+                    }
+                    
+                    break;
+                }
+                
+                
+                default: {
+                    // do nothing!
+                    
+                    break;
+                }
+            }
+        }
+    }
+    
     
     this->frame++;
     return;

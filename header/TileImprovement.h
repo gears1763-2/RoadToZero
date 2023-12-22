@@ -33,6 +33,7 @@
 
 enum TileImprovementType {
     SETTLEMENT, ///< A settlement.
+    DIESEL_GENERATOR, ///< A diesel generator.
     SOLAR_PV, ///< A solar PV array.
     WIND_TURBINE, ///< A wind turbine.
     TIDAL_TURBINE, ///< A tidal turbine.
@@ -67,6 +68,7 @@ class TileImprovement {
         //  1. attributes
         TileImprovementType tile_improvement_type; ///< The type of the tile improvement.
         
+        bool is_running; ///< A boolean which indicates whether or not the improvement is running.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         bool just_built; ///< A boolean which indicates that the improvement was just built.
         

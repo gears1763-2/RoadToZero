@@ -1353,12 +1353,14 @@ void HexMap :: draw(void)
     
     this->render_window_ptr->draw(this->glass_screen);
     
-    //  2. draw tiles in drawing order
+    //  2. draw tiles (other than the selected tile) in drawing order
     for (size_t i = 0; i < this->hex_draw_order_vec.size(); i++) {
-        this->hex_draw_order_vec[i]->draw();
+        if (not this->hex_draw_order_vec[i]->is_selected) {
+            this->hex_draw_order_vec[i]->draw();
+        }
     }
     
-    //  3. redraw selected tile
+    //  3. draw selected tile
     HexTile* selected_tile_ptr = this->__getSelectedTile();
     if (selected_tile_ptr != NULL) {
         selected_tile_ptr->draw();

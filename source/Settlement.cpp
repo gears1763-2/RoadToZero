@@ -216,12 +216,10 @@ TileImprovement(
     //  1.2. public
     this->tile_improvement_type = TileImprovementType :: SETTLEMENT;
     
-    this->skip_smoke_processing = true;
-    
-    this->smoke_da = 1e-8 * SECONDS_PER_FRAME;
+    this->smoke_da = SECONDS_PER_FRAME / 4;
     this->smoke_dx = 5 * SECONDS_PER_FRAME;
     this->smoke_dy = -10 * SECONDS_PER_FRAME;
-    this->smoke_prob = 2 * SECONDS_PER_FRAME;
+    this->smoke_prob = 3 * SECONDS_PER_FRAME;
     
     this->smoke_sprite_list = {};
     
@@ -233,6 +231,35 @@ TileImprovement(
     
     return;
 }   /* Settlement() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Settlement :: getTileOptionsSubstring(void)
+///
+/// \brief Helper method to assemble and return tile options substring.
+///
+/// \return Tile options substring.
+///
+
+std::string Settlement :: getTileOptionsSubstring(void)
+{
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string options_substring                = "  **** SETTLEMENT OPTIONS ****  \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    
+    return options_substring;
+}   /* getTileOptionsSubstring() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -310,61 +337,42 @@ void Settlement :: draw(void)
     while (iter != this->smoke_sprite_list.end()) {
         this->render_window_ptr->draw(*iter);
         
-        if (not this->skip_smoke_processing) {
-            alpha = (*iter).getColor().a;
+        alpha = (*iter).getColor().a;
+    
+        alpha -= this->smoke_da;
         
-            alpha -= this->smoke_da;
-            
-            if (alpha <= 0) {
-                iter = this->smoke_sprite_list.erase(iter);
-                continue;
-            }
-            
-            (*iter).setColor(sf::Color(255, 255, 255, alpha));
-            
-            (*iter).move(
-                this->smoke_dx + 2 * (((double)rand() / RAND_MAX) - 1) / FRAMES_PER_SECOND,
-                this->smoke_dy
-            );
-            
-            (*iter).rotate(((double)rand() / RAND_MAX));
+        if (alpha <= 0) {
+            iter = this->smoke_sprite_list.erase(iter);
+            continue;
         }
+        
+        (*iter).setColor(sf::Color(255, 255, 255, alpha));
+        
+        (*iter).move(
+            this->smoke_dx + 2 * (((double)rand() / RAND_MAX) - 1) / FRAMES_PER_SECOND,
+            this->smoke_dy
+        );
+        
+        (*iter).rotate(((double)rand() / RAND_MAX));
         
         iter++;
     }
     
     
-    if (not this->skip_smoke_processing) {
-        if ((double)rand() / RAND_MAX < smoke_prob) {
-            this->smoke_sprite_list.push_back(
-                sf::Sprite(*(this->assets_manager_ptr->getTexture("emissions")))
-            );
-            
-            this->smoke_sprite_list.back().setOrigin(
-                this->smoke_sprite_list.back().getLocalBounds().width / 2,
-                this->smoke_sprite_list.back().getLocalBounds().height / 2
-            );
-            
-            this->smoke_sprite_list.back().setPosition(
-                this->position_x + 9,
-                this->position_y - 33
-            );
-        }
-    }
-    
-    
-    if (this->is_selected) {
-        if (this->skip_smoke_processing) {
-            this->skip_smoke_processing = false;
-        }
+    if ((double)rand() / RAND_MAX < smoke_prob) {
+        this->smoke_sprite_list.push_back(
+            sf::Sprite(*(this->assets_manager_ptr->getTexture("emissions")))
+        );
         
-        else {
-            this->skip_smoke_processing = true;
-        }
-    }
-    
-    else {
-        this->skip_smoke_processing = false;
+        this->smoke_sprite_list.back().setOrigin(
+            this->smoke_sprite_list.back().getLocalBounds().width / 2,
+            this->smoke_sprite_list.back().getLocalBounds().height / 2
+        );
+        
+        this->smoke_sprite_list.back().setPosition(
+            this->position_x + 9 + 4 * ((double)rand() / RAND_MAX) - 2,
+            this->position_y - 33
+        );
     }
     
     this->frame++;

@@ -167,6 +167,8 @@ void DieselGenerator :: __handleMouseButtonEvents(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -228,7 +230,13 @@ TileImprovement(
     this->tile_improvement_type = TileImprovementType :: DIESEL_GENERATOR;
     
     this->is_running = false;
-    this->skip_smoke_processing = true;
+    
+    this->health = 100;
+    
+    this->capacity_kW = 100;
+    
+    this->production_MWh = 0;
+    this->max_production_MWh = 72;
     
     this->smoke_da = 1e-8 * SECONDS_PER_FRAME;
     this->smoke_dx = 5 * SECONDS_PER_FRAME;
@@ -253,6 +261,55 @@ TileImprovement(
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void DieselGenerator :: getTileOptionsSubstring(void)
+///
+/// \brief Helper method to assemble and return tile options substring.
+///
+/// \return Tile options substring.
+///
+
+std::string DieselGenerator :: getTileOptionsSubstring(void)
+{
+    int upgrade_cost = DIESEL_GENERATOR_BUILD_COST;
+    
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string options_substring                = "CAPACITY:    ";
+    options_substring                           += std::to_string(this->capacity_kW);
+    options_substring                           += " kW\n";
+    
+    options_substring                           += "PRODUCTION:  ";
+    options_substring                           += std::to_string(this->production_MWh);
+    options_substring                           += " MWh (MAX ";
+    options_substring                           += std::to_string(this->max_production_MWh);
+    options_substring                           += ")\n";
+    
+    options_substring                           += "HEALTH:      ";
+    options_substring                           += std::to_string(this->health);
+    options_substring                           += "/100\n";
+    
+    options_substring                           += "                                \n";
+    options_substring                           += "  **** DIESEL GEN OPTIONS ****  \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "[E]:  OPEN PRODUCTION MENU      \n";
+    
+    options_substring                           += "[U]:  UPGRADE (";
+    options_substring                           += std::to_string(upgrade_cost);
+    options_substring                           +=" K)\n";
+    
+    options_substring                           += "[P]:  SCRAP (";
+    options_substring                           += std::to_string(SCRAP_COST);
+    options_substring                           += " K)";
+    
+    return options_substring;
+}   /* getTileOptionsSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void DieselGenerator :: processEvent(void)
 ///
 /// \brief Method to process DieselGenerator. To be called once per event.
@@ -260,6 +317,8 @@ TileImprovement(
 
 void DieselGenerator :: processEvent(void)
 {
+    TileImprovement :: processEvent();
+    
     if (this->event_ptr->type == sf::Event::KeyPressed) {
         this->__handleKeyPressEvents();
     }
@@ -285,6 +344,8 @@ void DieselGenerator :: processEvent(void)
 
 void DieselGenerator :: processMessage(void)
 {
+    TileImprovement :: processMessage();
+    
     //...
     
     return;
@@ -334,7 +395,14 @@ void DieselGenerator :: draw(void)
         //...
     }
     
-    //...
+    
+    //  4. draw production menu
+    if (this->production_menu_open) {
+        this->render_window_ptr->draw(this->production_menu_backing);
+        this->render_window_ptr->draw(this->production_menu_backing_text);
+        
+        //...
+    }
     
     this->frame++;
     return;

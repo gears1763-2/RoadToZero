@@ -94,6 +94,8 @@ class WindTurbine: public TileImprovement {
             MessageHub*
         );
         
+        std::string getTileOptionsSubstring(void);
+        
         void processEvent(void);
         void processMessage(void);
         

@@ -764,7 +764,7 @@ void HexTile :: __setIsSelected(bool is_selected)
     this->is_selected = is_selected;
     
     if (this->tile_improvement_ptr != NULL) {
-        this->tile_improvement_ptr->is_selected = is_selected;
+        this->tile_improvement_ptr->setIsSelected(is_selected);
         
         if (is_selected) {
             switch (this->tile_improvement_ptr->tile_improvement_type) {
@@ -789,7 +789,7 @@ void HexTile :: __setIsSelected(bool is_selected)
     }
     
     return;
-}   /* __toggleIsSelected() */
+}   /* __setIsSelected() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -1107,7 +1107,16 @@ void HexTile :: __handleKeyPressEvents(void)
     
     else if (this->game_phase == "system management") {
         if (this->has_improvement) {
-            // will be caught by this->tile_improvement_ptr->processEvent();
+            if (this->tile_improvement_ptr->tile_improvement_type != TileImprovementType :: SETTLEMENT) {
+                if (this->event_ptr->key.code == sf::Keyboard::P) {
+                    this->__scrapImprovement();
+                }
+            }
+            
+            /*
+             * All other inputs will be caught and handled by
+             *   this->tile_improvement_ptr->processEvent()
+             */
         }
         
         
@@ -1638,6 +1647,42 @@ void HexTile :: __buildEnergyStorage(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexTile :: __scrapImprovement(void)
+///
+/// \brief Helper method to scrap the tile improvement (Settlement cannot be scrapped).
+///
+
+void HexTile :: __scrapImprovement(void)
+{
+    this->draw_explosion = true;
+    this->assets_manager_ptr->getSound("clear non-mountains tile")->play();
+    
+    delete this->tile_improvement_ptr;
+    this->tile_improvement_ptr = NULL;
+    
+    this->has_improvement = false;
+    
+    if (
+        (this->tile_type == TileType :: LAKE) or
+        (this->tile_type == TileType :: OCEAN)
+    ) {
+        this->decoration_cleared = false;
+    }
+    
+    this->__sendCreditsSpentMessage(SCRAP_COST);
+    this->__sendTileStateMessage();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __scrapImprovement() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexTile :: __sendTileSelectedMessage(void)
 ///
 /// \brief Helper method to format and send message on tile selection.
@@ -1871,17 +1916,15 @@ std::string HexTile :: __getTileOptionsSubstring(void)
         ) {
             options_substring += "[B]:  BUILD SETTLEMENT (";
             options_substring += std::to_string(BUILD_SETTLEMENT_COST);
-            options_substring += " K)";
+            options_substring += " K)\n";
         }
     }
     
     
     else if (this->game_phase == "system management") {
         if (this->has_improvement) {
-            /*
             options_substring.clear();
             options_substring = this->tile_improvement_ptr->getTileOptionsSubstring();
-            */
         }
         
         
@@ -2689,7 +2732,7 @@ void HexTile :: draw(void)
         sf::Color outline_colour = this->select_outline_sprite.getOutlineColor();
         
         outline_colour.a =
-            255 * pow(cos((M_PI * this->frame) / (1.5 * FRAMES_PER_SECOND)), 2);
+            255 * pow(cos((M_PI * this->frame) / FRAMES_PER_SECOND), 2);
         
         this->select_outline_sprite.setOutlineColor(outline_colour);
         
@@ -2717,12 +2760,13 @@ void HexTile :: draw(void)
     if (this->draw_explosion) {
         this->render_window_ptr->draw(this->explosion_sprite_reel[this->explosion_frame]);
         
-        if (this->frame % (FRAMES_PER_SECOND / 10) == 0) {
+        if (this->frame % (FRAMES_PER_SECOND / 20) == 0) {
             this->explosion_frame++;
         }
         
         if (this->explosion_frame >= this->explosion_sprite_reel.size()) {
             this->draw_explosion = false;
+            this->explosion_frame = 0;
         }
     }
     

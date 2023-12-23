@@ -149,6 +149,8 @@ class HexTile {
         void __buildWaveEnergyConverter(void);
         void __buildEnergyStorage(void);
         
+        void __scrapImprovement(void);
+        
         void __sendTileSelectedMessage(void);
         
         std::string __getTileCoordsSubstring(void);

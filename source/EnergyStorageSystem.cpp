@@ -218,6 +218,8 @@ TileImprovement(
     
     this->is_running = false;
     
+    this->health = 100;
+    
     this->tile_improvement_string = "ENERGY STORAGE";
     
     this->__setUpTileImprovementSpriteStatic();
@@ -226,6 +228,39 @@ TileImprovement(
     
     return;
 }   /* EnergyStorageSystem() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void EnergyStorageSystem :: getTileOptionsSubstring(void)
+///
+/// \brief Helper method to assemble and return tile options substring.
+///
+/// \return Tile options substring.
+///
+
+std::string EnergyStorageSystem :: getTileOptionsSubstring(void)
+{
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string options_substring                = "**** ENERGY STORAGE OPTIONS ****\n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "                                \n";
+    
+    options_substring                           += "[P]:  SCRAP (";
+    options_substring                           += std::to_string(SCRAP_COST);
+    options_substring                           += " K)";
+    
+    return options_substring;
+}   /* getTileOptionsSubstring() */
 
 // ---------------------------------------------------------------------------------- //
 

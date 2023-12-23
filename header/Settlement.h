@@ -82,8 +82,6 @@ class Settlement: public TileImprovement {
     
     public:
         //  1. attributes
-        bool skip_smoke_processing; ///< A boolean which indicates whether or not to skip smoke processing.
-        
         double smoke_da; ///< The per frame delta in smoke particle alpha value.
         double smoke_dx; ///< The per frame delta in smoke particle x position.
         double smoke_dy; ///< The per frame delta in smoke particle y position.
@@ -100,6 +98,8 @@ class Settlement: public TileImprovement {
             AssetsManager*,
             MessageHub*
         );
+        
+        std::string getTileOptionsSubstring(void);
         
         void processEvent(void);
         void processMessage(void);

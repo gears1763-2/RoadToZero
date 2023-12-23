@@ -82,7 +82,10 @@ class DieselGenerator: public TileImprovement {
     
     public:
         //  1. attributes
-        bool skip_smoke_processing; ///< A boolean which indicates whether or not to skip smoke processing.
+        int capacity_kW; ///< The rated production capacity [kW] of the diesel generator.
+        
+        int production_MWh; ///< The current production [MWh] of the diesel generator.
+        int max_production_MWh; ///< The maximum production [MWh] for this turn.
         
         double smoke_da; ///< The per frame delta in smoke particle alpha value.
         double smoke_dx; ///< The per frame delta in smoke particle x position.
@@ -100,6 +103,8 @@ class DieselGenerator: public TileImprovement {
             AssetsManager*,
             MessageHub*
         );
+        
+        std::string getTileOptionsSubstring(void);
         
         void processEvent(void);
         void processMessage(void);

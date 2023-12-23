@@ -59,6 +59,42 @@
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void TileImprovement :: __setUpProductionMenu(void)
+///
+/// \brief Helper method to set up and position production menu assets (drawable).
+///
+
+void TileImprovement :: __setUpProductionMenu(void)
+{
+    //  1. set up and place build menu backing and text
+    this->production_menu_backing.setSize(sf::Vector2f(400, 256));
+    this->production_menu_backing.setOrigin(200, 128);
+    this->production_menu_backing.setPosition(400, 400);
+    this->production_menu_backing.setFillColor(MONOCHROME_SCREEN_BACKGROUND);
+    this->production_menu_backing.setOutlineColor(MENU_FRAME_GREY);
+    this->production_menu_backing.setOutlineThickness(4);
+    
+    this->production_menu_backing_text.setString("**** PRODUCTION MENU ****");
+    this->production_menu_backing_text.setFont(
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
+    );
+    this->production_menu_backing_text.setCharacterSize(16);
+    this->production_menu_backing_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    this->production_menu_backing_text.setOrigin(
+        this->production_menu_backing_text.getLocalBounds().width / 2, 0
+    );
+    this->production_menu_backing_text.setPosition(200, 200 - 128 + 4);
+    
+    return;
+}   /* __setUpProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void TileImprovement :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -67,7 +103,11 @@
 void TileImprovement :: __handleKeyPressEvents(void)
 {
     switch (this->event_ptr->key.code) {
-        //...
+        case (sf::Keyboard::E): {
+            this->__openProductionMenu();
+            
+            break;
+        }
         
         
         default: {
@@ -118,6 +158,54 @@ void TileImprovement :: __handleMouseButtonEvents(void)
     
     return;
 }   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __openProductionMenu(void)
+///
+/// \brief Helper method to open the production menu.
+///
+
+void TileImprovement :: __openProductionMenu(void)
+{
+    if (this->production_menu_open) {
+        return;
+    }
+    
+    this->production_menu_open = true;
+    this->assets_manager_ptr->getSound("build menu open")->play();
+    
+    return;
+}   /* __openProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __closeProductionMenu(void)
+///
+/// \brief Helper method to close the production menu.
+///
+
+void TileImprovement :: __closeProductionMenu(void)
+{
+    if (not this->production_menu_open) {
+        return;
+    }
+    
+    this->production_menu_open = false;
+    this->assets_manager_ptr->getSound("build menu close")->play();
+    
+    return;
+}   /* __closeProductionMenu() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -177,6 +265,7 @@ TileImprovement :: TileImprovement(
     //  1.2. public
     this->is_selected = true;
     this->just_built = true;
+    this->production_menu_open = false;
     
     this->frame = 0;
     this->credits = 0;
@@ -186,10 +275,55 @@ TileImprovement :: TileImprovement(
     
     this->game_phase = "build settlement";
     
+    this->__setUpProductionMenu();
+    
     std::cout << "TileImprovement constructed at " << this << std::endl;
     
     return;
 }   /* TileImprovement() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: setIsSelected(bool is_selected)
+///
+/// \brief Method to set the is selected attribute.
+///
+/// \param is_selected The value to set the is selected attribute to.
+///
+
+void TileImprovement :: setIsSelected(bool is_selected)
+{
+    this->is_selected = is_selected;
+    
+    if (is_selected) {
+        switch (this->tile_improvement_type) {
+            /*
+            case (TileImprovementType :: SETTLEMENT): {
+                this->assets_manager_ptr->getSound("people and children")->play();
+                
+                break;
+            }
+            */
+            
+            default: {
+                // do nothing!
+                
+                break;
+            }
+        }
+    }
+    
+    if ((not is_selected) and this->production_menu_open) {
+        this->__closeProductionMenu();
+    }
+    
+    return;
+}   /* setIsSelected() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -253,13 +387,13 @@ void TileImprovement :: draw(void)
     if (this->tile_improvement_sprite_static.getTexture() != NULL) {
         int alpha = this->tile_improvement_sprite_static.getColor().a;
     
-        alpha += 0.04 * FRAMES_PER_SECOND;
+        alpha += 0.08 * FRAMES_PER_SECOND;
         
         this->tile_improvement_sprite_static.setColor(
             sf::Color(255, 255, 255, alpha)
         );
         
-        this->tile_improvement_sprite_static.move(0, 25 * SECONDS_PER_FRAME);
+        this->tile_improvement_sprite_static.move(0, 50 * SECONDS_PER_FRAME);
         
         if (
             (alpha >= 255) or
@@ -288,13 +422,13 @@ void TileImprovement :: draw(void)
         for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
             alpha = this->tile_improvement_sprite_animated[i].getColor().a;
             
-            alpha += 0.04 * FRAMES_PER_SECOND;
+            alpha += 0.08 * FRAMES_PER_SECOND;
             
             this->tile_improvement_sprite_animated[i].setColor(
                 sf::Color(255, 255, 255, alpha)
             );
             
-            this->tile_improvement_sprite_animated[i].move(0, 25 * SECONDS_PER_FRAME);
+            this->tile_improvement_sprite_animated[i].move(0, 50 * SECONDS_PER_FRAME);
             
             if (
                 (alpha >= 255) or

@@ -94,8 +94,13 @@ class TileImprovement {
         
         
         //  2. methods
+        void __setUpProductionMenu(void);
+        
         virtual void __handleKeyPressEvents(void);
         virtual void __handleMouseButtonEvents(void);
+        
+        void __openProductionMenu(void);
+        void __closeProductionMenu(void);
     
     
     public:
@@ -105,9 +110,11 @@ class TileImprovement {
         bool is_running; ///< A boolean which indicates whether or not the improvement is running.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         bool just_built; ///< A boolean which indicates that the improvement was just built.
+        bool production_menu_open; ///< A boolean which indicates whether or not the production menu is open.
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
+        int health; ///< The health of the improvement.
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
@@ -118,6 +125,9 @@ class TileImprovement {
         sf::Sprite tile_improvement_sprite_static; ///< A static sprite, for decorating the tile.
         std::vector<sf::Sprite> tile_improvement_sprite_animated; ///< An animated sprite, for the ContextMenu visual screen.
         
+        sf::RectangleShape production_menu_backing; ///< A backing for the production build menu.
+        sf::Text production_menu_backing_text; ///< Text for the production menu backing.
+        
         //  2. methods
         TileImprovement(
             double,
@@ -127,6 +137,10 @@ class TileImprovement {
             AssetsManager*,
             MessageHub*
         );
+        
+        void setIsSelected(bool);
+        
+        virtual std::string getTileOptionsSubstring(void) {return "";}
         
         virtual void processEvent(void);
         virtual void processMessage(void);

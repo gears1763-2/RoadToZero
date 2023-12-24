@@ -112,14 +112,15 @@ const int CLEAR_FOREST_COST = 40; ///< The cost of clearing a forest tile.
 const int CLEAR_MOUNTAINS_COST = 250; ///< The cost of clearing a mountains tile.
 const int CLEAR_PLAINS_COST = 20; ///< The cost of clearing a plains tile.
 
-const int DIESEL_GENERATOR_BUILD_COST = 100; ///< The cost of building (or ugrading) a diesel generator.
-const int WIND_TURBINE_BUILD_COST = 400; ///< The cost of building (or upgrading) a wind turbine.
+const int DIESEL_GENERATOR_BUILD_COST = 100; ///< The cost of building (or ugrading) a diesel generator in 100 kW increments.
+const int WIND_TURBINE_BUILD_COST = 400; ///< The cost of building (or upgrading) a wind turbine in 100 kW increments.
 const double WIND_TURBINE_WATER_BUILD_MULTIPLIER = 1.25; ///< The additional cost of building on water.
-const int SOLAR_PV_BUILD_COST = 300; ///< The cost of building (or upgrading) a solar PV array.
+const int SOLAR_PV_BUILD_COST = 300; ///< The cost of building (or upgrading) a solar PV array in 100 kW increments.
 const double SOLAR_PV_WATER_BUILD_MULTIPLIER = 1.5; ///< The additional cost of building on water.
-const int TIDAL_TURBINE_BUILD_COST = 600; ///< The cost of building (or upgrading) a tidal turbine.
-const int WAVE_ENERGY_CONVERTER_BUILD_COST = 800; ///< The cost of building (or upgrading) a wave energy converter.
-const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 400; ///< The cost of building (or upgrading) an energy storage system.
+const int TIDAL_TURBINE_BUILD_COST = 600; ///< The cost of building (or upgrading) a tidal turbine in 100 kW increments.
+const int WAVE_ENERGY_CONVERTER_BUILD_COST = 800; ///< The cost of building (or upgrading) a wave energy converter in 100 kW increments.
+
+const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 800; ///< The cost of building (or upgrading) an energy storage system in 1 MWh increments.
 
 const int SCRAP_COST = 50; ///< The cost of scrapping a tile improvement (other than settlement).
 

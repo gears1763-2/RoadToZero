@@ -84,7 +84,10 @@ class SolarPV: public TileImprovement {
     
     public:
         //  1. attributes
-        //...
+        int capacity_kW; ///< The rated production capacity [kW] of the solar PV array.
+        
+        int production_MWh; ///< The current production [MWh] of the solar PV array.
+        int dispatchable_MWh; ///< The amount of production that is directly dispatchable to the grid (i.e. production correlated with demand).
         
         //  2. methods
         SolarPV(

@@ -631,6 +631,7 @@ void HexTile :: __setUpWaveEnergyConverterBuildOption(void)
 
 void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
 {
+    /*
     //  1. set up option sprite(s)
     std::string texture_key = "energy storage system";
     
@@ -638,7 +639,7 @@ void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
     //                                            "----------------\n"
     std::string energy_storage_system_string    = " ENERGY STORAGE \n";
     energy_storage_system_string               += "                \n";
-    energy_storage_system_string               += "CAPCTY:  500 kWh\n";
+    energy_storage_system_string               += "CAPCTY:   1 MWh\n";
     energy_storage_system_string               += "COST:     ";
     energy_storage_system_string               += std::to_string(ENERGY_STORAGE_SYSTEM_BUILD_COST);
     energy_storage_system_string               += " K\n\n\n";
@@ -646,7 +647,7 @@ void HexTile :: __setUpEnergyStorageSystemBuildOption(void)
     
     //  3. call general method
     this->__setUpBuildOption(texture_key, energy_storage_system_string);
-    
+    */
     return;
 }   /* __setUpEnergyStorageSystemBuildOption() */
 
@@ -692,7 +693,7 @@ void HexTile :: __setUpBuildMenu(void)
             this->__setUpDieselGeneratorBuildOption();
             this->__setUpSolarPVBuildOption();
             this->__setUpWindTurbineBuildOption();
-            this->__setUpEnergyStorageSystemBuildOption();
+            //this->__setUpEnergyStorageSystemBuildOption();
             
             break;
         }
@@ -710,7 +711,7 @@ void HexTile :: __setUpBuildMenu(void)
             this->__setUpDieselGeneratorBuildOption();
             this->__setUpSolarPVBuildOption();
             this->__setUpWindTurbineBuildOption();
-            this->__setUpEnergyStorageSystemBuildOption();
+            //this->__setUpEnergyStorageSystemBuildOption();
             
             break;
         }
@@ -729,7 +730,7 @@ void HexTile :: __setUpBuildMenu(void)
             this->__setUpDieselGeneratorBuildOption();
             this->__setUpSolarPVBuildOption();
             this->__setUpWindTurbineBuildOption();
-            this->__setUpEnergyStorageSystemBuildOption();
+            //this->__setUpEnergyStorageSystemBuildOption();
             
             break;
         }
@@ -1193,6 +1194,61 @@ void HexTile :: __handleKeyPressEvents(void)
 // ---------------------------------------------------------------------------------- //
 
 
+void HexTile :: __handleKeyReleaseEvents(void)
+{
+    if (not this->is_selected) {
+        return;
+    }
+    
+    
+    switch (this->event_ptr->key.code) {
+        case (sf::Keyboard::P): {
+            if (this->has_improvement) {
+                this->scrap_improvement_frame = 0;
+
+                if (
+                    this->tile_improvement_ptr->tile_improvement_sprite_static.getTexture() != NULL
+                ) {
+                    this->tile_improvement_ptr->tile_improvement_sprite_static.setColor(
+                        sf::Color(255, 255, 255, 255)
+                    );
+                }
+
+                else {
+                    for (
+                        size_t i = 0;
+                        i < this->tile_improvement_ptr->tile_improvement_sprite_animated.size();
+                        i++
+                    ) {
+                        this->tile_improvement_ptr->tile_improvement_sprite_animated[i].setColor(
+                            sf::Color(255, 255, 255, 255)
+                        );
+                    }
+                }
+            }
+            
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
+    }
+    
+    /*
+    if (this->event_ptr->key.code == sf::Keyboard::P) {
+        
+    }
+    */
+    
+    return;
+}   /* __handleKeyReleaseEvents() */
+
+
 
 // ---------------------------------------------------------------------------------- //
 
@@ -1594,6 +1650,7 @@ void HexTile :: __buildWaveEnergyConverter(void)
 
 void HexTile :: __buildEnergyStorage(void)
 {
+    /*
     int build_cost = ENERGY_STORAGE_SYSTEM_BUILD_COST;
     
     if (this->credits < build_cost) {
@@ -1619,7 +1676,7 @@ void HexTile :: __buildEnergyStorage(void)
     this->__sendCreditsSpentMessage(build_cost);
     this->__sendTileStateMessage();
     this->__sendGameStateRequest();
-    
+    */
     return;
 }   /* __buildEnergyStorage() */
 
@@ -1633,33 +1690,68 @@ void HexTile :: __buildEnergyStorage(void)
 /// \fn void HexTile :: __scrapImprovement(void)
 ///
 /// \brief Helper method to scrap the tile improvement (Settlement cannot be scrapped).
+///     Requires the mapped key to be held continuously to confirm.
 ///
 
 void HexTile :: __scrapImprovement(void)
 {
-    this->draw_explosion = true;
-    this->assets_manager_ptr->getSound("clear non-mountains tile")->play();
-    
-    if (this->tile_improvement_ptr->production_menu_open) {
-        this->tile_improvement_ptr->production_menu_open = false;
-        this->assets_manager_ptr->getSound("build menu close")->play();
+    //  1. implement key hold confirmation
+    if (this->scrap_improvement_frame <= FRAMES_PER_SECOND) {
+        double colour_scalar =
+            1 - ((double)(this->scrap_improvement_frame) / (FRAMES_PER_SECOND));
+        
+        if (
+            this->tile_improvement_ptr->tile_improvement_sprite_static.getTexture() != NULL
+        ) {
+            this->tile_improvement_ptr->tile_improvement_sprite_static.setColor(
+                sf::Color(255, 255 * colour_scalar, 255 * colour_scalar, 255)
+            );
+        }
+        
+        else {
+            for (
+                size_t i = 0;
+                i < this->tile_improvement_ptr->tile_improvement_sprite_animated.size();
+                i++
+            ) {
+                this->tile_improvement_ptr->tile_improvement_sprite_animated[i].setColor(
+                    sf::Color(255, 255 * colour_scalar, 255 * colour_scalar, 255)
+                );
+            }
+        }
+        
+        this->scrap_improvement_frame += 4;
     }
     
-    delete this->tile_improvement_ptr;
-    this->tile_improvement_ptr = NULL;
     
-    this->has_improvement = false;
-    
-    if (
-        (this->tile_type == TileType :: LAKE) or
-        (this->tile_type == TileType :: OCEAN)
-    ) {
-        this->decoration_cleared = false;
+    //  2. carry out scrapping
+    else {
+        this->draw_explosion = true;
+        this->assets_manager_ptr->getSound("clear non-mountains tile")->play();
+        
+        if (this->tile_improvement_ptr->production_menu_open) {
+            this->tile_improvement_ptr->production_menu_open = false;
+            this->assets_manager_ptr->getSound("build menu close")->play();
+        }
+        
+        delete this->tile_improvement_ptr;
+        this->tile_improvement_ptr = NULL;
+        
+        this->has_improvement = false;
+        
+        this->scrap_improvement_frame = 0;
+        
+        if (
+            (this->tile_type == TileType :: LAKE) or
+            (this->tile_type == TileType :: OCEAN)
+        ) {
+            this->decoration_cleared = false;
+        }
+        
+        this->__sendCreditsSpentMessage(SCRAP_COST);
+        this->__sendTileStateMessage();
+        this->__sendGameStateRequest();
     }
-    
-    this->__sendCreditsSpentMessage(SCRAP_COST);
-    this->__sendTileStateMessage();
-    this->__sendGameStateRequest();
     
     return;
 }   /* __scrapImprovement() */
@@ -2007,7 +2099,6 @@ void HexTile :: __sendTileStateMessage(void)
     
     //                   32 char x 17 line console "--------------------------------\n";
     std::string console_string                   = "      **** TILE INFO ****       \n";
-    console_string                              += "                                \n";
     
     console_string                              += this->__getTileCoordsSubstring();
     console_string                              += "                                \n";
@@ -2237,6 +2328,8 @@ HexTile :: HexTile(
     
     this->frame = 0;
     this->credits = 0;
+    
+    this->scrap_improvement_frame = 0;
     
     this->position_x = position_x;
     this->position_y = position_y;
@@ -2620,6 +2713,10 @@ void HexTile :: processEvent(void)
     //  2. process HexTile events
     if (this->event_ptr->type == sf::Event::KeyPressed) {
         this->__handleKeyPressEvents();
+    }
+    
+    if (this->event_ptr->type == sf::Event::KeyReleased) {
+        this->__handleKeyReleaseEvents();
     }
     
     if (this->event_ptr->type == sf::Event::MouseButtonPressed) {

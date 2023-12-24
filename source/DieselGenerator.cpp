@@ -354,15 +354,15 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     options_substring                           += "                                \n";
     options_substring                           += "  **** DIESEL GEN OPTIONS ****  \n";
     options_substring                           += "                                \n";
-    options_substring                           += "[E]:  OPEN PRODUCTION MENU      \n";
+    options_substring                           += "     [E]:  OPEN PRODUCTION MENU \n";
     
     if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
-        options_substring                           += "[U]:  UPGRADE (";
+        options_substring                           += "     [U]:  UPGRD CAPACITY (";
         options_substring                           += std::to_string(upgrade_cost);
         options_substring                           +=" K)\n";
     }
     
-    options_substring                           += "[P]:  SCRAP (";
+    options_substring                           += "HOLD [P]:  SCRAP (";
     options_substring                           += std::to_string(SCRAP_COST);
     options_substring                           += " K)";
     

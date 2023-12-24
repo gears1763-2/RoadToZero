@@ -288,8 +288,14 @@ TileImprovement(
     this->tile_improvement_type = TileImprovementType :: WAVE_ENERGY_CONVERTER;
     
     this->is_running = false;
-    
+
     this->health = 100;
+    
+    this->capacity_kW = 100;
+    this->upgrade_level = 1;
+    
+    this->production_MWh = 0;
+    this->dispatchable_MWh = 0;
     
     this->tile_improvement_string = "WAVE ENERGY";
     
@@ -317,16 +323,30 @@ TileImprovement(
 std::string WaveEnergyConverter :: getTileOptionsSubstring(void)
 {
     //                   32 char x 17 line console "--------------------------------\n";
-    std::string options_substring                = " **** WAVE ENERGY OPTIONS ****  \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
+    std::string options_substring                = "CAPACITY:      ";
+    options_substring                           += std::to_string(this->capacity_kW);
+    options_substring                           += " kW (level ";
+    options_substring                           += std::to_string(this->upgrade_level);
+    options_substring                           += ")\n";
     
-    options_substring                           += "[P]:  SCRAP (";
+    options_substring                           += "PRODUCTION:    ";
+    options_substring                           += std::to_string(this->production_MWh);
+    options_substring                           += " MWh\n";
+    
+    options_substring                           += "DISPATCHABLE:  ";
+    options_substring                           += std::to_string(this->dispatchable_MWh);
+    options_substring                           += " MWh\n";
+    
+    options_substring                           += "HEALTH:        ";
+    options_substring                           += std::to_string(this->health);
+    options_substring                           += "/100\n";
+    
+    options_substring                           += "                                \n";
+    options_substring                           += " **** WAVE ENERGY OPTIONS ****  \n";
+    options_substring                           += "                                \n";
+    options_substring                           += "     [E]:  OPEN PRODUCTION MENU \n";
+    options_substring                           += "     [U]:  OPEN UPGRADE MENU    \n";
+    options_substring                           += "HOLD [P]:  SCRAP (";
     options_substring                           += std::to_string(SCRAP_COST);
     options_substring                           += " K)";
     

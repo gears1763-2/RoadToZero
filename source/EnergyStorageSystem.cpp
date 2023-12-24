@@ -94,6 +94,35 @@ void EnergyStorageSystem :: __setUpTileImprovementSpriteStatic(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void EnergyStorageSystem :: __setUpProductionMenu(void)
+///
+/// \brief Helper method to set up and position production menu assets (drawable).
+///
+
+void EnergyStorageSystem :: __setUpProductionMenu(void)
+{
+    //  1. modify production menu text
+    this->production_menu_backing_text.setString("**** DISCHARGE MENU ****");
+    this->production_menu_backing_text.setFont(
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
+    );
+    this->production_menu_backing_text.setCharacterSize(16);
+    this->production_menu_backing_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    this->production_menu_backing_text.setOrigin(
+        this->production_menu_backing_text.getLocalBounds().width / 2, 0
+    );
+    this->production_menu_backing_text.setPosition(400, 400 - 128 + 4);
+    
+    return;
+}   /* __setUpProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void EnergyStorageSystem :: __upgrade(void)
 ///
 /// \brief Helper method to upgrade the diesel generator.
@@ -281,9 +310,15 @@ TileImprovement(
     
     this->health = 100;
     
+    this->capacity_MWh = 1;
+    this->upgrade_level = 1;
+    
+    this->charge_MWh = 0;
+    
     this->tile_improvement_string = "ENERGY STORAGE";
     
     this->__setUpTileImprovementSpriteStatic();
+    this->__setUpProductionMenu();
     
     std::cout << "EnergyStorageSystem constructed at " << this << std::endl;
     
@@ -331,17 +366,35 @@ void EnergyStorageSystem :: setIsSelected(bool is_selected)
 
 std::string EnergyStorageSystem :: getTileOptionsSubstring(void)
 {
-    //                   32 char x 17 line console "--------------------------------\n";
-    std::string options_substring                = "**** ENERGY STORAGE OPTIONS ****\n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
-    options_substring                           += "                                \n";
+    int upgrade_cost = ENERGY_STORAGE_SYSTEM_BUILD_COST;
     
-    options_substring                           += "[P]:  SCRAP (";
+    //                   32 char x 17 line console "--------------------------------\n";
+    std::string options_substring                = "CAPACITY:  ";
+    options_substring                           += std::to_string(this->capacity_MWh);
+    options_substring                           += " MWh (level ";
+    options_substring                           += std::to_string(this->upgrade_level);
+    options_substring                           += ")\n";
+    
+    options_substring                           += "CHARGE:    ";
+    options_substring                           += std::to_string(this->charge_MWh);
+    options_substring                           += " MWh\n";
+    
+    options_substring                           += "HEALTH:    ";
+    options_substring                           += std::to_string(this->health);
+    options_substring                           += "/100\n";
+    
+    options_substring                           += "                                \n";
+    options_substring                           += "**** ENERGY STORAGE OPTIONS ****\n";
+    options_substring                           += "                                \n";
+    options_substring                           += "     [E]:  OPEN DISCHARGE MENU  \n";
+    
+    if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
+        options_substring                           += "     [U]:  UPGRADE (";
+        options_substring                           += std::to_string(upgrade_cost);
+        options_substring                           +=" K)\n";
+    }
+    
+    options_substring                           += "HOLD [P]:  SCRAP (";
     options_substring                           += std::to_string(SCRAP_COST);
     options_substring                           += " K)";
     

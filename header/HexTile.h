@@ -54,7 +54,7 @@
 
 
 #include "DieselGenerator.h"
-#include "EnergyStorageSystem.h"
+//#include "EnergyStorageSystem.h"
 #include "Settlement.h"
 #include "SolarPV.h"
 #include "TidalTurbine.h"
@@ -136,6 +136,7 @@ class HexTile {
         bool __isClicked(void);
         
         void __handleKeyPressEvents(void);
+        void __handleKeyReleaseEvents(void);
         void __handleMouseButtonEvents(void);
         
         void __openBuildMenu(void);
@@ -190,6 +191,7 @@ class HexTile {
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
+        int scrap_improvement_frame; ///< A frame for key-hold to confirm scrapping.
         
         double position_x; ///< The x position of the tile.
         double position_y; ///< The y position of the tile.

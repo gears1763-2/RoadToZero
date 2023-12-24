@@ -75,6 +75,7 @@ class EnergyStorageSystem: public TileImprovement {
         
         //  2. methods
         void __setUpTileImprovementSpriteStatic(void);
+        void __setUpProductionMenu(void);
         
         void __upgrade(void);
         
@@ -84,7 +85,8 @@ class EnergyStorageSystem: public TileImprovement {
     
     public:
         //  1. attributes
-        //...
+        int capacity_MWh; ///< The rated energy capacity [MWh] of the energy storage system.
+        int charge_MWh; ///< The charge [MWh] in the energy storage system.
         
         //  2. methods
         EnergyStorageSystem(

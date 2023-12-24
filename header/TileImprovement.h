@@ -95,12 +95,16 @@ class TileImprovement {
         
         //  2. methods
         void __setUpProductionMenu(void);
+        void __setUpUpgradeMenu(void);
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         
         void __openProductionMenu(void);
         void __closeProductionMenu(void);
+        
+        void __openUpgradeMenu(void);
+        void __closeUpgradeMenu(void);
         
         void __sendTileStateRequest(void);
         void __sendGameStateRequest(void);
@@ -118,6 +122,7 @@ class TileImprovement {
         bool just_built; ///< A boolean which indicates that the improvement was just built.
         bool just_upgraded; ///< A boolean which indicates that the improvement was just upgraded.
         bool production_menu_open; ///< A boolean which indicates whether or not the production menu is open.
+        bool upgrade_menu_open; ///< A boolean which indicates whether or not the build menu is open.
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
@@ -134,8 +139,11 @@ class TileImprovement {
         sf::Sprite tile_improvement_sprite_static; ///< A static sprite, for decorating the tile.
         std::vector<sf::Sprite> tile_improvement_sprite_animated; ///< An animated sprite, for the ContextMenu visual screen.
         
-        sf::RectangleShape production_menu_backing; ///< A backing for the production build menu.
+        sf::RectangleShape production_menu_backing; ///< A backing for the production menu.
         sf::Text production_menu_backing_text; ///< Text for the production menu backing.
+        
+        sf::RectangleShape upgrade_menu_backing; ///< A backing for the upgrade menu.
+        sf::Text upgrade_menu_backing_text; ///< Text for the upgrade menu backing.
         
         //  2. methods
         TileImprovement(

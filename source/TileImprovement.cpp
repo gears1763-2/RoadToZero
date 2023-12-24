@@ -66,7 +66,7 @@
 
 void TileImprovement :: __setUpProductionMenu(void)
 {
-    //  1. set up and place build menu backing and text
+    //  1. set up and place production menu backing and text
     this->production_menu_backing.setSize(sf::Vector2f(400, 256));
     this->production_menu_backing.setOrigin(200, 128);
     this->production_menu_backing.setPosition(400, 400);
@@ -87,6 +87,42 @@ void TileImprovement :: __setUpProductionMenu(void)
     
     return;
 }   /* __setUpProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __setUpUpgradeMenu(void)
+///
+/// \brief Helper method to set up and position upgrade menu assets (drawable).
+///
+
+void TileImprovement :: __setUpUpgradeMenu(void)
+{
+    //  1. set up and place upgrade menu backing and text
+    this->upgrade_menu_backing.setSize(sf::Vector2f(400, 256));
+    this->upgrade_menu_backing.setOrigin(200, 128);
+    this->upgrade_menu_backing.setPosition(400, 400);
+    this->upgrade_menu_backing.setFillColor(MONOCHROME_SCREEN_BACKGROUND);
+    this->upgrade_menu_backing.setOutlineColor(MENU_FRAME_GREY);
+    this->upgrade_menu_backing.setOutlineThickness(4);
+    
+    this->upgrade_menu_backing_text.setString("**** UPGARDE MENU ****");
+    this->upgrade_menu_backing_text.setFont(
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
+    );
+    this->upgrade_menu_backing_text.setCharacterSize(16);
+    this->upgrade_menu_backing_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    this->upgrade_menu_backing_text.setOrigin(
+        this->upgrade_menu_backing_text.getLocalBounds().width / 2, 0
+    );
+    this->upgrade_menu_backing_text.setPosition(400, 400 - 128 + 4);
+    
+    return;
+}   /* __setUpUpgradeMenu() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -193,6 +229,10 @@ void TileImprovement :: __openProductionMenu(void)
         return;
     }
     
+    if (this->upgrade_menu_open) {
+        this->__closeUpgradeMenu();
+    }
+    
     this->production_menu_open = true;
     this->assets_manager_ptr->getSound("build menu open")->play();
     
@@ -222,6 +262,58 @@ void TileImprovement :: __closeProductionMenu(void)
     
     return;
 }   /* __closeProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __openUpgradeMenu(void)
+///
+/// \brief Helper method to open the upgrade menu.
+///
+
+void TileImprovement :: __openUpgradeMenu(void)
+{
+    if (this->upgrade_menu_open) {
+        return;
+    }
+    
+    if (this->production_menu_open) {
+        this->__closeProductionMenu();
+    }
+    
+    this->upgrade_menu_open = true;
+    this->assets_manager_ptr->getSound("build menu open")->play();
+    
+    return;
+}   /* __openUpgradeMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __closeUpgradeMenu(void)
+///
+/// \brief Helper method to close the build menu.
+///
+
+void TileImprovement :: __closeUpgradeMenu(void)
+{
+    if (not this->upgrade_menu_open) {
+        return;
+    }
+    
+    this->upgrade_menu_open = false;
+    this->assets_manager_ptr->getSound("build menu close")->play();
+    
+    return;
+}   /* __closeUpgradeMenu() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -399,6 +491,7 @@ TileImprovement :: TileImprovement(
     this->game_phase = "build settlement";
     
     this->__setUpProductionMenu();
+    this->__setUpUpgradeMenu();
     
     std::cout << "TileImprovement constructed at " << this << std::endl;
     
@@ -425,6 +518,10 @@ void TileImprovement :: setIsSelected(bool is_selected)
     
     if ((not is_selected) and this->production_menu_open) {
         this->__closeProductionMenu();
+    }
+    
+    if ((not is_selected) and this->upgrade_menu_open) {
+        this->__closeUpgradeMenu();
     }
     
     return;

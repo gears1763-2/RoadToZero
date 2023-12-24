@@ -247,6 +247,31 @@ TileImprovement(
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Settlement :: setIsSelected(bool is_selected)
+///
+/// \brief Method to set the is selected attribute.
+///
+/// \param is_selected The value to set the is selected attribute to.
+///
+
+void Settlement :: setIsSelected(bool is_selected)
+{
+    TileImprovement :: setIsSelected(is_selected);
+    
+    if (this->is_selected) {
+        this->assets_manager_ptr->getSound("people and children")->play();
+    }
+    
+    return;
+}   /* setIsSelected() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Settlement :: getTileOptionsSubstring(void)
 ///
 /// \brief Helper method to assemble and return tile options substring.

@@ -76,6 +76,8 @@ class WaveEnergyConverter: public TileImprovement {
         //  2. methods
         void __setUpTileImprovementSpriteAnimated(void);
         
+        void __upgrade(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
     

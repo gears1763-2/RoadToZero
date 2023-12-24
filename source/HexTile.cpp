@@ -765,23 +765,6 @@ void HexTile :: __setIsSelected(bool is_selected)
     
     if (this->tile_improvement_ptr != NULL) {
         this->tile_improvement_ptr->setIsSelected(is_selected);
-        
-        if (is_selected) {
-            switch (this->tile_improvement_ptr->tile_improvement_type) {
-                case (TileImprovementType :: SETTLEMENT): {
-                    this->assets_manager_ptr->getSound("people and children")->play();
-                    
-                    break;
-                }
-                
-                
-                default: {
-                    // do nothing!
-                    
-                    break;
-                }
-            }
-        }
     }
     
     if ((not is_selected) and this->build_menu_open) {
@@ -1107,10 +1090,7 @@ void HexTile :: __handleKeyPressEvents(void)
     
     else if (this->game_phase == "system management") {
         if (this->has_improvement) {
-            if (
-                this->tile_improvement_ptr->tile_improvement_type != TileImprovementType :: SETTLEMENT and
-                not this->tile_improvement_ptr->production_menu_open
-            ) {
+            if (this->tile_improvement_ptr->tile_improvement_type != TileImprovementType :: SETTLEMENT) {
                 if (this->event_ptr->key.code == sf::Keyboard::P) {
                     this->__scrapImprovement();
                 }
@@ -1659,6 +1639,11 @@ void HexTile :: __scrapImprovement(void)
 {
     this->draw_explosion = true;
     this->assets_manager_ptr->getSound("clear non-mountains tile")->play();
+    
+    if (this->tile_improvement_ptr->production_menu_open) {
+        this->tile_improvement_ptr->production_menu_open = false;
+        this->assets_manager_ptr->getSound("build menu close")->play();
+    }
     
     delete this->tile_improvement_ptr;
     this->tile_improvement_ptr = NULL;
@@ -2625,7 +2610,10 @@ void HexTile :: assess(void)
 void HexTile :: processEvent(void)
 {
     //  1. process TileImprovement events
-    if (this->tile_improvement_ptr != NULL) {
+    if (
+        this->is_selected and
+        this->tile_improvement_ptr != NULL
+    ) {
         this->tile_improvement_ptr->processEvent();
     }
     
@@ -2656,7 +2644,10 @@ void HexTile :: processEvent(void)
 void HexTile :: processMessage(void)
 {
     //  1. process TileImprovement messages
-    if (this->tile_improvement_ptr != NULL) {
+    if (
+        this->is_selected and 
+        this->tile_improvement_ptr != NULL
+    ) {
         this->tile_improvement_ptr->processMessage();
     }
     
@@ -2679,6 +2670,19 @@ void HexTile :: processMessage(void)
                 std::cout << "Game state message received by " << this << std::endl;
                 this->__sendTileStateMessage();
                 this->message_hub_ptr->popMessage(GAME_STATE_CHANNEL);
+            }
+        }
+        
+        if (not this->message_hub_ptr->isEmpty(TILE_STATE_CHANNEL)) {
+            Message tile_state_message = this->message_hub_ptr->receiveMessage(
+                TILE_STATE_CHANNEL
+            );
+            
+            if (tile_state_message.subject == "state request") {
+                this->__sendTileStateMessage();
+                
+                std::cout << "Tile state request received by " << this << std::endl;
+                this->message_hub_ptr->popMessage(TILE_STATE_CHANNEL);
             }
         }
         

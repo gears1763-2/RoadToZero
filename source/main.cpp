@@ -244,7 +244,7 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     
     assets_manager_ptr->loadSound(
         "assets/audio/samples/647663__jotraing__electric-train-motor-idle-loop-new-generation-rollingstock_CC0.ogg",
-        "energy storage system idle"
+        "energy storage system"
     );
     
     assets_manager_ptr->loadSound(
@@ -255,6 +255,11 @@ void loadAssets(AssetsManager* assets_manager_ptr)
     assets_manager_ptr->loadSound(
         "assets/audio/samples/mixkit-calm-park-with-people-and-children_MixkitFree.ogg",
         "people and children"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-magical-coin-win-1936_MixkitFree.ogg",
+        "upgrade"
     );
     
     

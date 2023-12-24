@@ -76,6 +76,8 @@ class SolarPV: public TileImprovement {
         //  2. methods
         void __setUpTileImprovementSpriteStatic(void);
         
+        void __upgrade(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
     

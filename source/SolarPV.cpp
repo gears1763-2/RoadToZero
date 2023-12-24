@@ -94,6 +94,53 @@ void SolarPV :: __setUpTileImprovementSpriteStatic(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void SolarPV :: __upgrade(void)
+///
+/// \brief Helper method to upgrade the diesel generator.
+///
+
+void SolarPV :: __upgrade(void)
+{
+    /*
+    int upgrade_cost = DIESEL_GENERATOR_BUILD_COST;
+    
+    if (this->credits < upgrade_cost) {
+        std::cout << "Cannot upgrade diesel generator: insufficient credits (need "
+            << upgrade_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->is_running = false;
+    
+    this->health = 100;
+    
+    this->capacity_kW += 100;
+    this->upgrade_level++;
+    
+    this->production_MWh = 0;
+    this->max_production_MWh += 72;
+    
+    this->just_upgraded = true;
+    
+    this->assets_manager_ptr->getSound("upgrade")->play();
+    
+    this->__sendCreditsSpentMessage(upgrade_cost);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    */
+    
+    return;
+}   /* __upgrade() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void SolarPV :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -106,7 +153,13 @@ void SolarPV :: __handleKeyPressEvents(void)
     }
     
     switch (this->event_ptr->key.code) {
-        //...
+        case (sf::Keyboard::U): {
+            if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
+                this->__upgrade();
+            }
+            
+            break;
+        }
         
         
         default: {

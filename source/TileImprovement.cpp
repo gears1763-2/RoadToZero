@@ -225,6 +225,113 @@ void TileImprovement :: __closeProductionMenu(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __sendTileStateRequest(void)
+///
+/// \brief Helper method to format and send a request for the parent HexTile to send
+///     a tile state message.
+///
+
+void TileImprovement :: __sendTileStateRequest(void)
+{
+    Message tile_state_request;
+    
+    tile_state_request.channel = TILE_STATE_CHANNEL;
+    tile_state_request.subject = "state request";
+    
+    this->message_hub_ptr->sendMessage(tile_state_request);
+    
+    std::cout << "Tile state request sent by " << this << std::endl;
+    return;
+}   /* __sendTileStateRequest() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __sendGameStateRequest(void)
+///
+/// \brief Helper method to format and send a game state request (message).
+///
+
+void TileImprovement :: __sendGameStateRequest(void)
+{
+    Message game_state_request;
+    
+    game_state_request.channel = GAME_CHANNEL;
+    game_state_request.subject = "state request";
+    
+    this->message_hub_ptr->sendMessage(game_state_request);
+    
+    std::cout << "Game state request message sent by " << this << std::endl;
+    return;
+}   /* __sendGameStateRequest() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __sendCreditsSpentMessage(int credits_spent)
+///
+/// \brief Helper method to format and send a credits spent message.
+///
+/// \param credits_spent The number of credits that were spent.
+///
+
+void TileImprovement :: __sendCreditsSpentMessage(int credits_spent)
+{
+    Message credits_spent_message;
+    
+    credits_spent_message.channel = GAME_CHANNEL;
+    credits_spent_message.subject = "credits spent";
+    
+    credits_spent_message.int_payload["credits spent"] = credits_spent;
+    
+    this->message_hub_ptr->sendMessage(credits_spent_message);
+    
+    std::cout << "Credits spent (" << credits_spent << ") message sent by " << this
+        << std::endl;
+    return;
+}   /* __sendCreditsSpentMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __sendInsufficientCreditsMessage(void)
+///
+/// \brief Helper method to format and send an insufficient credits message.
+///
+
+void TileImprovement :: __sendInsufficientCreditsMessage(void)
+{
+    Message insufficient_credits_message;
+    
+    insufficient_credits_message.channel = GAME_CHANNEL;
+    insufficient_credits_message.subject = "insufficient credits";
+    
+    this->message_hub_ptr->sendMessage(insufficient_credits_message);
+    
+    std::cout << "Insufficient credits message sent by " << this << std::endl;
+    
+    return;
+}   /* __sendInsufficientCreditsMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -315,24 +422,6 @@ TileImprovement :: TileImprovement(
 void TileImprovement :: setIsSelected(bool is_selected)
 {
     this->is_selected = is_selected;
-    
-    if (is_selected) {
-        switch (this->tile_improvement_type) {
-            /*
-            case (TileImprovementType :: SETTLEMENT): {
-                this->assets_manager_ptr->getSound("people and children")->play();
-                
-                break;
-            }
-            */
-            
-            default: {
-                // do nothing!
-                
-                break;
-            }
-        }
-    }
     
     if ((not is_selected) and this->production_menu_open) {
         this->__closeProductionMenu();

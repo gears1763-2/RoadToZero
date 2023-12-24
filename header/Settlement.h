@@ -99,6 +99,8 @@ class Settlement: public TileImprovement {
             MessageHub*
         );
         
+        void setIsSelected(bool);
+        
         std::string getTileOptionsSubstring(void);
         
         void processEvent(void);

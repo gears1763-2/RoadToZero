@@ -105,6 +105,51 @@ void DieselGenerator :: __setUpTileImprovementSpriteAnimated(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void DieselGenerator :: __upgrade(void)
+///
+/// \brief Helper method to upgrade the diesel generator.
+///
+
+void DieselGenerator :: __upgrade(void)
+{
+    int upgrade_cost = DIESEL_GENERATOR_BUILD_COST;
+    
+    if (this->credits < upgrade_cost) {
+        std::cout << "Cannot upgrade diesel generator: insufficient credits (need "
+            << upgrade_cost << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    this->is_running = false;
+    
+    this->health = 100;
+    
+    this->capacity_kW += 100;
+    this->upgrade_level++;
+    
+    this->production_MWh = 0;
+    this->max_production_MWh += 72;
+    
+    this->just_upgraded = true;
+    
+    this->assets_manager_ptr->getSound("upgrade")->play();
+    
+    this->__sendCreditsSpentMessage(upgrade_cost);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __upgrade() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void DieselGenerator :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -116,8 +161,15 @@ void DieselGenerator :: __handleKeyPressEvents(void)
         return;
     }
     
+    
     switch (this->event_ptr->key.code) {
-        //...
+        case (sf::Keyboard::U): {
+            if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
+                this->__upgrade();
+            }
+            
+            break;
+        }
         
         
         default: {
@@ -126,6 +178,7 @@ void DieselGenerator :: __handleKeyPressEvents(void)
             break;
         }
     }
+    
 
     return;
 }   /* __handleKeyPressEvents() */
@@ -242,6 +295,7 @@ TileImprovement(
     this->health = 100;
     
     this->capacity_kW = 100;
+    this->upgrade_level = 1;
     
     this->production_MWh = 0;
     this->max_production_MWh = 72;
@@ -283,7 +337,9 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     //                   32 char x 17 line console "--------------------------------\n";
     std::string options_substring                = "CAPACITY:    ";
     options_substring                           += std::to_string(this->capacity_kW);
-    options_substring                           += " kW\n";
+    options_substring                           += " kW (level ";
+    options_substring                           += std::to_string(this->upgrade_level);
+    options_substring                           += ")\n";
     
     options_substring                           += "PRODUCTION:  ";
     options_substring                           += std::to_string(this->production_MWh);
@@ -300,9 +356,11 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     options_substring                           += "                                \n";
     options_substring                           += "[E]:  OPEN PRODUCTION MENU      \n";
     
-    options_substring                           += "[U]:  UPGRADE (";
-    options_substring                           += std::to_string(upgrade_cost);
-    options_substring                           +=" K)\n";
+    if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
+        options_substring                           += "[U]:  UPGRADE (";
+        options_substring                           += std::to_string(upgrade_cost);
+        options_substring                           +=" K)\n";
+    }
     
     options_substring                           += "[P]:  SCRAP (";
     options_substring                           += std::to_string(SCRAP_COST);
@@ -381,12 +439,48 @@ void DieselGenerator :: draw(void)
         return;
     }
     
+    //  2. handle upgrade effects
+    if (this->just_upgraded) {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(
+                    255 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2),
+                    255,
+                    255 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2),
+                    255
+                )
+            );
+            
+            this->tile_improvement_sprite_animated[i].setScale(
+                sf::Vector2f(
+                    1 + 0.2 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2),
+                    1 + 0.2 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2)
+                )
+            );
+        }
+        
+        this->upgrade_frame++;
+    }
     
-    //  2. draw first element of animated sprite
+    if (this->upgrade_frame >= 2 * FRAMES_PER_SECOND) {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(255,255,255,255)
+            );
+            
+            this->tile_improvement_sprite_animated[i].setScale(sf::Vector2f(1,1));
+        }
+        
+        this->just_upgraded = false;
+        this->upgrade_frame = 0;
+    }
+    
+    
+    //  3. draw first element of animated sprite
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[0]);
     
     
-    //  3. draw second element of animated sprite
+    //  4. draw second element of animated sprite
     if (this->is_running) {
         //...
     }
@@ -398,13 +492,13 @@ void DieselGenerator :: draw(void)
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);
     
     
-    //  4. draw smoke effects
+    //  5. draw smoke effects
     if (this->is_running) {
         //...
     }
     
     
-    //  5. draw production menu
+    //  6. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);

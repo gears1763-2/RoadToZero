@@ -123,6 +123,8 @@ const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 400; ///< The cost of building (or 
 
 const int SCRAP_COST = 50; ///< The cost of scrapping a tile improvement (other than settlement).
 
+const int MAX_UPGRADE_LEVELS = 5; ///< The maximum upgrade level of any tile improvement.
+
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //
 
 

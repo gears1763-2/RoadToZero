@@ -76,6 +76,8 @@ class EnergyStorageSystem: public TileImprovement {
         //  2. methods
         void __setUpTileImprovementSpriteStatic(void);
         
+        void __upgrade(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
     
@@ -93,6 +95,8 @@ class EnergyStorageSystem: public TileImprovement {
             AssetsManager*,
             MessageHub*
         );
+        
+        void setIsSelected(bool);
         
         std::string getTileOptionsSubstring(void);
         

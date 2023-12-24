@@ -101,6 +101,12 @@ class TileImprovement {
         
         void __openProductionMenu(void);
         void __closeProductionMenu(void);
+        
+        void __sendTileStateRequest(void);
+        void __sendGameStateRequest(void);
+        
+        void __sendCreditsSpentMessage(int);
+        void __sendInsufficientCreditsMessage(void);
     
     
     public:
@@ -110,11 +116,14 @@ class TileImprovement {
         bool is_running; ///< A boolean which indicates whether or not the improvement is running.
         bool is_selected; ///< A boolean which indicates whether or not the tile is selected.
         bool just_built; ///< A boolean which indicates that the improvement was just built.
+        bool just_upgraded; ///< A boolean which indicates that the improvement was just upgraded.
         bool production_menu_open; ///< A boolean which indicates whether or not the production menu is open.
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
         int health; ///< The health of the improvement.
+        int upgrade_level; ///< The upgrade level of the improvement.
+        int upgrade_frame; ///< The frame of the upgrade animation.
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
@@ -138,7 +147,7 @@ class TileImprovement {
             MessageHub*
         );
         
-        void setIsSelected(bool);
+        virtual void setIsSelected(bool);
         
         virtual std::string getTileOptionsSubstring(void) {return "";}
         

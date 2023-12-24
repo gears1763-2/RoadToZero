@@ -1107,7 +1107,10 @@ void HexTile :: __handleKeyPressEvents(void)
     
     else if (this->game_phase == "system management") {
         if (this->has_improvement) {
-            if (this->tile_improvement_ptr->tile_improvement_type != TileImprovementType :: SETTLEMENT) {
+            if (
+                this->tile_improvement_ptr->tile_improvement_type != TileImprovementType :: SETTLEMENT and
+                not this->tile_improvement_ptr->production_menu_open
+            ) {
                 if (this->event_ptr->key.code == sf::Keyboard::P) {
                     this->__scrapImprovement();
                 }
@@ -2714,20 +2717,7 @@ void HexTile :: draw(void)
         this->render_window_ptr->draw(this->tile_decoration_sprite);
     }
     
-    //  4. draw tile improvement
-    if (this->has_improvement) {
-        if (not this->tile_improvement_ptr->just_built) {
-            this->tile_improvement_ptr->draw();
-        }
-    }
-    
-    //  5. draw resource
-    if (this->show_resource) {
-        this->render_window_ptr->draw(this->resource_chip_sprite);
-        this->render_window_ptr->draw(this->resource_text);
-    }
-    
-    //  6. draw selection outline
+    //  4. draw selection outline
     if (this->is_selected) {
         sf::Color outline_colour = this->select_outline_sprite.getOutlineColor();
         
@@ -2737,6 +2727,19 @@ void HexTile :: draw(void)
         this->select_outline_sprite.setOutlineColor(outline_colour);
         
         this->render_window_ptr->draw(this->select_outline_sprite);
+    }
+    
+    //  5. draw tile improvement
+    if (this->has_improvement) {
+        if (not this->tile_improvement_ptr->just_built) {
+            this->tile_improvement_ptr->draw();
+        }
+    }
+    
+    //  6. draw resource
+    if (this->show_resource) {
+        this->render_window_ptr->draw(this->resource_chip_sprite);
+        this->render_window_ptr->draw(this->resource_text);
     }
     
     //  7. draw resource assessment notification

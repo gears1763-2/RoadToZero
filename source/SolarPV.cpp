@@ -101,6 +101,10 @@ void SolarPV :: __setUpTileImprovementSpriteStatic(void)
 
 void SolarPV :: __handleKeyPressEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->key.code) {
         //...
         
@@ -129,6 +133,10 @@ void SolarPV :: __handleKeyPressEvents(void)
 
 void SolarPV :: __handleMouseButtonEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->mouseButton.button) {
         case (sf::Mouse::Left): {
             //...
@@ -276,6 +284,8 @@ std::string SolarPV :: getTileOptionsSubstring(void)
 
 void SolarPV :: processEvent(void)
 {
+    TileImprovement :: processEvent();
+    
     if (this->event_ptr->type == sf::Event::KeyPressed) {
         this->__handleKeyPressEvents();
     }
@@ -301,6 +311,8 @@ void SolarPV :: processEvent(void)
 
 void SolarPV :: processMessage(void)
 {
+    TileImprovement :: processMessage();
+    
     //...
     
     return;

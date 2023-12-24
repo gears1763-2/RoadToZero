@@ -112,6 +112,10 @@ void WaveEnergyConverter :: __setUpTileImprovementSpriteAnimated(void)
 
 void WaveEnergyConverter :: __handleKeyPressEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->key.code) {
         //...
         
@@ -140,6 +144,9 @@ void WaveEnergyConverter :: __handleKeyPressEvents(void)
 
 void WaveEnergyConverter :: __handleMouseButtonEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
     switch (this->event_ptr->mouseButton.button) {
         case (sf::Mouse::Left): {
             //...
@@ -287,6 +294,8 @@ std::string WaveEnergyConverter :: getTileOptionsSubstring(void)
 
 void WaveEnergyConverter :: processEvent(void)
 {
+    TileImprovement :: processEvent();
+    
     if (this->event_ptr->type == sf::Event::KeyPressed) {
         this->__handleKeyPressEvents();
     }
@@ -312,6 +321,8 @@ void WaveEnergyConverter :: processEvent(void)
 
 void WaveEnergyConverter :: processMessage(void)
 {
+    TileImprovement :: processMessage();
+    
     //...
     
     return;
@@ -340,11 +351,11 @@ void WaveEnergyConverter :: draw(void)
     }
     
     
-    //  1. draw first element of animated sprite
+    //  2. draw first element of animated sprite
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[0]);
     
     
-    //  2. draw second element of animated sprite
+    //  3. draw second element of animated sprite
     if (this->is_running) {
         //...
     }
@@ -354,6 +365,14 @@ void WaveEnergyConverter :: draw(void)
     }
     
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);
+    
+    //  4. draw production menu
+    if (this->production_menu_open) {
+        this->render_window_ptr->draw(this->production_menu_backing);
+        this->render_window_ptr->draw(this->production_menu_backing_text);
+        
+        //...
+    }
     
     this->frame++;
     return;

@@ -96,8 +96,8 @@ class TileImprovement {
         //  2. methods
         void __setUpProductionMenu(void);
         
-        virtual void __handleKeyPressEvents(void);
-        virtual void __handleMouseButtonEvents(void);
+        void __handleKeyPressEvents(void);
+        void __handleMouseButtonEvents(void);
         
         void __openProductionMenu(void);
         void __closeProductionMenu(void);

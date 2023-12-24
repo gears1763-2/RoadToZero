@@ -112,6 +112,10 @@ void DieselGenerator :: __setUpTileImprovementSpriteAnimated(void)
 
 void DieselGenerator :: __handleKeyPressEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->key.code) {
         //...
         
@@ -140,6 +144,10 @@ void DieselGenerator :: __handleKeyPressEvents(void)
 
 void DieselGenerator :: __handleMouseButtonEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->mouseButton.button) {
         case (sf::Mouse::Left): {
             //...
@@ -374,11 +382,11 @@ void DieselGenerator :: draw(void)
     }
     
     
-    //  1. draw first element of animated sprite
+    //  2. draw first element of animated sprite
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[0]);
     
     
-    //  2. draw second element of animated sprite
+    //  3. draw second element of animated sprite
     if (this->is_running) {
         //...
     }
@@ -390,13 +398,13 @@ void DieselGenerator :: draw(void)
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);
     
     
-    //  3. draw smoke effects
+    //  4. draw smoke effects
     if (this->is_running) {
         //...
     }
     
     
-    //  4. draw production menu
+    //  5. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);

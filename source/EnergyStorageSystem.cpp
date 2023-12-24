@@ -101,6 +101,10 @@ void EnergyStorageSystem :: __setUpTileImprovementSpriteStatic(void)
 
 void EnergyStorageSystem :: __handleKeyPressEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->key.code) {
         //...
         
@@ -129,6 +133,10 @@ void EnergyStorageSystem :: __handleKeyPressEvents(void)
 
 void EnergyStorageSystem :: __handleMouseButtonEvents(void)
 {
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->mouseButton.button) {
         case (sf::Mouse::Left): {
             //...
@@ -276,6 +284,8 @@ std::string EnergyStorageSystem :: getTileOptionsSubstring(void)
 
 void EnergyStorageSystem :: processEvent(void)
 {
+    TileImprovement :: processEvent();
+    
     if (this->event_ptr->type == sf::Event::KeyPressed) {
         this->__handleKeyPressEvents();
     }
@@ -301,6 +311,8 @@ void EnergyStorageSystem :: processEvent(void)
 
 void EnergyStorageSystem :: processMessage(void)
 {
+    TileImprovement :: processMessage();
+    
     //...
     
     return;
@@ -329,8 +341,17 @@ void EnergyStorageSystem :: draw(void)
     }
     
     
-    //  1. draw static sprite
+    //  2. draw static sprite
     this->render_window_ptr->draw(this->tile_improvement_sprite_static);
+    
+    
+    //  3. draw production menu
+    if (this->production_menu_open) {
+        this->render_window_ptr->draw(this->production_menu_backing);
+        this->render_window_ptr->draw(this->production_menu_backing_text);
+        
+        //...
+    }
     
     this->frame++;
     return;

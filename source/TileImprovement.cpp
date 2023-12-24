@@ -83,7 +83,7 @@ void TileImprovement :: __setUpProductionMenu(void)
     this->production_menu_backing_text.setOrigin(
         this->production_menu_backing_text.getLocalBounds().width / 2, 0
     );
-    this->production_menu_backing_text.setPosition(200, 200 - 128 + 4);
+    this->production_menu_backing_text.setPosition(400, 400 - 128 + 4);
     
     return;
 }   /* __setUpProductionMenu() */
@@ -102,6 +102,14 @@ void TileImprovement :: __setUpProductionMenu(void)
 
 void TileImprovement :: __handleKeyPressEvents(void)
 {
+    if (this->tile_improvement_type == TileImprovementType :: SETTLEMENT) {
+        return;
+    }
+    
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->key.code) {
         case (sf::Keyboard::E): {
             this->__openProductionMenu();
@@ -134,6 +142,14 @@ void TileImprovement :: __handleKeyPressEvents(void)
 
 void TileImprovement :: __handleMouseButtonEvents(void)
 {
+    if (this->tile_improvement_type == TileImprovementType :: SETTLEMENT) {
+        return;
+    }
+    
+    if (this->just_built) {
+        return;
+    }
+    
     switch (this->event_ptr->mouseButton.button) {
         case (sf::Mouse::Left): {
             //...

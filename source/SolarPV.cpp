@@ -586,7 +586,13 @@ void SolarPV :: draw(void)
     this->render_window_ptr->draw(this->tile_improvement_sprite_static);
     
     
-    //  4. draw production menu
+    //  4. draw storage upgrades
+    for (size_t i = 0; i < this->storage_upgrade_sprite_vec.size(); i++) {
+        this->render_window_ptr->draw(this->storage_upgrade_sprite_vec[i]);
+    }
+    
+    
+    //  5. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);
@@ -594,7 +600,7 @@ void SolarPV :: draw(void)
         //...
     }
     
-    //  5. draw upgrade menu
+    //  6. draw upgrade menu
     if (this->upgrade_menu_open) {
         this->render_window_ptr->draw(this->upgrade_menu_backing);
         this->render_window_ptr->draw(this->upgrade_menu_backing_text);

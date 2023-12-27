@@ -192,6 +192,22 @@ void TileImprovement :: __upgradeStorageCapacity(void)
     
     this->storage_level++;
     
+    this->storage_upgrade_sprite_vec.push_back(
+        sf::Sprite(
+            *(this->assets_manager_ptr->getTexture("storage level"))
+        )
+    );
+    
+    this->storage_upgrade_sprite_vec.back().setOrigin(
+        this->storage_upgrade_sprite_vec.back().getLocalBounds().width / 2,
+        this->storage_upgrade_sprite_vec.back().getLocalBounds().height
+    );
+    
+    this->storage_upgrade_sprite_vec.back().setPosition(
+        this->position_x + 18,
+        this->position_y + 25 - 7 * this->storage_upgrade_sprite_vec.size()
+    );
+    
     this->just_upgraded = true;
     
     this->assets_manager_ptr->getSound("upgrade")->play();

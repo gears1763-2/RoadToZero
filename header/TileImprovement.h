@@ -149,6 +149,8 @@ class TileImprovement {
         sf::Text upgrade_menu_backing_text; ///< Text for the upgrade menu backing.
         
         sf::Sprite storage_upgrade_sprite; ///< A sprite for illustrating storage (in upgrade menu).
+        std::vector<sf::Sprite> storage_upgrade_sprite_vec; ///< A vector of sprites for illustrating the storage upgrade level (on tile).
+        
         sf::Sprite upgrade_arrow_sprite; ///< An upgrade arrow sprite.
         sf::Sprite upgrade_plus_sprite; ///< An upgrade plus sprite.
         

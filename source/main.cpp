@@ -155,6 +155,11 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "upgrade plus"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/energy_storage_16x16_1_CC-BY.png",
+        "storage level"
+    );
+    
     
     //  3. load sounds
     assets_manager_ptr->loadSound(

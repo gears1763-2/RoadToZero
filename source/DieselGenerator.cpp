@@ -112,13 +112,15 @@ void DieselGenerator :: __setUpTileImprovementSpriteAnimated(void)
 
 void DieselGenerator :: __upgrade(void)
 {
-    int upgrade_cost = DIESEL_GENERATOR_BUILD_COST;
-    
-    if (this->credits < upgrade_cost) {
+    if (this->credits < DIESEL_GENERATOR_BUILD_COST) {
         std::cout << "Cannot upgrade diesel generator: insufficient credits (need "
-            << upgrade_cost << " K)" << std::endl;
+            << DIESEL_GENERATOR_BUILD_COST << " K)" << std::endl;
             
         this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    if (this->upgrade_level >= MAX_UPGRADE_LEVELS) {
         return;
     }
     
@@ -136,7 +138,7 @@ void DieselGenerator :: __upgrade(void)
     
     this->assets_manager_ptr->getSound("upgrade")->play();
     
-    this->__sendCreditsSpentMessage(upgrade_cost);
+    this->__sendCreditsSpentMessage(DIESEL_GENERATOR_BUILD_COST);
     this->__sendTileStateRequest();
     this->__sendGameStateRequest();
     
@@ -164,9 +166,7 @@ void DieselGenerator :: __handleKeyPressEvents(void)
     
     switch (this->event_ptr->key.code) {
         case (sf::Keyboard::U): {
-            if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
-                this->__upgrade();
-            }
+            this->__upgrade();
             
             break;
         }
@@ -357,7 +357,7 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     options_substring                           += "     [E]:  OPEN PRODUCTION MENU \n";
     
     if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
-        options_substring                           += "     [U]:  UPGRD CAPACITY (";
+        options_substring                           += "     [U]:  + 100 kW (";
         options_substring                           += std::to_string(upgrade_cost);
         options_substring                           +=" K)\n";
     }

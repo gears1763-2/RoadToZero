@@ -105,45 +105,40 @@ void TidalTurbine :: __setUpTileImprovementSpriteAnimated(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void TidalTurbine :: __upgrade(void)
+/// \fn void TidalTurbine :: __upgradePowerCapacity(void)
 ///
-/// \brief Helper method to upgrade the diesel generator.
+/// \brief Helper method to upgrade power capacity.
 ///
 
-void TidalTurbine :: __upgrade(void)
+void TidalTurbine :: __upgradePowerCapacity(void)
 {
-    /*
-    int upgrade_cost = DIESEL_GENERATOR_BUILD_COST;
-    
-    if (this->credits < upgrade_cost) {
-        std::cout << "Cannot upgrade diesel generator: insufficient credits (need "
-            << upgrade_cost << " K)" << std::endl;
+    if (this->credits < TIDAL_TURBINE_BUILD_COST) {
+        std::cout << "Cannot upgrade tidal turbine: insufficient credits (need "
+            << TIDAL_TURBINE_BUILD_COST << " K)" << std::endl;
             
         this->__sendInsufficientCreditsMessage();
         return;
     }
     
-    this->is_running = false;
+    if (this->upgrade_level >= MAX_UPGRADE_LEVELS) {
+        return;
+    }
     
     this->health = 100;
     
     this->capacity_kW += 100;
     this->upgrade_level++;
     
-    this->production_MWh = 0;
-    this->max_production_MWh += 72;
-    
     this->just_upgraded = true;
     
     this->assets_manager_ptr->getSound("upgrade")->play();
     
-    this->__sendCreditsSpentMessage(upgrade_cost);
+    this->__sendCreditsSpentMessage(TIDAL_TURBINE_BUILD_COST);
     this->__sendTileStateRequest();
     this->__sendGameStateRequest();
-    */
     
     return;
-}   /* __upgrade() */
+}   /* __upgradePowerCapacity() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -165,8 +160,35 @@ void TidalTurbine :: __handleKeyPressEvents(void)
     
     switch (this->event_ptr->key.code) {
         case (sf::Keyboard::U): {
-            if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
-                this->__upgrade();
+            this->__openUpgradeMenu();
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::W): {
+            if (this->production_menu_open) {
+                //...
+            }
+            
+            else if (this->upgrade_menu_open) {
+                this->__upgradePowerCapacity();
+            }
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::S): {
+            //...
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::D): {
+            if (this->upgrade_menu_open) {
+                this->__upgradeStorageCapacity();
             }
             
             break;
@@ -225,6 +247,120 @@ void TidalTurbine :: __handleMouseButtonEvents(void)
     
     return;
 }   /* __handleMouseButtonEvents() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: __drawUpgradeOptions(void)
+///
+/// \brief Helper method to set up and draw upgrade options.
+///
+
+void TidalTurbine :: __drawUpgradeOptions(void)
+{
+    //  1. draw power capacity upgrade sprite
+    for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+        sf::Vector2f initial_position = this->tile_improvement_sprite_animated[i].getPosition();
+        this->tile_improvement_sprite_animated[i].setPosition(400 - 100, 400 - 32 - 8);
+        
+        sf::Color initial_colour = this->tile_improvement_sprite_animated[i].getColor();
+        this->tile_improvement_sprite_animated[i].setColor(sf::Color(255, 255, 255, 255));
+        
+        sf::Vector2f initial_scale = this->tile_improvement_sprite_animated[i].getScale();
+        this->tile_improvement_sprite_animated[i].setScale(sf::Vector2f(1, 1));
+        
+        this->render_window_ptr->draw(this->tile_improvement_sprite_animated[i]);
+        
+        this->tile_improvement_sprite_animated[i].setPosition(initial_position);
+        this->tile_improvement_sprite_animated[i].setColor(initial_colour);
+        this->tile_improvement_sprite_animated[i].setScale(initial_scale);
+    }
+    
+    this->render_window_ptr->draw(this->upgrade_arrow_sprite);
+    
+    
+    //  2. draw power capacity upgrade text
+    //                  16 char line = "                \n"
+    std::string power_upgrade_string = "POWER CAPACITY  \n";
+    power_upgrade_string            += "                \n";
+    
+    power_upgrade_string            += "CAPACITY:  ";
+    power_upgrade_string            += std::to_string(this->capacity_kW);
+    power_upgrade_string            += " kW\n";
+    
+    power_upgrade_string            += "LEVEL:     ";
+    power_upgrade_string            += std::to_string(this->upgrade_level);
+    power_upgrade_string            += "\n\n";
+    
+    if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
+        power_upgrade_string        += "[W]: + 100 kW (";
+        power_upgrade_string        +=  std::to_string(TIDAL_TURBINE_BUILD_COST);
+        power_upgrade_string        += " K)\n";
+    }
+    
+    else {
+        power_upgrade_string        += " * MAX LEVEL *  \n";
+    }
+    
+    sf::Text power_upgrade_text = sf::Text(
+        power_upgrade_string,
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        16
+    );
+    
+    power_upgrade_text.setOrigin(power_upgrade_text.getLocalBounds().width / 2, 0);
+    power_upgrade_text.setPosition(400 - 100, 400 - 32 + 16);
+    power_upgrade_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    this->render_window_ptr->draw(power_upgrade_text);
+    
+    
+    //  3. draw energy capacity (storage) upgrade sprite
+    this->render_window_ptr->draw(this->storage_upgrade_sprite);
+    this->render_window_ptr->draw(this->upgrade_plus_sprite);
+    
+    
+    //  4. draw energy capacity (storage) upgrade text
+    //                   16 char line = "                \n"
+    std::string energy_upgrade_string = "ENERGY CAPACITY \n";
+    energy_upgrade_string            += "                \n";
+    
+    energy_upgrade_string            += "CAPACITY:  ";
+    energy_upgrade_string            += std::to_string(this->storage_level * 200);
+    energy_upgrade_string            += " kWh\n";
+    
+    energy_upgrade_string            += "LEVEL:     ";
+    energy_upgrade_string            += std::to_string(this->storage_level);
+    energy_upgrade_string            += "\n\n";
+    
+    if (this->storage_level < MAX_STORAGE_LEVELS) {
+        energy_upgrade_string        += "[D]: + 200 kWh (";
+        energy_upgrade_string        +=  std::to_string(ENERGY_STORAGE_SYSTEM_BUILD_COST);
+        energy_upgrade_string        += " K)\n";
+    }
+    
+    else {
+        energy_upgrade_string += " * MAX LEVEL *  \n";
+    }
+    
+    sf::Text energy_upgrade_text = sf::Text(
+        energy_upgrade_string,
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        16
+    );
+    
+    energy_upgrade_text.setOrigin(energy_upgrade_text.getLocalBounds().width / 2, 0);
+    energy_upgrade_text.setPosition(400 + 100, 400 - 32 + 16);
+    energy_upgrade_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    this->render_window_ptr->draw(energy_upgrade_text);
+    
+    return;
+}   /* __drawUpgradeOptions() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -294,6 +430,7 @@ TileImprovement(
     
     this->capacity_kW = 100;
     this->upgrade_level = 1;
+    this->storage_level = 0;
     
     this->production_MWh = 0;
     this->dispatchable_MWh = 0;
@@ -425,11 +562,48 @@ void TidalTurbine :: draw(void)
     }
     
     
-    //  2. draw first element of animated sprite
+    //  2. handle upgrade effects
+    if (this->just_upgraded) {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(
+                    255 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2),
+                    255,
+                    255 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2),
+                    255
+                )
+            );
+            
+            this->tile_improvement_sprite_animated[i].setScale(
+                sf::Vector2f(
+                    1 + 0.2 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2),
+                    1 + 0.2 * pow(cos((M_PI * this->upgrade_frame) / FRAMES_PER_SECOND), 2)
+                )
+            );
+        }
+        
+        this->upgrade_frame++;
+    }
+    
+    if (this->upgrade_frame >= 2 * FRAMES_PER_SECOND) {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(255,255,255,255)
+            );
+            
+            this->tile_improvement_sprite_animated[i].setScale(sf::Vector2f(1,1));
+        }
+        
+        this->just_upgraded = false;
+        this->upgrade_frame = 0;
+    }
+    
+    
+    //  3. draw first element of animated sprite
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[0]);
     
     
-    //  3. draw second element of animated sprite
+    //  4. draw second element of animated sprite
     if (this->is_running) {
         //...
     }
@@ -440,12 +614,20 @@ void TidalTurbine :: draw(void)
     
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);
     
-    //  4. draw production menu
+    //  5. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);
         
         //...
+    }
+    
+    //  6. draw upgrade menu
+    if (this->upgrade_menu_open) {
+        this->render_window_ptr->draw(this->upgrade_menu_backing);
+        this->render_window_ptr->draw(this->upgrade_menu_backing_text);
+        
+        this->__drawUpgradeOptions();
     }
     
     this->frame++;

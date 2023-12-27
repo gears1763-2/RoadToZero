@@ -145,6 +145,16 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "wave energy converter"
     );
     
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/upgrade_arrow_16x16_1_CC-BY.png",
+        "upgrade arrow"
+    );
+    
+    assets_manager_ptr->loadTexture(
+        "assets/tile_sheets/upgrade_plus_16x16_1_CC-BY.png",
+        "upgrade plus"
+    );
+    
     
     //  3. load sounds
     assets_manager_ptr->loadSound(

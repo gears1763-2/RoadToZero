@@ -110,7 +110,7 @@ void TileImprovement :: __setUpUpgradeMenu(void)
     this->upgrade_menu_backing.setOutlineColor(MENU_FRAME_GREY);
     this->upgrade_menu_backing.setOutlineThickness(4);
     
-    this->upgrade_menu_backing_text.setString("**** UPGARDE MENU ****");
+    this->upgrade_menu_backing_text.setString("**** UPGRADE MENU ****");
     this->upgrade_menu_backing_text.setFont(
         *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
     );
@@ -121,8 +121,87 @@ void TileImprovement :: __setUpUpgradeMenu(void)
     );
     this->upgrade_menu_backing_text.setPosition(400, 400 - 128 + 4);
     
+    
+    //  2. set up and place storage upgrade sprite (with upgrade plus)
+    this->storage_upgrade_sprite = sf::Sprite(
+        *(this->assets_manager_ptr->getTexture("energy storage system"))
+    );
+    
+    this->storage_upgrade_sprite.setOrigin(
+        this->storage_upgrade_sprite.getLocalBounds().width / 2,
+        this->storage_upgrade_sprite.getLocalBounds().height
+    );
+    
+    this->storage_upgrade_sprite.setPosition(400 + 100, 400 - 32);
+    
+    this->upgrade_plus_sprite = sf::Sprite(
+        *(this->assets_manager_ptr->getTexture("upgrade plus"))
+    );
+    
+    this->upgrade_plus_sprite.setOrigin(
+        this->upgrade_plus_sprite.getLocalBounds().width / 2,
+        this->upgrade_plus_sprite.getLocalBounds().height / 2
+    );
+    
+    this->upgrade_plus_sprite.setPosition(400 + 130, 400 - 64);
+    
+    
+    //  3. set up and place upgrade arrow sprite
+    this->upgrade_arrow_sprite = sf::Sprite(
+        *(this->assets_manager_ptr->getTexture("upgrade arrow"))
+    );
+    
+    this->upgrade_arrow_sprite.setOrigin(
+        this->upgrade_arrow_sprite.getLocalBounds().width / 2,
+        this->upgrade_arrow_sprite.getLocalBounds().height / 2
+    );
+    
+    this->upgrade_arrow_sprite.setPosition(400 - 64, 400 - 64);
+    
+    
     return;
 }   /* __setUpUpgradeMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __upgradeStorageCapacity(void)
+///
+/// \brief Helper method to upgrade storage capacity.
+///
+
+void TileImprovement :: __upgradeStorageCapacity(void)
+{
+    if (this->credits < ENERGY_STORAGE_SYSTEM_BUILD_COST) {
+        std::cout << "Cannot add energy storage: insufficient credits (need "
+            << ENERGY_STORAGE_SYSTEM_BUILD_COST << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    if (this->storage_level >= MAX_STORAGE_LEVELS) {
+        return;
+    }
+    
+    this->health = 100;
+    
+    this->storage_level++;
+    
+    this->just_upgraded = true;
+    
+    this->assets_manager_ptr->getSound("upgrade")->play();
+    
+    this->__sendCreditsSpentMessage(ENERGY_STORAGE_SYSTEM_BUILD_COST);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __upgradeStorageCapacity() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -481,6 +560,7 @@ TileImprovement :: TileImprovement(
     this->is_selected = true;
     this->just_built = true;
     this->production_menu_open = false;
+    this->upgrade_menu_open = false;
     
     this->frame = 0;
     this->credits = 0;

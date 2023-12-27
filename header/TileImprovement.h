@@ -97,6 +97,8 @@ class TileImprovement {
         void __setUpProductionMenu(void);
         void __setUpUpgradeMenu(void);
         
+        void __upgradeStorageCapacity(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         
@@ -129,6 +131,7 @@ class TileImprovement {
         int health; ///< The health of the improvement.
         int upgrade_level; ///< The upgrade level of the improvement.
         int upgrade_frame; ///< The frame of the upgrade animation.
+        int storage_level; ///< The level of storage installed alongside the tile improvement.
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
@@ -144,6 +147,10 @@ class TileImprovement {
         
         sf::RectangleShape upgrade_menu_backing; ///< A backing for the upgrade menu.
         sf::Text upgrade_menu_backing_text; ///< Text for the upgrade menu backing.
+        
+        sf::Sprite storage_upgrade_sprite; ///< A sprite for illustrating storage (in upgrade menu).
+        sf::Sprite upgrade_arrow_sprite; ///< An upgrade arrow sprite.
+        sf::Sprite upgrade_plus_sprite; ///< An upgrade plus sprite.
         
         //  2. methods
         TileImprovement(

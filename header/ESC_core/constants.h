@@ -120,11 +120,12 @@ const double SOLAR_PV_WATER_BUILD_MULTIPLIER = 1.5; ///< The additional cost of 
 const int TIDAL_TURBINE_BUILD_COST = 600; ///< The cost of building (or upgrading) a tidal turbine in 100 kW increments.
 const int WAVE_ENERGY_CONVERTER_BUILD_COST = 800; ///< The cost of building (or upgrading) a wave energy converter in 100 kW increments.
 
-const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 800; ///< The cost of building (or upgrading) an energy storage system in 1 MWh increments.
+const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 160; ///< The cost of adding energy storage in 200 kWh increments
 
 const int SCRAP_COST = 50; ///< The cost of scrapping a tile improvement (other than settlement).
 
 const int MAX_UPGRADE_LEVELS = 5; ///< The maximum upgrade level of any tile improvement.
+const int MAX_STORAGE_LEVELS = 5; ///< The maximum storage level of any tile improvement.
 
 // ======== END HEXTILE AND HEXMAP CONSTANTS ======================================== //
 

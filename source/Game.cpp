@@ -84,6 +84,98 @@ void Game :: __toggleFrameClockOverlay(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __checkTerminatingConditions(void)
+///
+/// \brief Helper method to check terminating conditions (i.e., loss or victory
+///     conditions).
+///
+
+void Game :: __checkTerminatingConditions(void)
+{
+    //...
+    
+    return;
+}   /* __checkTerminatingConditions() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __advanceTurn(void)
+///
+/// \brief Helper method to advance turn.
+///
+
+void Game :: __advanceTurn(void)
+{
+    //  1. advance turn
+    this->turn++;
+    
+    //  2. advance month/year
+    this->month++;
+    if (this->month > 12) {
+        this->year++;
+        this->month = 1;
+    }
+    
+    //  3. update population
+    if (this->turn == 1) {
+        this->population = STARTING_POPULATION;
+    }
+    
+    else {
+        this->population = ceil(this->population * POPULATION_MONTHLY_GROWTH_RATE);
+    }
+    
+    //  4. update demand
+    this->__computeCurrentDemand();
+    
+}   /* __advanceTurn() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __computeCurrentDemand(void)
+///
+/// \brief Helper method to compute current energy demand.
+///
+
+void Game :: __computeCurrentDemand(void)
+{
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+
+    std::normal_distribution<double> normal_dist(
+        MEAN_DAILY_DEMAND_RATIOS[this->month - 1],
+        STDEV_DAILY_DEMAND_RATIOS[this->month - 1]
+    );
+  
+    double monthly_demand_ratio = 0;
+    
+    for (int i = 0; i < 30; i++) {
+        monthly_demand_ratio += normal_dist(generator);
+    }
+    
+    this->demand_MWh =
+        monthly_demand_ratio * MAXIMUM_DAILY_DEMAND_PER_CAPITA * this->population;
+    
+    return;
+}   /* __computeCurrentDemand() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -92,6 +184,18 @@ void Game :: __toggleFrameClockOverlay(void)
 void Game :: __handleKeyPressEvents(void)
 {
     switch (this->event.key.code) {
+        case (sf::Keyboard::Enter): {
+            if (this->game_phase == GamePhase :: SYSTEM_MANAGEMENT) {
+                this->__checkTerminatingConditions();
+                if (this->game_phase == GamePhase :: SYSTEM_MANAGEMENT) {
+                    this->__advanceTurn();
+                }
+            }
+            
+            break;
+        }
+        
+        
         case (sf::Keyboard::Tilde): {
             this->__toggleFrameClockOverlay();
             
@@ -337,8 +441,7 @@ void Game :: __processMessage(void)
                 game_channel_message.string_payload["game phase"] == "system management"
             ) {
                 this->game_phase = GamePhase :: SYSTEM_MANAGEMENT;
-                this->population = STARTING_POPULATION;
-                this->turn++;
+                this->__advanceTurn();
             }
             
             else if (
@@ -722,6 +825,9 @@ Game :: Game(
     
     this->year = 1970 + (int)years_since_epoch;
     this->month = (years_since_epoch - (int)years_since_epoch) * 12 + 1;
+    while (this->month > 12) {
+        this->month -= 12;
+    }
     
     this->population = 0;
     this->credits = STARTING_CREDITS;

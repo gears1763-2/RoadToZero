@@ -92,6 +92,11 @@ class Game {
         //  2. methods
         void __toggleFrameClockOverlay(void);
         
+        void __checkTerminatingConditions(void);
+        void __advanceTurn(void);
+        
+        void __computeCurrentDemand(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         

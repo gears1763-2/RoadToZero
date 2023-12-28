@@ -2762,6 +2762,8 @@ void HexTile :: processMessage(void)
                 if (this->tile_improvement_ptr != NULL) {
                     this->tile_improvement_ptr->credits = this->credits;
                     this->tile_improvement_ptr->game_phase = this->game_phase;
+                    this->tile_improvement_ptr->month =
+                        game_state_message.int_payload["month"];
                 }
                 
                 std::cout << "Game state message received by " << this << std::endl;

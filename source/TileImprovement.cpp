@@ -578,8 +578,11 @@ TileImprovement :: TileImprovement(
     this->production_menu_open = false;
     this->upgrade_menu_open = false;
     
+    this->upgrade_frame = 0;
+    
     this->frame = 0;
     this->credits = 0;
+    this->month = 1;
     
     this->position_x = position_x;
     this->position_y = position_y;

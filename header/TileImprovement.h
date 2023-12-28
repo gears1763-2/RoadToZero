@@ -128,6 +128,7 @@ class TileImprovement {
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
+        int month; ///< The current month of play
         int health; ///< The health of the improvement.
         int upgrade_level; ///< The upgrade level of the improvement.
         int upgrade_frame; ///< The frame of the upgrade animation.

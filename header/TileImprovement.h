@@ -133,6 +133,8 @@ class TileImprovement {
         int health; ///< The health of the improvement.
         int upgrade_level; ///< The upgrade level of the improvement.
         int upgrade_frame; ///< The frame of the upgrade animation.
+        
+        int storage_kWh; ///< The rated energy capacity [kWh] of the storage.
         int storage_level; ///< The level of storage installed alongside the tile improvement.
         
         int tile_resource; ///< The renewable resource quality of the tile.
@@ -140,6 +142,8 @@ class TileImprovement {
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
+        
+        std::vector<double> demand_vec_MWh; ///< A vector of daily demands [MWh] for the current month.
         
         std::string game_phase; ///< The current phase of the game.
         std::string tile_improvement_string; ///< A string representation of the tile improvement type.

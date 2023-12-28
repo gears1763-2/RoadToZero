@@ -131,8 +131,8 @@ void WindTurbine :: __upgradePowerCapacity(void)
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
     
-    this->production_MWh =
-        this->monthly_capacity_factor * this->max_daily_production_MWh;
+    this->__computeProduction();
+    this->__computeDispatch();
     
     this->just_upgraded = true;
     
@@ -152,12 +152,12 @@ void WindTurbine :: __upgradePowerCapacity(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void WindTurbine :: __updateProduction(void)
+/// \fn void WindTurbine :: __computeCapacityFactors(void)
 ///
-/// \brief Helper method to update current production.
+/// \brief Helper method to compute capacity factors
 ///
 
-void WindTurbine :: __updateProduction(void)
+void WindTurbine :: __computeCapacityFactors(void)
 {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
@@ -173,17 +173,40 @@ void WindTurbine :: __updateProduction(void)
 
     std::normal_distribution<double> normal_dist(mean, stdev);
     
-    this->monthly_capacity_factor = 0;
+    for (int i = 0; i < 30; i++) {
+        this->capacity_factor_vec[i] = normal_dist(generator);
+    }
+
+    return;
+}   /* __computeCapacityFactors() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void WindTurbine :: __computeProduction(void)
+///
+/// \brief Helper method to compute production values.
+///
+
+void WindTurbine :: __computeProduction(void)
+{
+    double production_MWh = 0;
     
     for (int i = 0; i < 30; i++) {
-        this->monthly_capacity_factor += normal_dist(generator);
+        this->production_vec_MWh[i] =
+            this->max_daily_production_MWh * this->capacity_factor_vec[i];
+        
+        production_MWh += this->production_vec_MWh[i];
     }
     
-    this->production_MWh =
-        round(this->monthly_capacity_factor * this->max_daily_production_MWh);
+    this->production_MWh = round(production_MWh);
     
     return;
-}   /* __updateProduction() */
+}   /* __computeProduction() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -192,23 +215,75 @@ void WindTurbine :: __updateProduction(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void WindTurbine :: __computeDispatchable(void)
+/// \fn void WindTurbine :: __computeDispatch(void)
 ///
-/// \brief Helper method to compute current dispatchable.
+/// \brief Helper method to compute dispatch values.
 ///
 
-void WindTurbine :: __computeDispatchable(void)
+void WindTurbine :: __computeDispatch(void)
 {
-    if (this->production_MWh < 0.15 * this->demand_MWh) {
-        this->dispatchable_MWh = this->production_MWh;
+    double stored_energy_MWh = 0;
+    double storage_capacity_MWh = (double)(this->storage_kWh) / 1000;
+    
+    double demand_MWh = 0;
+    double production_MWh = 0;
+    double dispatch_MWh = 0;
+    double difference_MWh = 0;
+    
+    double room_MWh = 0;
+    
+    for (int i = 0; i < 30; i++) {
+        demand_MWh = this->demand_vec_MWh[i];
+        production_MWh = this->production_vec_MWh[i];
+        
+        if (production_MWh <= demand_MWh) {
+            this->dispatch_vec_MWh[i] = production_MWh;
+            dispatch_MWh += this->dispatch_vec_MWh[i];
+            
+            difference_MWh = demand_MWh - production_MWh;
+            
+            if ((storage_capacity_MWh > 0) and (stored_energy_MWh > 0)) {
+                if (difference_MWh > stored_energy_MWh) {
+                    this->dispatch_vec_MWh[i] += stored_energy_MWh;
+                    dispatch_MWh += stored_energy_MWh;
+                    stored_energy_MWh = 0;
+                }
+                
+                else {
+                    this->dispatch_vec_MWh[i] += difference_MWh;
+                    dispatch_MWh += difference_MWh;
+                    stored_energy_MWh -= difference_MWh;
+                }
+            }
+        }
+        
+        else {
+            this->dispatch_vec_MWh[i] = demand_MWh;
+            dispatch_MWh += this->dispatch_vec_MWh[i];
+            
+            difference_MWh = production_MWh - demand_MWh;
+            
+            if (
+                (storage_capacity_MWh > 0) and
+                (stored_energy_MWh < storage_capacity_MWh)
+            ) {
+                room_MWh = storage_capacity_MWh - stored_energy_MWh;
+                
+                if (difference_MWh > room_MWh) {
+                    stored_energy_MWh += room_MWh;
+                }
+                
+                else {
+                    stored_energy_MWh += difference_MWh;
+                }
+            }
+        }
     }
     
-    else {
-        //...
-    }
+    this->dispatchable_MWh = round(dispatch_MWh);
     
     return;
-}   /* __computeDispatchable() */
+}   /* __computeDispatch() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -259,6 +334,8 @@ void WindTurbine :: __handleKeyPressEvents(void)
         case (sf::Keyboard::D): {
             if (this->upgrade_menu_open) {
                 this->__upgradeStorageCapacity();
+                this->__computeProduction();
+                this->__computeDispatch();
             }
             
             break;
@@ -505,18 +582,23 @@ TileImprovement(
     
     this->capacity_kW = 100;
     this->upgrade_level = 1;
+    
+    this->storage_kWh = 0;
     this->storage_level = 0;
     
     this->production_MWh = 0;
     this->dispatchable_MWh = 0;
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
-    this->monthly_capacity_factor = 0;
+    
+    this->capacity_factor_vec.resize(30, 0);
+    this->production_vec_MWh.resize(30, 0);
+    this->dispatch_vec_MWh.resize(30, 0);
     
     this->tile_improvement_string = "WIND TURBINE";
     
     this->__setUpTileImprovementSpriteAnimated();
-    this->__updateProduction();
+    this->update();
     
     std::cout << "WindTurbine constructed at " << this << std::endl;
     
@@ -608,8 +690,9 @@ void WindTurbine :: advanceTurn(void)
 
 void WindTurbine :: update(void)
 {
-    this->__updateProduction();
-    this->__computeDispatchable();
+    this->__computeCapacityFactors();
+    this->__computeProduction();
+    this->__computeDispatch();
     
     return;
 }   /* update() */

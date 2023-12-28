@@ -131,8 +131,8 @@ void TidalTurbine :: __upgradePowerCapacity(void)
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
     
-    this->production_MWh =
-        round(this->monthly_capacity_factor * this->max_daily_production_MWh);
+    this->__computeProduction();
+    this->__computeDispatch();
     
     this->just_upgraded = true;
     
@@ -152,41 +152,124 @@ void TidalTurbine :: __upgradePowerCapacity(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void TidalTurbine :: __updateProduction(void)
+/// \fn void TidalTurbine :: __computeCapacityFactors(void)
 ///
-/// \brief Helper method to update current production.
+/// \brief Helper method to compute capacity factors
 ///
 
-void TidalTurbine :: __updateProduction(void)
+void TidalTurbine :: __computeCapacityFactors(void)
 {
-    //...
-    
+    for (int i = 0; i < 30; i++) {
+        this->capacity_factor_vec[i] = DAILY_TIDAL_CAPACITY_FACTOR;
+    }
+
     return;
-}   /* __updateProduction() */
+}   /* __computeCapacityFactors() */
 
 // ---------------------------------------------------------------------------------- //
 
 
+
 // ---------------------------------------------------------------------------------- //
 
 ///
-/// \fn void TidalTurbine :: __computeDispatchable(void)
+/// \fn void TidalTurbine :: __computeProduction(void)
 ///
-/// \brief Helper method to compute current dispatchable.
+/// \brief Helper method to compute production values.
 ///
 
-void TidalTurbine :: __computeDispatchable(void)
+void TidalTurbine :: __computeProduction(void)
 {
-    if (this->production_MWh < 0.15 * this->demand_MWh) {
-        this->dispatchable_MWh = this->production_MWh;
+    double production_MWh = 0;
+    
+    for (int i = 0; i < 30; i++) {
+        this->production_vec_MWh[i] =
+            this->max_daily_production_MWh * this->capacity_factor_vec[i];
+        
+        production_MWh += this->production_vec_MWh[i];
     }
     
-    else {
-        //...
-    }
+    this->production_MWh = round(production_MWh);
     
     return;
-}   /* __computeDispatchable() */
+}   /* __computeProduction() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: __computeDispatch(void)
+///
+/// \brief Helper method to compute dispatch values.
+///
+
+void TidalTurbine :: __computeDispatch(void)
+{
+    double stored_energy_MWh = 0;
+    double storage_capacity_MWh = (double)(this->storage_kWh) / 1000;
+    
+    double demand_MWh = 0;
+    double production_MWh = 0;
+    double dispatch_MWh = 0;
+    double difference_MWh = 0;
+    
+    double room_MWh = 0;
+    
+    for (int i = 0; i < 30; i++) {
+        demand_MWh = this->demand_vec_MWh[i];
+        production_MWh = this->production_vec_MWh[i];
+        
+        if (production_MWh <= demand_MWh) {
+            this->dispatch_vec_MWh[i] = production_MWh;
+            dispatch_MWh += this->dispatch_vec_MWh[i];
+            
+            difference_MWh = demand_MWh - production_MWh;
+            
+            if ((storage_capacity_MWh > 0) and (stored_energy_MWh > 0)) {
+                if (difference_MWh > stored_energy_MWh) {
+                    this->dispatch_vec_MWh[i] += stored_energy_MWh;
+                    dispatch_MWh += stored_energy_MWh;
+                    stored_energy_MWh = 0;
+                }
+                
+                else {
+                    this->dispatch_vec_MWh[i] += difference_MWh;
+                    dispatch_MWh += difference_MWh;
+                    stored_energy_MWh -= difference_MWh;
+                }
+            }
+        }
+        
+        else {
+            this->dispatch_vec_MWh[i] = demand_MWh;
+            dispatch_MWh += this->dispatch_vec_MWh[i];
+            
+            difference_MWh = production_MWh - demand_MWh;
+            
+            if (
+                (storage_capacity_MWh > 0) and
+                (stored_energy_MWh < storage_capacity_MWh)
+            ) {
+                room_MWh = storage_capacity_MWh - stored_energy_MWh;
+                
+                if (difference_MWh > room_MWh) {
+                    stored_energy_MWh += room_MWh;
+                }
+                
+                else {
+                    stored_energy_MWh += difference_MWh;
+                }
+            }
+        }
+    }
+    
+    this->dispatchable_MWh = round(dispatch_MWh);
+    
+    return;
+}   /* __computeDispatch() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -237,6 +320,8 @@ void TidalTurbine :: __handleKeyPressEvents(void)
         case (sf::Keyboard::D): {
             if (this->upgrade_menu_open) {
                 this->__upgradeStorageCapacity();
+                this->__computeProduction();
+                this->__computeDispatch();
             }
             
             break;
@@ -483,21 +568,23 @@ TileImprovement(
     
     this->capacity_kW = 100;
     this->upgrade_level = 1;
+    
+    this->storage_kWh = 0;
     this->storage_level = 0;
     
+    this->production_MWh = 0;
     this->dispatchable_MWh = 0;
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
     
-    this->monthly_capacity_factor =
-        30 * this->tile_resource_scalar * DAILY_TIDAL_CAPACITY_FACTOR;
-    
-    this->production_MWh =
-        round(this->monthly_capacity_factor * this->max_daily_production_MWh);
+    this->capacity_factor_vec.resize(30, 0);
+    this->production_vec_MWh.resize(30, 0);
+    this->dispatch_vec_MWh.resize(30, 0);
     
     this->tile_improvement_string = "TIDAL TURBINE";
     
     this->__setUpTileImprovementSpriteAnimated();
+    this->update();
     
     std::cout << "TidalTurbine constructed at " << this << std::endl;
     
@@ -589,8 +676,9 @@ void TidalTurbine :: advanceTurn(void)
 
 void TidalTurbine :: update(void)
 {
-    this->__updateProduction();
-    this->__computeDispatchable();
+    this->__computeCapacityFactors();
+    this->__computeProduction();
+    this->__computeDispatch();
     
     return;
 }   /* update() */

@@ -2768,10 +2768,15 @@ void HexTile :: processMessage(void)
                 if (this->tile_improvement_ptr != NULL) {
                     this->tile_improvement_ptr->credits = this->credits;
                     this->tile_improvement_ptr->game_phase = this->game_phase;
+                    
                     this->tile_improvement_ptr->month =
                         game_state_message.int_payload["month"];
+                        
                     this->tile_improvement_ptr->demand_MWh =
                         game_state_message.int_payload["demand_MWh"];
+                    
+                    this->tile_improvement_ptr->demand_vec_MWh =
+                        game_state_message.vector_payload["demand_vec_MWh"];
                     
                     this->tile_improvement_ptr->update();
                 }

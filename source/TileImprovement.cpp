@@ -191,6 +191,7 @@ void TileImprovement :: __upgradeStorageCapacity(void)
     this->health = 100;
     
     this->storage_level++;
+    this->storage_kWh += 200;
     
     this->storage_upgrade_sprite_vec.push_back(
         sf::Sprite(
@@ -214,7 +215,6 @@ void TileImprovement :: __upgradeStorageCapacity(void)
     
     this->__sendCreditsSpentMessage(ENERGY_STORAGE_SYSTEM_BUILD_COST);
     this->__sendTileStateRequest();
-    this->__sendGameStateRequest();
     
     return;
 }   /* __upgradeStorageCapacity() */
@@ -589,6 +589,8 @@ TileImprovement :: TileImprovement(
     this->credits = 0;
     this->month = 1;
     this->demand_MWh = 0;
+    
+    this->demand_vec_MWh.resize(30, 0);
     
     this->tile_resource = tile_resource;
     

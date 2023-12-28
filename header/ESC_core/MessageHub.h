@@ -66,8 +66,9 @@ struct Message {
     std::string subject = ""; ///< A string describing the message subject.
     
     std::map<std::string, bool> bool_payload = {}; ///< A boolean payload.
-    std::map<std::string, int> int_payload = {}; ///< A vector payload.
-    std::map<std::string, double> double_payload = {}; ///< A vector payload.
+    std::map<std::string, int> int_payload = {}; ///< An int payload.
+    std::map<std::string, double> double_payload = {}; ///< A double payload.
+    std::map<std::string, std::vector<double>> vector_payload = {}; ///< A vector (double) payload.
     std::map<std::string, std::string> string_payload = {}; ///< A string payload.
 };  /* Message */
 

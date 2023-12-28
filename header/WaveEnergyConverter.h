@@ -78,8 +78,9 @@ class WaveEnergyConverter: public TileImprovement {
         
         void __upgradePowerCapacity(void);
         
-        void __updateProduction(void);
-        void __computeDispatchable(void);
+        void __computeCapacityFactors(void);
+        void __computeProduction(void);
+        void __computeDispatch(void);
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
@@ -95,7 +96,10 @@ class WaveEnergyConverter: public TileImprovement {
         int dispatchable_MWh; ///< The amount of production that is directly dispatchable to the grid (i.e. production correlated with demand).
         
         double max_daily_production_MWh; ///< The maximum daily production [MWh] of the solar PV array.
-        double monthly_capacity_factor; ///< The current monthly capacity factor.
+        
+        std::vector<double> capacity_factor_vec; ///< A vector of daily capacity factors for the current month.
+        std::vector<double> production_vec_MWh; ///< A vector of daily production [MWh] for the current month.
+        std::vector<double> dispatch_vec_MWh; ///< A vector of daily dispatch [MWh] for the current month.
         
         //  2. methods
         WaveEnergyConverter(

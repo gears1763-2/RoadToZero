@@ -133,6 +133,8 @@ class Game {
         
         int turn = 0; ///< The current game turn.
         
+        std::vector<double> demand_vec_MWh; ///< A vector of daily demands [MWh] for the current month.
+        
         sf::Clock clock; ///< The game clock.
         sf::Event event; ///< The game events class.
         

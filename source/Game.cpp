@@ -159,16 +159,18 @@ void Game :: __computeCurrentDemand(void)
         MEAN_DAILY_DEMAND_RATIOS[this->month - 1],
         STDEV_DAILY_DEMAND_RATIOS[this->month - 1]
     );
-  
-    double monthly_demand_ratio = 0;
+    
+    double demand_MWh = 0;
     
     for (int i = 0; i < 30; i++) {
-        monthly_demand_ratio += normal_dist(generator);
+        this->demand_vec_MWh[i] =
+            normal_dist(generator) * MAXIMUM_DAILY_DEMAND_PER_CAPITA * this->population;
+        
+        demand_MWh += this->demand_vec_MWh[i];
     }
     
-    this->demand_MWh =
-        monthly_demand_ratio * MAXIMUM_DAILY_DEMAND_PER_CAPITA * this->population;
-    
+    this->demand_MWh = round(demand_MWh);
+
     return;
 }   /* __computeCurrentDemand() */
 
@@ -369,6 +371,8 @@ void Game :: __sendGameStateMessage(void)
             break;
         }
     }
+    
+    game_state_message.vector_payload["demand_vec_MWh"] = this->demand_vec_MWh;
     
     this->message_hub.sendMessage(game_state_message);
     
@@ -871,6 +875,8 @@ Game :: Game(
     this->credits = STARTING_CREDITS;
     this->demand_MWh = 0;
     this->cumulative_emissions_tonnes = 0;
+    
+    this->demand_vec_MWh.resize(30, 0);
 
     this->hex_map_ptr = new HexMap(
         6,

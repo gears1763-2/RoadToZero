@@ -1374,6 +1374,7 @@ void HexTile :: __buildSettlement(void)
     this->tile_improvement_ptr = new Settlement(
         this->position_x,
         this->position_y,
+        this->tile_resource,
         this->event_ptr,
         this->render_window_ptr,
         this->assets_manager_ptr,
@@ -1420,6 +1421,7 @@ void HexTile :: __buildDieselGenerator(void)
     this->tile_improvement_ptr = new DieselGenerator(
         this->position_x,
         this->position_y,
+        this->tile_resource,
         this->event_ptr,
         this->render_window_ptr,
         this->assets_manager_ptr,
@@ -1467,6 +1469,7 @@ void HexTile :: __buildSolarPV(void)
     this->tile_improvement_ptr = new SolarPV(
         this->position_x,
         this->position_y,
+        this->tile_resource,
         this->event_ptr,
         this->render_window_ptr,
         this->assets_manager_ptr,
@@ -1522,6 +1525,7 @@ void HexTile :: __buildWindTurbine(void)
     this->tile_improvement_ptr = new WindTurbine(
         this->position_x,
         this->position_y,
+        this->tile_resource,
         this->event_ptr,
         this->render_window_ptr,
         this->assets_manager_ptr,
@@ -1573,6 +1577,7 @@ void HexTile :: __buildTidalTurbine(void)
     this->tile_improvement_ptr = new TidalTurbine(
         this->position_x,
         this->position_y,
+        this->tile_resource,
         this->event_ptr,
         this->render_window_ptr,
         this->assets_manager_ptr,
@@ -1618,6 +1623,7 @@ void HexTile :: __buildWaveEnergyConverter(void)
     this->tile_improvement_ptr = new WaveEnergyConverter(
         this->position_x,
         this->position_y,
+        this->tile_resource,
         this->event_ptr,
         this->render_window_ptr,
         this->assets_manager_ptr,
@@ -2764,11 +2770,22 @@ void HexTile :: processMessage(void)
                     this->tile_improvement_ptr->game_phase = this->game_phase;
                     this->tile_improvement_ptr->month =
                         game_state_message.int_payload["month"];
+                    this->tile_improvement_ptr->demand_MWh =
+                        game_state_message.int_payload["demand_MWh"];
+                    
+                    this->tile_improvement_ptr->update();
                 }
                 
                 std::cout << "Game state message received by " << this << std::endl;
                 this->__sendTileStateMessage();
                 this->message_hub_ptr->popMessage(GAME_STATE_CHANNEL);
+            }
+            
+            else if (
+                this->has_improvement and
+                game_state_message.subject == "turn advance"
+            ) {
+                this->tile_improvement_ptr->advanceTurn();
             }
         }
         

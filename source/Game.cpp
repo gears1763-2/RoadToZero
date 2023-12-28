@@ -133,6 +133,9 @@ void Game :: __advanceTurn(void)
     //  4. update demand
     this->__computeCurrentDemand();
     
+    //  5. send turn advance message
+    this->__sendTurnAdvanceMessage();
+    
 }   /* __advanceTurn() */
 
 // ---------------------------------------------------------------------------------- //
@@ -380,6 +383,31 @@ void Game :: __sendGameStateMessage(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __sendTurnAdvanceMessage(void)
+///
+/// \brief Helper method to format and send a turn advance message.
+///
+
+void Game :: __sendTurnAdvanceMessage(void)
+{
+    Message turn_advance_message;
+    
+    turn_advance_message.channel = GAME_STATE_CHANNEL;
+    turn_advance_message.subject = "turn advance";
+    
+    this->message_hub.sendMessage(turn_advance_message);
+    
+    std::cout << "Turn advance message sent by " << this << std::endl;
+    return;
+}   /* __sendTurnAdvanceMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __processMessage(void)
 ///
 /// \brief Helper method to process Game. To be called once per message.
@@ -469,6 +497,16 @@ void Game :: __processMessage(void)
             }
             
             this->message_hub.popMessage(GAME_CHANNEL);
+        }
+    }
+    
+    if (not this->message_hub.isEmpty(GAME_STATE_CHANNEL)) {
+        Message game_state_message =
+            this->message_hub.receiveMessage(GAME_STATE_CHANNEL);
+        
+        if (game_state_message.subject == "turn advance") {
+            std::cout << "Turn advance message received by " << this << std::endl;
+            this->message_hub.popMessage(GAME_STATE_CHANNEL);
         }
     }
     

@@ -104,6 +104,7 @@ class Game {
         void __processMessage(void);
         
         void __sendGameStateMessage(void);
+        void __sendTurnAdvanceMessage(void);
         
         void __insufficientCreditsAlarm(void);
         

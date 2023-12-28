@@ -118,6 +118,11 @@ void SolarPV :: __upgradePowerCapacity(void)
     this->capacity_kW += 100;
     this->upgrade_level++;
     
+    this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
+    
+    this->production_MWh =
+        this->monthly_capacity_factor * this->max_daily_production_MWh;
+    
     this->just_upgraded = true;
     
     this->assets_manager_ptr->getSound("upgrade")->play();
@@ -128,6 +133,71 @@ void SolarPV :: __upgradePowerCapacity(void)
     
     return;
 }   /* __upgradePowerCapacity() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void SolarPV :: __updateProduction(void)
+///
+/// \brief Helper method to update current production.
+///
+
+void SolarPV :: __updateProduction(void)
+{
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+
+    double mean =
+        this->tile_resource_scalar * MEAN_DAILY_SOLAR_CAPACITY_FACTORS[this->month - 1];
+    
+    double stdev = STDEV_DAILY_SOLAR_CAPACITY_FACTORS[this->month - 1];
+    
+    if (this->tile_resource_scalar > 1) {
+        stdev /= this->tile_resource_scalar;
+    }
+
+    std::normal_distribution<double> normal_dist(mean, stdev);
+    
+    this->monthly_capacity_factor = 0;
+    
+    for (int i = 0; i < 30; i++) {
+        this->monthly_capacity_factor += normal_dist(generator);
+    }
+    
+    this->production_MWh =
+        round(this->monthly_capacity_factor * this->max_daily_production_MWh);
+    
+    return;
+}   /* __updateProduction() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void SolarPV :: __computeDispatchable(void)
+///
+/// \brief Helper method to compute current dispatchable.
+///
+
+void SolarPV :: __computeDispatchable(void)
+{
+    if (this->production_MWh < 0.15 * this->demand_MWh) {
+        this->dispatchable_MWh = this->production_MWh;
+    }
+    
+    else {
+        //...
+    }
+    
+    return;
+}   /* __computeDispatchable() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -363,6 +433,7 @@ void SolarPV :: __drawUpgradeOptions(void)
 /// \fn SolarPV :: SolarPV(
 ///         double position_x,
 ///         double position_y,
+///         int tile_resource,
 ///         sf::Event* event_ptr,
 ///         sf::RenderWindow* render_window_ptr,
 ///         AssetsManager* assets_manager_ptr,
@@ -377,6 +448,8 @@ void SolarPV :: __drawUpgradeOptions(void)
 ///
 /// \param position_y The y position of the tile.
 ///
+/// \param tile_resource The renewable resource quality of the tile.
+///
 /// \param event_ptr Pointer to the event class.
 ///
 /// \param render_window_ptr Pointer to the render window.
@@ -389,6 +462,7 @@ void SolarPV :: __drawUpgradeOptions(void)
 SolarPV :: SolarPV(
     double position_x,
     double position_y,
+    int tile_resource,
     sf::Event* event_ptr,
     sf::RenderWindow* render_window_ptr,
     AssetsManager* assets_manager_ptr,
@@ -397,6 +471,7 @@ SolarPV :: SolarPV(
 TileImprovement(
     position_x,
     position_y,
+    tile_resource,
     event_ptr,
     render_window_ptr,
     assets_manager_ptr,
@@ -422,9 +497,15 @@ TileImprovement(
     this->production_MWh = 0;
     this->dispatchable_MWh = 0;
     
+    this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
+    this->monthly_capacity_factor = 0;
+    
     this->tile_improvement_string = "SOLAR PV ARRAY";
     
     this->__setUpTileImprovementSpriteStatic();
+    
+    this->__updateProduction();
+    this->__computeDispatchable();
     
     std::cout << "SolarPV constructed at " << this << std::endl;
     
@@ -477,6 +558,50 @@ std::string SolarPV :: getTileOptionsSubstring(void)
     
     return options_substring;
 }   /* getTileOptionsSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void SolarPV :: advanceTurn(void)
+///
+/// \brief Method to handle turn advance.
+///
+
+void SolarPV :: advanceTurn(void)
+{
+    //  1. update
+    this->update();
+    
+    //...
+    
+    std::cout << "Turn advance message received by " << this << std::endl;
+    this->__sendGameStateRequest();
+    return;
+}   /* advanceTurn() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void SolarPV :: update(void)
+///
+/// \brief Method to trigger production and dispatchable updates.
+///
+
+void SolarPV :: update(void)
+{
+    this->__updateProduction();
+    this->__computeDispatchable();
+    
+    return;
+}   /* update() */
 
 // ---------------------------------------------------------------------------------- //
 

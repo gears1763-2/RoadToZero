@@ -242,6 +242,7 @@ void DieselGenerator :: __handleMouseButtonEvents(void)
 /// \fn DieselGenerator :: DieselGenerator(
 ///         double position_x,
 ///         double position_y,
+///         int tile_resource,
 ///         sf::Event* event_ptr,
 ///         sf::RenderWindow* render_window_ptr,
 ///         AssetsManager* assets_manager_ptr,
@@ -256,6 +257,8 @@ void DieselGenerator :: __handleMouseButtonEvents(void)
 ///
 /// \param position_y The y position of the tile.
 ///
+/// \param tile_resource The renewable resource quality of the tile.
+///
 /// \param event_ptr Pointer to the event class.
 ///
 /// \param render_window_ptr Pointer to the render window.
@@ -268,6 +271,7 @@ void DieselGenerator :: __handleMouseButtonEvents(void)
 DieselGenerator :: DieselGenerator(
     double position_x,
     double position_y,
+    int tile_resource,
     sf::Event* event_ptr,
     sf::RenderWindow* render_window_ptr,
     AssetsManager* assets_manager_ptr,
@@ -276,6 +280,7 @@ DieselGenerator :: DieselGenerator(
 TileImprovement(
     position_x,
     position_y,
+    tile_resource,
     event_ptr,
     render_window_ptr,
     assets_manager_ptr,
@@ -368,6 +373,26 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     
     return options_substring;
 }   /* getTileOptionsSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void DieselGenerator :: advanceTurn(void)
+///
+/// \brief Method to handle turn advance.
+///
+
+void DieselGenerator :: advanceTurn(void)
+{
+    //...
+    
+    std::cout << "Turn advance message received by " << this << std::endl;
+    return;
+}   /* advanceTurn() */
 
 // ---------------------------------------------------------------------------------- //
 

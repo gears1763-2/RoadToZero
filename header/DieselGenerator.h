@@ -100,6 +100,7 @@ class DieselGenerator: public TileImprovement {
         DieselGenerator(
             double,
             double,
+            int,
             sf::Event*,
             sf::RenderWindow*,
             AssetsManager*,
@@ -107,6 +108,8 @@ class DieselGenerator: public TileImprovement {
         );
         
         std::string getTileOptionsSubstring(void);
+        
+        void advanceTurn(void);
         
         void processEvent(void);
         void processMessage(void);

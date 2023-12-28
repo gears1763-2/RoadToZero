@@ -531,6 +531,7 @@ void TileImprovement :: __sendInsufficientCreditsMessage(void)
 /// \fn TileImprovement :: TileImprovement(
 ///         double position_x,
 ///         double position_y,
+///         int tile_resource,
 ///         sf::Event* event_ptr,
 ///         sf::RenderWindow* render_window_ptr,
 ///         AssetsManager* assets_manager_ptr,
@@ -545,6 +546,8 @@ void TileImprovement :: __sendInsufficientCreditsMessage(void)
 ///
 /// \param position_y The y position of the tile.
 ///
+/// \param tile_resource The renewable resource quality of the tile.
+///
 /// \param event_ptr Pointer to the event class.
 ///
 /// \param render_window_ptr Pointer to the render window.
@@ -557,6 +560,7 @@ void TileImprovement :: __sendInsufficientCreditsMessage(void)
 TileImprovement :: TileImprovement(
     double position_x,
     double position_y,
+    int tile_resource,
     sf::Event* event_ptr,
     sf::RenderWindow* render_window_ptr,
     AssetsManager* assets_manager_ptr,
@@ -578,11 +582,56 @@ TileImprovement :: TileImprovement(
     this->production_menu_open = false;
     this->upgrade_menu_open = false;
     
+    this->just_upgraded = false;
     this->upgrade_frame = 0;
     
     this->frame = 0;
     this->credits = 0;
     this->month = 1;
+    this->demand_MWh = 0;
+    
+    this->tile_resource = tile_resource;
+    
+    switch (this->tile_resource) {
+        case (0): {
+            this->tile_resource_scalar = 0.8;
+            
+            break;
+        }
+        
+        
+        case (1): {
+            this->tile_resource_scalar = 0.9;
+            
+            break;
+        }
+        
+        
+        case (2): {
+            this->tile_resource_scalar = 1;
+            
+            break;
+        }
+        
+        
+        case (3): {
+            this->tile_resource_scalar = 1.1;
+            
+            break;
+        }
+        
+        
+        case (4): {
+            this->tile_resource_scalar = 1.2;
+            
+            break;
+        }
+        
+        
+        default: {
+            this->tile_resource_scalar = 1;
+        }
+    }
     
     this->position_x = position_x;
     this->position_y = position_y;

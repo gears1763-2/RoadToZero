@@ -93,6 +93,7 @@ class Settlement: public TileImprovement {
         Settlement(
             double,
             double,
+            int,
             sf::Event*,
             sf::RenderWindow*,
             AssetsManager*,

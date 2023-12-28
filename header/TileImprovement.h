@@ -129,10 +129,14 @@ class TileImprovement {
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
         int month; ///< The current month of play
+        int demand_MWh; ///< The current demand [MWh].
         int health; ///< The health of the improvement.
         int upgrade_level; ///< The upgrade level of the improvement.
         int upgrade_frame; ///< The frame of the upgrade animation.
         int storage_level; ///< The level of storage installed alongside the tile improvement.
+        
+        int tile_resource; ///< The renewable resource quality of the tile.
+        double tile_resource_scalar; ///< A scalar associated with the renewable resource quality.
         
         double position_x; ///< The x position of the tile improvement.
         double position_y; ///< The y position of the tile improvement.
@@ -159,6 +163,7 @@ class TileImprovement {
         TileImprovement(
             double,
             double,
+            int,
             sf::Event*,
             sf::RenderWindow*,
             AssetsManager*,
@@ -166,6 +171,10 @@ class TileImprovement {
         );
         
         virtual void setIsSelected(bool);
+        
+        virtual void advanceTurn(void) {return;}
+        
+        virtual void update(void) {return;}
         
         virtual std::string getTileOptionsSubstring(void) {return "";}
         

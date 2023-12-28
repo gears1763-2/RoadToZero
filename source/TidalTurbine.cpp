@@ -129,6 +129,11 @@ void TidalTurbine :: __upgradePowerCapacity(void)
     this->capacity_kW += 100;
     this->upgrade_level++;
     
+    this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
+    
+    this->production_MWh =
+        round(this->monthly_capacity_factor * this->max_daily_production_MWh);
+    
     this->just_upgraded = true;
     
     this->assets_manager_ptr->getSound("upgrade")->play();
@@ -139,6 +144,49 @@ void TidalTurbine :: __upgradePowerCapacity(void)
     
     return;
 }   /* __upgradePowerCapacity() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: __updateProduction(void)
+///
+/// \brief Helper method to update current production.
+///
+
+void TidalTurbine :: __updateProduction(void)
+{
+    //...
+    
+    return;
+}   /* __updateProduction() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: __computeDispatchable(void)
+///
+/// \brief Helper method to compute current dispatchable.
+///
+
+void TidalTurbine :: __computeDispatchable(void)
+{
+    if (this->production_MWh < 0.15 * this->demand_MWh) {
+        this->dispatchable_MWh = this->production_MWh;
+    }
+    
+    else {
+        //...
+    }
+    
+    return;
+}   /* __computeDispatchable() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -376,6 +424,7 @@ void TidalTurbine :: __drawUpgradeOptions(void)
 /// \fn TidalTurbine :: TidalTurbine(
 ///         double position_x,
 ///         double position_y,
+///         int tile_resource,
 ///         sf::Event* event_ptr,
 ///         sf::RenderWindow* render_window_ptr,
 ///         AssetsManager* assets_manager_ptr,
@@ -390,6 +439,8 @@ void TidalTurbine :: __drawUpgradeOptions(void)
 ///
 /// \param position_y The y position of the tile.
 ///
+/// \param tile_resource The renewable resource quality of the tile.
+///
 /// \param event_ptr Pointer to the event class.
 ///
 /// \param render_window_ptr Pointer to the render window.
@@ -402,6 +453,7 @@ void TidalTurbine :: __drawUpgradeOptions(void)
 TidalTurbine :: TidalTurbine(
     double position_x,
     double position_y,
+    int tile_resource,
     sf::Event* event_ptr,
     sf::RenderWindow* render_window_ptr,
     AssetsManager* assets_manager_ptr,
@@ -410,6 +462,7 @@ TidalTurbine :: TidalTurbine(
 TileImprovement(
     position_x,
     position_y,
+    tile_resource,
     event_ptr,
     render_window_ptr,
     assets_manager_ptr,
@@ -432,8 +485,15 @@ TileImprovement(
     this->upgrade_level = 1;
     this->storage_level = 0;
     
-    this->production_MWh = 0;
     this->dispatchable_MWh = 0;
+    
+    this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
+    
+    this->monthly_capacity_factor =
+        30 * this->tile_resource_scalar * DAILY_TIDAL_CAPACITY_FACTOR;
+    
+    this->production_MWh =
+        round(this->monthly_capacity_factor * this->max_daily_production_MWh);
     
     this->tile_improvement_string = "TIDAL TURBINE";
     
@@ -490,6 +550,50 @@ std::string TidalTurbine :: getTileOptionsSubstring(void)
     
     return options_substring;
 }   /* getTileOptionsSubstring() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: advanceTurn(void)
+///
+/// \brief Method to handle turn advance.
+///
+
+void TidalTurbine :: advanceTurn(void)
+{
+    //  1. update
+    this->update();
+    
+    //...
+    
+    std::cout << "Turn advance message received by " << this << std::endl;
+    this->__sendGameStateRequest();
+    return;
+}   /* advanceTurn() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: update(void)
+///
+/// \brief Method to trigger production and dispatchable updates.
+///
+
+void TidalTurbine :: update(void)
+{
+    this->__updateProduction();
+    this->__computeDispatchable();
+    
+    return;
+}   /* update() */
 
 // ---------------------------------------------------------------------------------- //
 

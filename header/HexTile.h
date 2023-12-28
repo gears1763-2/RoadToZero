@@ -171,8 +171,8 @@ class HexTile {
     
     public:
         //  1. attributes
-        TileType tile_type;
-        TileResource tile_resource;
+        TileType tile_type; ///< The terrain type of the tile.
+        TileResource tile_resource; ///< The renewable resource quality of the tile.
         
         bool show_node; ///< A boolean which indicates whether or not to show the tile node.
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.

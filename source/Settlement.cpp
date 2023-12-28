@@ -176,6 +176,7 @@ void Settlement :: __handleMouseButtonEvents(void)
 /// \fn Settlement :: Settlement(
 ///         double position_x,
 ///         double position_y,
+///         int tile_resource,
 ///         sf::Event* event_ptr,
 ///         sf::RenderWindow* render_window_ptr,
 ///         AssetsManager* assets_manager_ptr,
@@ -190,6 +191,8 @@ void Settlement :: __handleMouseButtonEvents(void)
 ///
 /// \param position_y The y position of the tile.
 ///
+/// \param tile_resource The renewable resource quality of the tile.
+///
 /// \param event_ptr Pointer to the event class.
 ///
 /// \param render_window_ptr Pointer to the render window.
@@ -202,6 +205,7 @@ void Settlement :: __handleMouseButtonEvents(void)
 Settlement :: Settlement(
     double position_x,
     double position_y,
+    int tile_resource,
     sf::Event* event_ptr,
     sf::RenderWindow* render_window_ptr,
     AssetsManager* assets_manager_ptr,
@@ -210,6 +214,7 @@ Settlement :: Settlement(
 TileImprovement(
     position_x,
     position_y,
+    tile_resource,
     event_ptr,
     render_window_ptr,
     assets_manager_ptr,

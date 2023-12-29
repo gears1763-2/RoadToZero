@@ -65,6 +65,8 @@ struct Message {
     std::string channel = ""; ///< A string identifying the appropriate channel for this message.
     std::string subject = ""; ///< A string describing the message subject.
     
+    unsigned int number_of_reads = 0; ///< The number of times the message has been read.
+    
     std::map<std::string, bool> bool_payload = {}; ///< A boolean payload.
     std::map<std::string, int> int_payload = {}; ///< An int payload.
     std::map<std::string, double> double_payload = {}; ///< A double payload.
@@ -108,6 +110,7 @@ class MessageHub {
         
         bool isEmpty(std::string);
         Message receiveMessage(std::string);
+        void incrementMessageRead(std::string);
         void popMessage(std::string);
         
         void clearMessages(void);

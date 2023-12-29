@@ -2754,37 +2754,6 @@ void HexTile :: processMessage(void)
     
     //  2. process HexTile messages
     if (this->is_selected) {
-        if (not this->message_hub_ptr->isEmpty(GAME_STATE_CHANNEL)) {
-            Message game_state_message = this->message_hub_ptr->receiveMessage(
-                GAME_STATE_CHANNEL
-            );
-            
-            if (game_state_message.subject == "game state") {
-                this->credits = game_state_message.int_payload["credits"];
-                this->game_phase = game_state_message.string_payload["game phase"];
-                
-                if (this->tile_improvement_ptr != NULL) {
-                    this->tile_improvement_ptr->credits = this->credits;
-                    this->tile_improvement_ptr->game_phase = this->game_phase;
-                    
-                    this->tile_improvement_ptr->month =
-                        game_state_message.int_payload["month"];
-                        
-                    this->tile_improvement_ptr->demand_MWh =
-                        game_state_message.int_payload["demand_MWh"];
-                    
-                    this->tile_improvement_ptr->demand_vec_MWh =
-                        game_state_message.vector_payload["demand_vec_MWh"];
-                    
-                    this->tile_improvement_ptr->update();
-                }
-                
-                std::cout << "Game state message received by " << this << std::endl;
-                this->__sendTileStateMessage();
-                this->message_hub_ptr->popMessage(GAME_STATE_CHANNEL);
-            }
-        }
-        
         if (not this->message_hub_ptr->isEmpty(TILE_STATE_CHANNEL)) {
             Message tile_state_message = this->message_hub_ptr->receiveMessage(
                 TILE_STATE_CHANNEL
@@ -2800,6 +2769,40 @@ void HexTile :: processMessage(void)
         
         std::cout << "Current credits (HexTile): " << this->credits << " K" <<
             std::endl;
+    }
+    
+    if (not this->message_hub_ptr->isEmpty(GAME_STATE_CHANNEL)) {
+        Message game_state_message = this->message_hub_ptr->receiveMessage(
+            GAME_STATE_CHANNEL
+        );
+        
+        if (game_state_message.subject == "game state") {
+            this->credits = game_state_message.int_payload["credits"];
+            this->game_phase = game_state_message.string_payload["game phase"];
+            
+            if (this->tile_improvement_ptr != NULL) {
+                this->tile_improvement_ptr->credits = this->credits;
+                this->tile_improvement_ptr->game_phase = this->game_phase;
+                
+                this->tile_improvement_ptr->month =
+                    game_state_message.int_payload["month"];
+                    
+                this->tile_improvement_ptr->demand_MWh =
+                    game_state_message.int_payload["demand_MWh"];
+                
+                this->tile_improvement_ptr->demand_vec_MWh =
+                    game_state_message.vector_payload["demand_vec_MWh"];
+                
+                this->tile_improvement_ptr->update();
+            }
+            
+            this->message_hub_ptr->incrementMessageRead(GAME_STATE_CHANNEL);
+            std::cout << "Game state message read and passed by " << this << std::endl;
+            
+            if (this->is_selected) {
+                this->__sendTileStateMessage();
+            }
+        }
     }
     
     return;

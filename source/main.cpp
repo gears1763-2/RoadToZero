@@ -292,6 +292,16 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "breakdown"
     );
     
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-fantasy-game-success-notification-270_MixkitFree.ogg",
+        "victory"
+    );
+    
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-player-losing-or-failing-2042_MixkitFree.ogg",
+        "loss"
+    );
+    
     
     //  4. load tracks
     assets_manager_ptr->loadTrack(

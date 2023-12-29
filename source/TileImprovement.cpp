@@ -889,6 +889,7 @@ void TileImprovement :: processMessage(void)
             
             this->advanceTurn();
             
+            this->message_hub_ptr->incrementMessageRead(GAME_STATE_CHANNEL);
             std::cout << "Turn advance message read and passed by " << this << std::endl;
         }
     }

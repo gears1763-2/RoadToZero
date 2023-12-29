@@ -111,6 +111,14 @@ class Game {
         
         void __insufficientCreditsAlarm(void);
         
+        void __summarizeTurn(void);
+        
+        void __drawLossDemand(void);
+        void __drawLossCredits(void);
+        void __drawLossEmissions(void);
+        void __drawVictory(void);
+        
+        void __drawTurnSummary(void);
         void __drawFrameClockOverlay(void);
         void __drawHUD(void);
         void __draw(void);
@@ -136,15 +144,26 @@ class Game {
         int population; ///< Current population.
         int credits; ///< Current balance of credits.
         int demand_MWh; ///< Current energy demand [MWh].
-        int demand_remaining_MWh; ///< The current remaining energy demand [MWh].
         int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
         
-        int demand_served_MWh; ///< The demand served at the end of a turn
+        int past_demand_MWh; ///< The demand in the previous turn.
+        
+        int demand_served_MWh; ///< The demand served at the end of a turn.
+        int demand_remaining_MWh; ///< The demand remaining at the end of a turn.
         int overproduction_MWh; ///< The amount of overproduction at the end of a turn.
         int turn_fuel_cost; ///< The cost of fuel at the end of a turn.
         int turn_operation_maintenance_cost; ///< The cost of operation and maintenance at the end of a turn.
-        int net_credit_flow; ///< The net credit flow at the end of a turn.
         int turn_emissions_tonnes; ///< The amount of emissions at the end of a turn.
+        
+        int dispatch_income; ///< The amount earned from dispatch at the end of a turn.
+        int overproduction_penalty; ///< The penalty for overproduction.
+        int net_credit_flow; ///< The net credit flow at the end of a turn.
+        
+        int consecutive_zero_emissions_months; ///< The number of recent, consecutive zero emission months.
+        
+        size_t substring_idx; ///< The index of the turn summary substring 
+        std::string turn_summary_string; ///< A string representation of the end of turn summary.
+        sf::Text turn_summary_text; ///< A text representation (drawable) of the end of turn summary.
         
         int message_deadlock_frame; ///< A frame counter for detecting message deadlock.
         

@@ -525,12 +525,12 @@ void ContextMenu :: __setConsoleString(void)
             //           32 char x 17 line console "--------------------------------\n";
             this->console_string                 = "         **** MENU ****         \n";
             this->console_string                += "                                \n";
+            this->console_string                += "[ENTER]:  END TURN              \n";
+            this->console_string                += "                                \n";
             this->console_string                += "[R]:  RESTART                   \n";
             this->console_string                += "                                \n";
             this->console_string                += "[TAB]:  TOGGLE RESOURCE OVERLAY \n";
             this->console_string                += "[T]:  TUTORIAL                  \n";
-            this->console_string                += "                                \n";
-            this->console_string                += "                                \n";
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";

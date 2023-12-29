@@ -372,6 +372,56 @@ Message MessageHub :: receiveMessage(std::string channel)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void MessageHub :: incrementMessageRead(std::string channel)
+///
+/// \brief Method to increment the number of times the first message in the channel has
+///     been read. Channels are implemented in a first in, first out manner (i.e.
+///     message queue).
+///
+/// \param channel The key for the message channel being received from.
+///
+
+void MessageHub :: incrementMessageRead(std::string channel)
+{
+    //  1. check if channel is in map (if not, throw error)
+    if (this->message_map.count(channel) <= 0) {
+        std::string error_str = "ERROR  MessageHub::incrementMessageRead()  channel ";
+        error_str += channel;
+        error_str += " is not in message map";
+        
+        #ifdef _WIN32
+            std::cout << error_str << std::endl;
+        #endif  /* _WIN32 */
+        
+        throw std::runtime_error(error_str);
+    }
+    
+    //  2. check if channel is empty (if so, throw error)
+    if (this->message_map[channel].empty()) {
+        std::string error_str = "ERROR  MessageHub::incrementMessageRead()  channel ";
+        error_str += channel;
+        error_str += " is empty";
+        
+        #ifdef _WIN32
+            std::cout << error_str << std::endl;
+        #endif  /* _WIN32 */
+        
+        throw std::runtime_error(error_str);
+    }
+    
+    //  3. increment number of reads
+    this->message_map[channel].front().number_of_reads++;
+    
+    return;
+}   /* incrementMessageRead( */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void MessageHub :: popMessage(std::string channel)
 ///
 /// \brief Method to pop first message off of the given channel. Channels are

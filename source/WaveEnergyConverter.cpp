@@ -436,7 +436,7 @@ void WaveEnergyConverter :: __computeDispatch(void)
     
     this->dispatchable_MWh = round(dispatchable_MWh);
     
-    if (this->dispatch_MWh > this->dispatchable_MWh) {
+    if (this->dispatch_MWh != this->dispatchable_MWh) {
         this->dispatch_MWh = this->dispatchable_MWh;
     }
     
@@ -916,12 +916,12 @@ void WaveEnergyConverter :: setIsSelected(bool is_selected)
 
 void WaveEnergyConverter :: advanceTurn(void)
 {
-    //  1. update
+    //  1. send improvement state message
+    this->__sendImprovementStateMessage();
+    
+    //  2. update
     this->__computeCapacityFactors();
     this->update();
-    
-    //  2. send improvement state message
-    this->__sendImprovementStateMessage();
     
     //  3. handle start/stop
     if ((not this->is_running) and (this->dispatch_MWh > 0)) {

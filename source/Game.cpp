@@ -94,7 +94,29 @@ void Game :: __checkTerminatingConditions(void)
 {
     std::cout << "Game :: __checkTerminatingConditions()" << std::endl;
     
-    //...
+    //  1. loss emissions
+    if (this->cumulative_emissions_tonnes >= EMISSIONS_LIFETIME_LIMIT_TONNES) {
+        this->assets_manager_ptr->getSound("loss")->play();
+        this->game_phase = GamePhase :: LOSS_EMISSIONS;
+    }
+    
+    //  2. loss demand
+    else if (this->demand_remaining_MWh > 0) {
+        this->assets_manager_ptr->getSound("loss")->play();
+        this->game_phase = GamePhase :: LOSS_DEMAND;
+    }
+    
+    //  3. loss credits
+    else if (this->credits < 0) {
+        this->assets_manager_ptr->getSound("loss")->play();
+        this->game_phase = GamePhase :: LOSS_CREDITS;
+    }
+    
+    //  4. victory
+    else if (this->consecutive_zero_emissions_months >= 12) {
+        this->assets_manager_ptr->getSound("victory")->play();
+        this->game_phase = GamePhase :: VICTORY;
+    }
     
     return;
 }   /* __checkTerminatingConditions() */
@@ -117,14 +139,26 @@ void Game :: __advanceTurn(void)
     this->turn++;
     this->turn_end = true;
     
-    //  2. advance month/year
+    //  2. reset turn summary attributes
+    this->demand_served_MWh = 0;
+    this->demand_remaining_MWh = 0;
+    this->overproduction_MWh = 0;
+    this->turn_fuel_cost = 0;
+    this->turn_operation_maintenance_cost = 0;
+    this->turn_emissions_tonnes = 0;
+    
+    this->overproduction_penalty = 0;
+    this->dispatch_income = 0;
+    this->net_credit_flow = 0;
+    
+    //  3. advance month/year
     this->month++;
     if (this->month > 12) {
         this->year++;
         this->month = 1;
     }
     
-    //  3. update population
+    //  4. update population
     if (this->turn == 1) {
         this->population = STARTING_POPULATION;
     }
@@ -133,11 +167,12 @@ void Game :: __advanceTurn(void)
         this->population = ceil(this->population * POPULATION_MONTHLY_GROWTH_RATE);
     }
     
-    //  4. update demand
+    //  5. update demand
     this->__computeCurrentDemand();
     
-    //  5. send turn advance message
+    //  6. send turn advance message
     this->__sendTurnAdvanceMessage();
+    this->__sendGameStateMessage();
     
 }   /* __advanceTurn() */
 
@@ -155,6 +190,8 @@ void Game :: __advanceTurn(void)
 
 void Game :: __computeCurrentDemand(void)
 {
+    this->past_demand_MWh = this->demand_MWh;
+    
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
 
@@ -173,7 +210,6 @@ void Game :: __computeCurrentDemand(void)
     }
     
     this->demand_MWh = round(demand_MWh);
-    this->demand_remaining_MWh = this->demand_MWh;
 
     return;
 }   /* __computeCurrentDemand() */
@@ -279,28 +315,29 @@ void Game :: __handleMouseButtonEvents(void)
 
 void Game :: __handleImprovementStateMessage(Message improvement_state_message)
 {
-    //  1. unpack message and update game attributes
+    //  1. dispatch
     if (improvement_state_message.int_payload.count("dispatch_MWh") > 0) {
-        this->demand_remaining_MWh -= improvement_state_message.int_payload["dispatch_MWh"];
-
-        this->credits +=
-            round(CREDITS_PER_MWH_SERVED * improvement_state_message.int_payload["dispatch_MWh"]);
-        
-        this->__sendCreditsEarnedMessage();
+        this->demand_served_MWh += improvement_state_message.int_payload["dispatch_MWh"];
     }
     
+    //  2. fuel costs
     if (improvement_state_message.int_payload.count("fuel_cost") > 0) {
-        this->credits -= improvement_state_message.int_payload["fuel_cost"];
+        this->turn_fuel_cost += improvement_state_message.int_payload["fuel_cost"];
     }
     
+    //  3. operation and maintenance costs
     if (improvement_state_message.int_payload.count("operation_maintenance_cost") > 0) {
-        this->credits -=
+        this->turn_operation_maintenance_cost +=
             improvement_state_message.int_payload["operation_maintenance_cost"];
     }
     
+    //  4. emissions
     if (improvement_state_message.int_payload.count("emissions_tonnes_CO2e") > 0) {
-        this->cumulative_emissions_tonnes +=
+        double emissions_tonnes_CO2e =
             improvement_state_message.int_payload["emissions_tonnes_CO2e"];
+        
+        this->cumulative_emissions_tonnes += emissions_tonnes_CO2e;
+        this->turn_emissions_tonnes += emissions_tonnes_CO2e;
     }
     
     return;
@@ -362,6 +399,8 @@ void Game :: __sendGameStateMessage(void)
     game_state_message.int_payload["demand_MWh"] = this->demand_MWh;
     game_state_message.int_payload["cumulative_emissions_tonnes"] =
         this->cumulative_emissions_tonnes;
+    
+    game_state_message.int_payload["reads"] = 0;
     
     switch (this->game_phase) {
         case (GamePhase :: BUILD_SETTLEMENT): {
@@ -587,8 +626,17 @@ void Game :: __processMessage(void)
             this->message_hub.receiveMessage(GAME_STATE_CHANNEL);
         
         if (game_state_message.subject == "turn advance") {
-            std::cout << "Turn advance message received by " << this << std::endl;
-            this->message_hub.popMessage(GAME_STATE_CHANNEL);
+            if (game_state_message.number_of_reads > 0) {
+                std::cout << "Turn advance message received by " << this << std::endl;
+                this->message_hub.popMessage(GAME_STATE_CHANNEL);
+            }
+        }
+        
+        if (game_state_message.subject == "game state") {
+            if (game_state_message.number_of_reads > 0) {
+                std::cout << "Game state message received by " << this << std::endl;
+                this->message_hub.popMessage(GAME_STATE_CHANNEL);
+            }
         }
     }
     
@@ -701,6 +749,421 @@ void Game :: __insufficientCreditsAlarm(void)
 
     return;
 }   /* __insufficientCreditsAlarm( */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __summarizeTurn(void)
+///
+/// \brief Helper method to generate end of turn summary.
+///
+
+void Game :: __summarizeTurn(void)
+{
+    if (this->turn - 1 == 0) {
+        return;
+    }
+    
+    this->substring_idx = 0;
+    
+    //  1. handle dispatch and demand
+    if (this->demand_served_MWh > this->past_demand_MWh) {
+        this->overproduction_MWh = this->demand_served_MWh - this->past_demand_MWh;
+        this->demand_served_MWh -= this->overproduction_MWh;
+        
+        this->overproduction_penalty =
+            round(CREDITS_PER_MWH_SERVED * this->overproduction_MWh);
+    }
+    
+    else if (this->demand_served_MWh < this->past_demand_MWh) {
+        this->demand_remaining_MWh = this->past_demand_MWh - this->demand_served_MWh;
+    }
+    
+    //  2. compute dispatch income
+    this->dispatch_income = round(CREDITS_PER_MWH_SERVED * this->demand_served_MWh);
+    
+    if (this->dispatch_income > 0) {
+        this->__sendCreditsEarnedMessage();
+    }
+    
+    //  3. compute net credit flow
+    this->net_credit_flow = this->dispatch_income -
+        this->overproduction_penalty -
+        this->turn_fuel_cost -
+        this->turn_operation_maintenance_cost;
+    
+    this->credits += this->net_credit_flow;
+    
+    //  4. assemble turn summary string
+    this->turn_summary_string.clear();
+    
+    //16 line x 32 char console  "                                \n";
+    this->turn_summary_string  = "     **** TURN ";
+    this->turn_summary_string += std::to_string(this->turn - 1);
+    this->turn_summary_string += " SUMMARY ****   \n";
+    this->turn_summary_string += "                                \n";
+    
+    this->turn_summary_string += "DEMAND:            ";
+    this->turn_summary_string += std::to_string(this->past_demand_MWh);
+    this->turn_summary_string += " MWh\n";
+    
+    this->turn_summary_string += "DEMAND SERVED:     ";
+    this->turn_summary_string += std::to_string(this->demand_served_MWh);
+    this->turn_summary_string += " MWh\n";
+    
+    if (this->overproduction_MWh > 0) {
+        this->turn_summary_string += "OVERPRODUCTION:    ";
+        this->turn_summary_string += std::to_string(this->overproduction_MWh);
+        this->turn_summary_string += " MWh\n";
+    }
+    
+    else if (this->demand_remaining_MWh > 0) {
+        this->turn_summary_string += "DEMAND REMAINING:  ";
+        this->turn_summary_string += std::to_string(this->demand_remaining_MWh);
+        this->turn_summary_string += " MWh\n";
+    }
+    
+    this->turn_summary_string += "                                \n";
+    this->turn_summary_string += "                                \n";
+    
+    this->turn_summary_string += "DISPATCH INCOME:  +";
+    this->turn_summary_string += std::to_string(this->dispatch_income);
+    this->turn_summary_string += " K\n";
+    
+    this->turn_summary_string += "FUEL COST:        -";
+    this->turn_summary_string += std::to_string(this->turn_fuel_cost);
+    this->turn_summary_string += " K\n";
+    
+    this->turn_summary_string += "OP & MAINT COST:  -";
+    this->turn_summary_string += std::to_string(this->turn_operation_maintenance_cost);
+    this->turn_summary_string += " K\n";
+    
+    this->turn_summary_string += "OVERPRODUCTION:   -";
+    this->turn_summary_string += std::to_string(this->overproduction_penalty);
+    this->turn_summary_string += " K\n";
+    
+    this->turn_summary_string += "--------------------------------\n";
+    
+    this->turn_summary_string += "NET:              ";
+    
+    if (this->net_credit_flow > 0) {
+        this->turn_summary_string += "+";
+    }
+    
+    this->turn_summary_string += std::to_string(this->net_credit_flow);
+    this->turn_summary_string += " K\n";
+    
+    this->turn_summary_string += "                                \n";
+    
+    this->turn_summary_string += "EMISSIONS: ";
+    this->turn_summary_string += std::to_string(this->turn_emissions_tonnes);
+    this->turn_summary_string += " tonnes CO2e\n";
+    
+    if (this->turn_emissions_tonnes <= 0) {
+        this->consecutive_zero_emissions_months++;
+    }
+    
+    else {
+        this->consecutive_zero_emissions_months = 0;
+    }
+    
+    return;
+}   /* _summarizeTurn() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __drawLossDemand(void)
+///
+/// \brief Helper method to draw loss (demand) pop-up.
+///
+
+void Game :: __drawLossDemand(void)
+{
+    //  1. construct alarm text and backing rectangle
+    std::string loss_demand_string  = "   LOSS! - FAILED TO MEET DEMAND   \n";
+    loss_demand_string             += "     press any key to restart      ";
+    
+    sf::Text loss_demand_text(
+        loss_demand_string,
+        (*(this->assets_manager_ptr->getFont("DroidSansMono"))),
+        32
+    );
+    
+    loss_demand_text.setOrigin(
+        loss_demand_text.getLocalBounds().width / 2,
+        loss_demand_text.getLocalBounds().height / 2
+    );
+    
+    loss_demand_text.setPosition(400, GAME_HEIGHT / 2);
+    
+    sf::RectangleShape backing_rectangle(
+        sf::Vector2f(
+            1.1 * loss_demand_text.getLocalBounds().width,
+            1.5 * loss_demand_text.getLocalBounds().height
+        )
+    );
+    
+    backing_rectangle.setFillColor(RESOURCE_CHIP_GREY);
+    
+    backing_rectangle.setOrigin(
+        backing_rectangle.getLocalBounds().width / 2,
+        backing_rectangle.getLocalBounds().height / 2
+    );
+    
+    backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
+    
+    //  3. colour cycle and draw
+    if (this->frame % FRAMES_PER_SECOND <= FRAMES_PER_SECOND / 2) {
+        loss_demand_text.setFillColor(MONOCHROME_TEXT_RED);
+    }
+    
+    else {
+        loss_demand_text.setFillColor(sf::Color(255, 255, 255, 255));
+    }
+    
+    this->render_window_ptr->draw(backing_rectangle);
+    this->render_window_ptr->draw(loss_demand_text);
+    
+    return;
+}   /* __drawLossDemand() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __drawLossCredits(void)
+///
+/// \brief Helper method to draw loss (credits) pop-up.
+///
+
+void Game :: __drawLossCredits(void)
+{
+    //  1. construct loss text and backing rectangle
+    std::string loss_credits_string  = "    LOSS! - RAN OUT OF CREDITS     \n";
+    loss_credits_string             += "     press any key to restart      ";
+    
+    sf::Text loss_credits_text(
+        loss_credits_string,
+        (*(this->assets_manager_ptr->getFont("DroidSansMono"))),
+        32
+    );
+    
+    loss_credits_text.setOrigin(
+        loss_credits_text.getLocalBounds().width / 2,
+        loss_credits_text.getLocalBounds().height / 2
+    );
+    
+    loss_credits_text.setPosition(400, GAME_HEIGHT / 2);
+    
+    sf::RectangleShape backing_rectangle(
+        sf::Vector2f(
+            1.1 * loss_credits_text.getLocalBounds().width,
+            1.5 * loss_credits_text.getLocalBounds().height
+        )
+    );
+    
+    backing_rectangle.setFillColor(RESOURCE_CHIP_GREY);
+    
+    backing_rectangle.setOrigin(
+        backing_rectangle.getLocalBounds().width / 2,
+        backing_rectangle.getLocalBounds().height / 2
+    );
+    
+    backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
+    
+    //  3. colour cycle and draw
+    if (this->frame % FRAMES_PER_SECOND <= FRAMES_PER_SECOND / 2) {
+        loss_credits_text.setFillColor(MONOCHROME_TEXT_RED);
+    }
+    
+    else {
+        loss_credits_text.setFillColor(sf::Color(255, 255, 255, 255));
+    }
+    
+    this->render_window_ptr->draw(backing_rectangle);
+    this->render_window_ptr->draw(loss_credits_text);
+    
+    return;
+}   /* __drawLossCredits() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __drawLossEmissions(void)
+///
+/// \brief Helper method to draw loss (emissions) pop-up.
+///
+
+void Game :: __drawLossEmissions(void)
+{
+    //  1. construct loss text and backing rectangle
+    std::string loss_emissions_string  = "    LOSS! - EXCESSIVE EMISSIONS    \n";
+    loss_emissions_string             += "     press any key to restart      ";
+    
+    sf::Text loss_emissions_text(
+        loss_emissions_string,
+        (*(this->assets_manager_ptr->getFont("DroidSansMono"))),
+        32
+    );
+    
+    loss_emissions_text.setOrigin(
+        loss_emissions_text.getLocalBounds().width / 2,
+        loss_emissions_text.getLocalBounds().height / 2
+    );
+    
+    loss_emissions_text.setPosition(400, GAME_HEIGHT / 2);
+    
+    sf::RectangleShape backing_rectangle(
+        sf::Vector2f(
+            1.1 * loss_emissions_text.getLocalBounds().width,
+            1.5 * loss_emissions_text.getLocalBounds().height
+        )
+    );
+    
+    backing_rectangle.setFillColor(RESOURCE_CHIP_GREY);
+    
+    backing_rectangle.setOrigin(
+        backing_rectangle.getLocalBounds().width / 2,
+        backing_rectangle.getLocalBounds().height / 2
+    );
+    
+    backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
+    
+    //  3. colour cycle and draw
+    if (this->frame % FRAMES_PER_SECOND <= FRAMES_PER_SECOND / 2) {
+        loss_emissions_text.setFillColor(MONOCHROME_TEXT_RED);
+    }
+    
+    else {
+        loss_emissions_text.setFillColor(sf::Color(255, 255, 255, 255));
+    }
+    
+    this->render_window_ptr->draw(backing_rectangle);
+    this->render_window_ptr->draw(loss_emissions_text);
+    
+    return;
+}   /* __drawLossEmissions() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __drawVictory(void)
+///
+/// \brief Helper method to draw victory pop-up.
+///
+
+void Game :: __drawVictory(void)
+{
+    //  1. construct victory text and backing rectangle
+    std::string victory_string  = "        **** VICTORY! ****         \n";
+    victory_string             += "     press any key to restart      ";
+    
+    sf::Text victory_text(
+        victory_string,
+        (*(this->assets_manager_ptr->getFont("DroidSansMono"))),
+        32
+    );
+    
+    victory_text.setOrigin(
+        victory_text.getLocalBounds().width / 2,
+        victory_text.getLocalBounds().height / 2
+    );
+    
+    victory_text.setPosition(400, GAME_HEIGHT / 2);
+    
+    sf::RectangleShape backing_rectangle(
+        sf::Vector2f(
+            1.1 * victory_text.getLocalBounds().width,
+            1.5 * victory_text.getLocalBounds().height
+        )
+    );
+    
+    backing_rectangle.setFillColor(RESOURCE_CHIP_GREY);
+    
+    backing_rectangle.setOrigin(
+        backing_rectangle.getLocalBounds().width / 2,
+        backing_rectangle.getLocalBounds().height / 2
+    );
+    
+    backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
+    
+    //  3. colour cycle and draw
+    if (this->frame % FRAMES_PER_SECOND <= FRAMES_PER_SECOND / 2) {
+        victory_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    }
+    
+    else {
+        victory_text.setFillColor(sf::Color(255, 255, 255, 255));
+    }
+    
+    this->render_window_ptr->draw(backing_rectangle);
+    this->render_window_ptr->draw(victory_text);
+    
+    return;
+}   /* __drawVictory() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __drawTurnSummary(void)
+///
+/// \brief Helper method to draw turn summary.
+///
+
+void Game :: __drawTurnSummary(void)
+{
+    if (this->substring_idx < this->turn_summary_string.size()) {
+        this->assets_manager_ptr->getSound("console string print")->play();
+        
+        this->turn_summary_text.setString(
+            this->turn_summary_string.substr(0, this->substring_idx)
+        );
+        
+        while (
+            (this->turn_summary_string.substr(0, this->substring_idx).back() == ' ') or
+            (this->turn_summary_string.substr(0, this->substring_idx).back() == '\n')
+        ) {
+            this->substring_idx++;
+            
+            if (this->substring_idx == this->turn_summary_string.size() - 1) {
+                this->turn_summary_text.setString(
+                    this->turn_summary_string.substr(0, this->substring_idx)
+                );
+                
+                break;
+            }
+        }
+        
+        this->substring_idx++;
+    }
+    
+    this->render_window_ptr->draw(this->turn_summary_text);
+    
+    return;
+}   /* __drawTurnSummary() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -864,6 +1327,9 @@ void Game :: __drawHUD(void)
     HUD_string += "    TURN: ";
     HUD_string += std::to_string(this->turn);
     
+    HUD_string += "    CONSECUTIVE ZERO EMISSIONS MONTHS: ";
+    HUD_string += std::to_string(this->consecutive_zero_emissions_months);
+    
     HUD_text.setString(HUD_string);
     
     HUD_text.setPosition(
@@ -894,6 +1360,50 @@ void Game :: __draw(void)
     
     if (this->show_frame_clock_overlay) {
         this->__drawFrameClockOverlay();
+    }
+    
+    if (this->show_tutorial) {
+        
+    }
+    
+    else if (not this->turn_summary_string.empty()) {
+        this->__drawTurnSummary();
+    }
+    
+    switch (this->game_phase) {
+        case (GamePhase :: LOSS_DEMAND): {
+            this->__drawLossDemand();
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_CREDITS): {
+            this->__drawLossCredits();
+            
+            break;
+        }
+        
+        
+        case (GamePhase :: LOSS_EMISSIONS): {
+            this->__drawLossEmissions();
+            
+            break;
+        }
+        
+        
+        case (GamePhase ::VICTORY): {
+            this->__drawVictory();
+            
+            break;
+        }
+        
+        
+        default: {
+            // do nothing!
+            
+            break;
+        }
     }
     
     return;
@@ -958,17 +1468,34 @@ Game :: Game(
     this->population = 0;
     this->credits = STARTING_CREDITS;
     this->demand_MWh = 0;
-    this->demand_remaining_MWh = 0;
     this->cumulative_emissions_tonnes = 0;
+    
+    this->past_demand_MWh = 0;
     
     this->demand_vec_MWh.resize(30, 0);
     
     this->demand_served_MWh = 0;
+    this->demand_remaining_MWh = 0;
     this->overproduction_MWh = 0;
     this->turn_fuel_cost = 0;
     this->turn_operation_maintenance_cost = 0;
-    this->net_credit_flow = 0;
     this->turn_emissions_tonnes = 0;
+    
+    this->overproduction_penalty = 0;
+    this->dispatch_income = 0;
+    this->net_credit_flow = 0;
+    
+    this->consecutive_zero_emissions_months = 0;
+    
+    this->substring_idx = 0;
+    this->turn_summary_string = "";
+    
+    this->turn_summary_text.setFont(
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
+    );
+    this->turn_summary_text.setCharacterSize(16);
+    this->turn_summary_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    this->turn_summary_text.setPosition(GAME_WIDTH - 400 + 64, 64);
 
     this->hex_map_ptr = new HexMap(
         6,
@@ -988,6 +1515,8 @@ Game :: Game(
     //  2. add message channel(s)
     this->message_hub.addChannel(GAME_CHANNEL);
     this->message_hub.addChannel(GAME_STATE_CHANNEL);
+    
+    this->__sendGameStateMessage();
     
     std::cout << "Game constructed at " << this << std::endl;
     
@@ -1024,9 +1553,20 @@ bool Game :: run(void)
         if (this->time_since_start_s >= (this->frame + 1) * SECONDS_PER_FRAME) {
             //  6.1. process events
             while (this->render_window_ptr->pollEvent(this->event)) {
-                this->hex_map_ptr->processEvent();
-                this->context_menu_ptr->processEvent();
-                this->__processEvent();
+                if (
+                    (this->game_phase == GamePhase :: BUILD_SETTLEMENT) or
+                    (this->game_phase == GamePhase :: SYSTEM_MANAGEMENT)
+                ) {
+                    this->hex_map_ptr->processEvent();
+                    this->context_menu_ptr->processEvent();
+                    this->__processEvent();
+                }
+                
+                else {
+                    if (this->event.type == sf::Event::KeyPressed) {
+                        this->game_loop_broken = true;
+                    }
+                }
             }
             
             
@@ -1056,7 +1596,7 @@ bool Game :: run(void)
                 std::cout << "**** END OF TURN " << std::to_string(this->turn - 1) <<
                     " ****" << std::endl;
                 
-                //...
+                this->__summarizeTurn();
                 
                 this->turn_end = false;
             }

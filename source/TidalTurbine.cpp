@@ -415,7 +415,7 @@ void TidalTurbine :: __computeDispatch(void)
     
     this->dispatchable_MWh = round(dispatchable_MWh);
     
-    if (this->dispatch_MWh > this->dispatchable_MWh) {
+    if (this->dispatch_MWh != this->dispatchable_MWh) {
         this->dispatch_MWh = this->dispatchable_MWh;
     }
     
@@ -902,12 +902,12 @@ void TidalTurbine :: setIsSelected(bool is_selected)
 
 void TidalTurbine :: advanceTurn(void)
 {
-    //  1. update
+    //  1. send improvement state message
+    this->__sendImprovementStateMessage();
+    
+    //  2. update
     this->__computeCapacityFactors();
     this->update();
-    
-    //  2. send improvement state message
-    this->__sendImprovementStateMessage();
     
     //  3. handle start/stop
     if ((not this->is_running) and (this->dispatch_MWh > 0)) {

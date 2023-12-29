@@ -125,6 +125,8 @@ class Game {
         bool show_frame_clock_overlay; ///< Boolean indicating whether or not to show frame and clock overlay.
         bool check_terminating_conditions; ///< Boolean indicating whether or not to check terminating conditions.
         bool message_deadlock; ///< A boolean indicating whether a message deadlock has been detected.
+        bool show_tutorial; ///< A boolean indicating whether or not to show the tutorial.
+        bool turn_end; ///< A boolean indicating a turn end.
         
         unsigned long long int frame; ///< The current frame of the game.
         double time_since_start_s; ///< The time elapsed [s] since the start of the game.
@@ -136,6 +138,13 @@ class Game {
         int demand_MWh; ///< Current energy demand [MWh].
         int demand_remaining_MWh; ///< The current remaining energy demand [MWh].
         int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
+        
+        int demand_served_MWh; ///< The demand served at the end of a turn
+        int overproduction_MWh; ///< The amount of overproduction at the end of a turn.
+        int turn_fuel_cost; ///< The cost of fuel at the end of a turn.
+        int turn_operation_maintenance_cost; ///< The cost of operation and maintenance at the end of a turn.
+        int net_credit_flow; ///< The net credit flow at the end of a turn.
+        int turn_emissions_tonnes; ///< The amount of emissions at the end of a turn.
         
         int message_deadlock_frame; ///< A frame counter for detecting message deadlock.
         

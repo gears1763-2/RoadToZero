@@ -174,7 +174,7 @@ void SolarPV :: __upgradePowerCapacity(void)
         return;
     }
     
-    this->health = 100;
+    TileImprovement :: __repair();
     
     this->capacity_kW += 100;
     this->upgrade_level++;
@@ -240,6 +240,39 @@ void SolarPV :: __breakdown(void)
     
     return;
 }   /* __breakdown() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void SolarPV :: __repair(void)
+///
+/// \brief Helper method to repair the solar PV array.
+///
+
+void SolarPV :: __repair(void)
+{
+    if (this->credits < SOLAR_PV_BUILD_COST) {
+        std::cout << "Cannot repair solar PV: insufficient credits (need "
+            << SOLAR_PV_BUILD_COST << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    TileImprovement :: __repair();
+    
+    this->just_upgraded = true;
+    
+    this->__sendCreditsSpentMessage(SOLAR_PV_BUILD_COST);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __repair() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -806,14 +839,14 @@ std::string SolarPV :: getTileOptionsSubstring(void)
     options_substring                           += "   **** SOLAR PV OPTIONS ****   \n";
     options_substring                           += "                                \n";
     
-    options_substring                           += "     [E]:  ";
-    
     if (this->is_broken) {
-        options_substring                       += "*** BROKEN! ***\n";
+        options_substring                       += "     [R]:  REPAIR (";
+        options_substring                       += std::to_string(SOLAR_PV_BUILD_COST);
+        options_substring                       += " K)\n";
     }
     
     else {
-        options_substring                       += "OPEN PRODUCTION MENU\n";
+        options_substring                       += "     [E]:  OPEN PRODUCTION MENU \n";
     }
     
     options_substring                           += "     [U]:  OPEN UPGRADE MENU    \n";

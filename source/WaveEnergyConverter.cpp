@@ -191,7 +191,7 @@ void WaveEnergyConverter :: __upgradePowerCapacity(void)
         return;
     }
     
-    this->health = 100;
+    TileImprovement :: __repair();
     
     this->capacity_kW += 100;
     this->upgrade_level++;
@@ -257,6 +257,39 @@ void WaveEnergyConverter :: __breakdown(void)
     
     return;
 }   /* __breakdown() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void WaveEnergyConverter :: __repair(void)
+///
+/// \brief Helper method to repair the wave energy converter.
+///
+
+void WaveEnergyConverter :: __repair(void)
+{
+    if (this->credits < WAVE_ENERGY_CONVERTER_BUILD_COST) {
+        std::cout << "Cannot repair wave energy converter: insufficient credits (need "
+            << WAVE_ENERGY_CONVERTER_BUILD_COST << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    TileImprovement :: __repair();
+    
+    this->just_upgraded = true;
+    
+    this->__sendCreditsSpentMessage(WAVE_ENERGY_CONVERTER_BUILD_COST);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __repair() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -826,14 +859,14 @@ std::string WaveEnergyConverter :: getTileOptionsSubstring(void)
     options_substring                           += " **** WAVE ENERGY OPTIONS ****  \n";
     options_substring                           += "                                \n";
     
-    options_substring                           += "     [E]:  ";
-    
     if (this->is_broken) {
-        options_substring                       += "*** BROKEN! ***\n";
+        options_substring                       += "     [R]:  REPAIR (";
+        options_substring                       += std::to_string(WAVE_ENERGY_CONVERTER_BUILD_COST);
+        options_substring                       += " K)\n";
     }
     
     else {
-        options_substring                       += "OPEN PRODUCTION MENU\n";
+        options_substring                       += "     [E]:  OPEN PRODUCTION MENU \n";
     }
     
     options_substring                           += "     [U]:  OPEN UPGRADE MENU    \n";

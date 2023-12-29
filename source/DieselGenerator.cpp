@@ -197,7 +197,7 @@ void DieselGenerator :: __upgrade(void)
     
     this->is_running = false;
     
-    this->__repair();
+    TileImprovement :: __repair();
     
     this->capacity_kW += 100;
     this->upgrade_level++;
@@ -271,6 +271,39 @@ void DieselGenerator :: __breakdown(void)
     
     return;
 }   /* __breakdown() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void DieselGenerator :: __repair(void)
+///
+/// \brief Helper method to repair the diesel generator.
+///
+
+void DieselGenerator :: __repair(void)
+{
+    if (this->credits < DIESEL_GENERATOR_BUILD_COST) {
+        std::cout << "Cannot repair diesel generator: insufficient credits (need "
+            << DIESEL_GENERATOR_BUILD_COST << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    TileImprovement :: __repair();
+    
+    this->just_upgraded = true;
+    
+    this->__sendCreditsSpentMessage(DIESEL_GENERATOR_BUILD_COST);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __repair() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -560,15 +593,15 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     options_substring                           += "                                \n";
     options_substring                           += "  **** DIESEL GEN OPTIONS ****  \n";
     options_substring                           += "                                \n";
-    
-    options_substring                           += "     [E]:  ";
-    
+
     if (this->is_broken) {
-        options_substring                       += "*** BROKEN! ***\n";
+        options_substring                       += "     [R]:  REPAIR (";
+        options_substring                       += std::to_string(DIESEL_GENERATOR_BUILD_COST);
+        options_substring                       += " K)\n";
     }
     
     else {
-        options_substring                       += "OPEN PRODUCTION MENU\n";
+        options_substring                       += "     [E]:  OPEN PRODUCTION MENU \n";
     }
     
     if (this->upgrade_level < MAX_UPGRADE_LEVELS) {

@@ -83,6 +83,7 @@ class SolarPV: public TileImprovement {
         void __computeProductionCosts(void);
         
         void __breakdown(void);
+        void __repair(void);
         
         void __computeCapacityFactors(void);
         void __computeProduction(void);

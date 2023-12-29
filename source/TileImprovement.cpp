@@ -285,7 +285,22 @@ void TileImprovement :: __handleKeyPressEvents(void)
     
     switch (this->event_ptr->key.code) {
         case (sf::Keyboard::E): {
-            this->__openProductionMenu();
+            if (this->is_broken) {
+                this->assets_manager_ptr->getSound("breakdown")->play();
+            }
+            
+            else {
+                this->__openProductionMenu();
+            }
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::R): {
+            if (this->is_broken) {
+                this->__repair();
+            }
             
             break;
         }
@@ -362,11 +377,6 @@ void TileImprovement :: __handleMouseButtonEvents(void)
 
 void TileImprovement :: __openProductionMenu(void)
 {
-    if (this->is_broken) {
-        this->assets_manager_ptr->getSound("breakdown")->play();
-        return;
-    }
-    
     if (this->production_menu_open) {
         return;
     }

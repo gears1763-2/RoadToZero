@@ -83,6 +83,7 @@ class DieselGenerator: public TileImprovement {
         void __computeProductionCosts(void);
         
         void __breakdown(void);
+        void __repair(void);
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);

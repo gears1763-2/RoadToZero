@@ -107,7 +107,7 @@ class TileImprovement {
         void __closeProductionMenu(void);
         
         void __breakdown(void);
-        void __repair(void);
+        virtual void __repair(void);
         
         void __openUpgradeMenu(void);
         void __closeUpgradeMenu(void);

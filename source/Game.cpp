@@ -113,8 +113,9 @@ void Game :: __checkTerminatingConditions(void)
 
 void Game :: __advanceTurn(void)
 {
-    //  1. advance turn
+    //  1. advance turn, raise turn end flag
     this->turn++;
+    this->turn_end = true;
     
     //  2. advance month/year
     this->month++;
@@ -936,6 +937,8 @@ Game :: Game(
     this->game_loop_broken = false;
     this->show_frame_clock_overlay = false;
     this->check_terminating_conditions = false;
+    this->show_tutorial = false;
+    this->turn_end = false;
     
     this->frame = 0;
     this->time_since_start_s = 0;
@@ -959,6 +962,13 @@ Game :: Game(
     this->cumulative_emissions_tonnes = 0;
     
     this->demand_vec_MWh.resize(30, 0);
+    
+    this->demand_served_MWh = 0;
+    this->overproduction_MWh = 0;
+    this->turn_fuel_cost = 0;
+    this->turn_operation_maintenance_cost = 0;
+    this->net_credit_flow = 0;
+    this->turn_emissions_tonnes = 0;
 
     this->hex_map_ptr = new HexMap(
         6,
@@ -1041,14 +1051,25 @@ bool Game :: run(void)
             this->message_deadlock_frame = 0;
             
             
-            //  6.3. check terminating conditions
+            //  6.3. handle turn end summary
+            if (this->turn_end) {
+                std::cout << "**** END OF TURN " << std::to_string(this->turn - 1) <<
+                    " ****" << std::endl;
+                
+                //...
+                
+                this->turn_end = false;
+            }
+            
+            
+            //  6.4. check terminating conditions
             if (this->check_terminating_conditions) {
                 this->__checkTerminatingConditions();
                 this->check_terminating_conditions = false;
             }
             
             
-            //  6.4. draw frame
+            //  6.5. draw frame
             this->render_window_ptr->clear();
             
             this->hex_map_ptr->draw();
@@ -1058,7 +1079,7 @@ bool Game :: run(void)
             this->render_window_ptr->display();
             
             
-            //  6.5. increment frame
+            //  6.6. increment frame
             this->frame++;
         }
         

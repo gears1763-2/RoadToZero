@@ -191,7 +191,7 @@ void TidalTurbine :: __upgradePowerCapacity(void)
         return;
     }
     
-    this->health = 100;
+    TileImprovement :: __repair();
     
     this->capacity_kW += 100;
     this->upgrade_level++;
@@ -257,6 +257,39 @@ void TidalTurbine :: __breakdown(void)
     
     return;
 }   /* __breakdown() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TidalTurbine :: __repair(void)
+///
+/// \brief Helper method to repair the tidal turbine.
+///
+
+void TidalTurbine :: __repair(void)
+{
+    if (this->credits < TIDAL_TURBINE_BUILD_COST) {
+        std::cout << "Cannot repair tidal turbine: insufficient credits (need "
+            << TIDAL_TURBINE_BUILD_COST << " K)" << std::endl;
+            
+        this->__sendInsufficientCreditsMessage();
+        return;
+    }
+    
+    TileImprovement :: __repair();
+    
+    this->just_upgraded = true;
+    
+    this->__sendCreditsSpentMessage(TIDAL_TURBINE_BUILD_COST);
+    this->__sendTileStateRequest();
+    this->__sendGameStateRequest();
+    
+    return;
+}   /* __repair() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -811,14 +844,14 @@ std::string TidalTurbine :: getTileOptionsSubstring(void)
     options_substring                           += "**** TIDAL TURBINE OPTIONS **** \n";
     options_substring                           += "                                \n";
     
-    options_substring                           += "     [E]:  ";
-    
     if (this->is_broken) {
-        options_substring                       += "*** BROKEN! ***\n";
+        options_substring                       += "     [R]:  REPAIR (";
+        options_substring                       += std::to_string(TIDAL_TURBINE_BUILD_COST);
+        options_substring                       += " K)\n";
     }
     
     else {
-        options_substring                       += "OPEN PRODUCTION MENU\n";
+        options_substring                       += "     [E]:  OPEN PRODUCTION MENU \n";
     }
     
     options_substring                           += "     [U]:  OPEN UPGRADE MENU    \n";

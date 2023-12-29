@@ -197,7 +197,7 @@ void DieselGenerator :: __upgrade(void)
     
     this->is_running = false;
     
-    this->health = 100;
+    this->__repair();
     
     this->capacity_kW += 100;
     this->upgrade_level++;
@@ -560,7 +560,16 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     options_substring                           += "                                \n";
     options_substring                           += "  **** DIESEL GEN OPTIONS ****  \n";
     options_substring                           += "                                \n";
-    options_substring                           += "     [E]:  OPEN PRODUCTION MENU \n";
+    
+    options_substring                           += "     [E]:  ";
+    
+    if (this->is_broken) {
+        options_substring                       += "*** BROKEN! ***\n";
+    }
+    
+    else {
+        options_substring                       += "OPEN PRODUCTION MENU\n";
+    }
     
     if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
         options_substring                           += "     [U]:  + 100 kW (";
@@ -644,6 +653,11 @@ void DieselGenerator :: advanceTurn(void)
     
     if (this->upgrade_menu_open) {
         this->__closeUpgradeMenu();
+    }
+    
+    //  5. send tile state request (if selected)
+    if (this->is_selected) {
+        this->__sendTileStateRequest();
     }
     
     return;
@@ -833,12 +847,34 @@ void DieselGenerator :: draw(void)
     }
     
     
-    //  6. draw production menu
+    //  6. handle dispatch illustration
+    if (this->production_MWh > 0) {
+        this->dispatch_text.setString(std::to_string(this->production_MWh));
+        this->__drawDispatch();
+    }
+    
+    
+    //  7. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);
         
         this->__drawProductionMenu();
+    }
+    
+    
+    //  8. handle broken effects
+    if (this->is_broken) {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(
+                    255,
+                    255 * pow(cos((M_PI * this->frame) / FRAMES_PER_SECOND), 2),
+                    255 * pow(cos((M_PI * this->frame) / FRAMES_PER_SECOND), 2),
+                    255
+                )
+            );
+        }
     }
     
     this->frame++;

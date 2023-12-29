@@ -439,6 +439,10 @@ void Game :: __sendTurnAdvanceMessage(void)
     turn_advance_message.channel = GAME_STATE_CHANNEL;
     turn_advance_message.subject = "turn advance";
     
+    turn_advance_message.int_payload["credits"] = this->credits;
+    turn_advance_message.int_payload["month"] = this->month;
+    turn_advance_message.int_payload["demand_MWh"] = this->demand_MWh;
+    
     this->message_hub.sendMessage(turn_advance_message);
     
     std::cout << "Turn advance message sent by " << this << std::endl;

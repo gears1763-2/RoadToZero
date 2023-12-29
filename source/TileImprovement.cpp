@@ -169,6 +169,50 @@ void TileImprovement :: __setUpUpgradeMenu(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void TileImprovement :: __setUpDispatchIllustration(void)
+///
+/// \brief Helper method to set up and position dispatch assets (drawable).
+///
+
+void TileImprovement :: __setUpDispatchIllustration(void)
+{
+    //  1. set up backing
+    this->dispatch_backing.setRadius(16);
+    
+    this->dispatch_backing.setOrigin(
+        this->dispatch_backing.getLocalBounds().width / 2,
+        this->dispatch_backing.getLocalBounds().height / 2
+    );
+    
+    this->dispatch_backing.setPosition(
+        this->position_x,
+        this->position_y
+    );
+    
+    this->dispatch_backing.setFillColor(RESOURCE_CHIP_GREY);
+    this->dispatch_backing.setOutlineThickness(1);
+    this->dispatch_backing.setOutlineColor(sf::Color(0, 0, 0, 255));
+    
+    
+    //  2. set up text
+    this->dispatch_text.setFont(*(assets_manager_ptr->getFont("DroidSansMono")));
+    this->dispatch_text.setFillColor(sf::Color(0, 0, 0, 255));
+    this->dispatch_text.setCharacterSize(16);
+    this->dispatch_text.setPosition(
+        this->position_x,
+        this->position_y - 4
+    );
+    
+    return;
+}   /* __setUpDispatchIllustration() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void TileImprovement :: __upgradeStorageCapacity(void)
 ///
 /// \brief Helper method to upgrade storage capacity.
@@ -389,6 +433,42 @@ void TileImprovement :: __breakdown(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void TileImprovement :: __repair(void)
+///
+/// \brief Helper method to repair a tile improvement.
+///
+
+void TileImprovement :: __repair(void)
+{
+    this->health = 100;
+    if (this->is_broken) {
+        this->is_broken = false;
+        this->assets_manager_ptr->getSound("positive notification")->play();
+    }
+    
+    
+    if (this->tile_improvement_sprite_static.getTexture() != NULL) {
+        this->tile_improvement_sprite_static.setColor(sf::Color(255, 255, 255, 255));
+    }
+    
+    else {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(255, 255, 255, 255)
+            );
+        }
+    }
+    
+    return;
+}   /* __repair() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void TileImprovement :: __openUpgradeMenu(void)
 ///
 /// \brief Helper method to open the upgrade menu.
@@ -543,6 +623,49 @@ void TileImprovement :: __sendInsufficientCreditsMessage(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __drawDispatch(void)
+///
+/// \brief Helper method to draw dispatch illustration.
+///
+
+void TileImprovement :: __drawDispatch(void)
+{
+    double alpha = 255 * pow(cos((0.5 * M_PI * this->frame) / FRAMES_PER_SECOND), 2);
+    
+    
+    //  1. dispatch backing
+    sf::Color backing_colour = this->dispatch_backing.getFillColor();
+    
+    backing_colour.a = alpha;
+    
+    this->dispatch_backing.setFillColor(backing_colour);
+    this->dispatch_backing.setOutlineColor(sf::Color(0, 0, 0, alpha));
+    
+    this->render_window_ptr->draw(this->dispatch_backing);
+    
+    
+    //  2. dispatch text
+    this->dispatch_text.setOrigin(
+        this->dispatch_text.getLocalBounds().width / 2,
+        this->dispatch_text.getLocalBounds().height / 2
+    );
+    
+    this->dispatch_text.setFillColor(
+        sf::Color(0, 0, 0, alpha)
+    );
+    
+    this->render_window_ptr->draw(this->dispatch_text);
+    
+    return;
+}   /* __drawDispatch() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -606,7 +729,6 @@ TileImprovement :: TileImprovement(
     this->production_menu_open = false;
     this->upgrade_menu_open = false;
     this->is_broken = false;
-    this->just_updated = false;
     
     this->just_upgraded = false;
     this->upgrade_frame = 0;
@@ -670,6 +792,7 @@ TileImprovement :: TileImprovement(
     
     this->__setUpProductionMenu();
     this->__setUpUpgradeMenu();
+    this->__setUpDispatchIllustration();
     
     std::cout << "TileImprovement constructed at " << this << std::endl;
     
@@ -750,6 +873,10 @@ void TileImprovement :: processMessage(void)
         );
         
         if (game_state_message.subject == "turn advance") {
+            this->credits = game_state_message.int_payload["credits"];
+            this->month = game_state_message.int_payload["month"];
+            this->demand_MWh = game_state_message.int_payload["demand_MWh"];
+            
             this->advanceTurn();
             
             std::cout << "Turn advance message read and passed by " << this << std::endl;

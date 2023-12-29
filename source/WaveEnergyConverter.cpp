@@ -348,7 +348,7 @@ void WaveEnergyConverter :: __computeDispatch(void)
     
     double demand_MWh = 0;
     double production_MWh = 0;
-    double dispatch_MWh = 0;
+    double dispatchable_MWh = 0;
     double difference_MWh = 0;
     
     double room_MWh = 0;
@@ -359,20 +359,20 @@ void WaveEnergyConverter :: __computeDispatch(void)
         
         if (production_MWh <= demand_MWh) {
             this->dispatch_vec_MWh[i] = production_MWh;
-            dispatch_MWh += this->dispatch_vec_MWh[i];
+            dispatchable_MWh += this->dispatch_vec_MWh[i];
             
             difference_MWh = demand_MWh - production_MWh;
             
             if ((storage_capacity_MWh > 0) and (stored_energy_MWh > 0)) {
                 if (difference_MWh > stored_energy_MWh) {
                     this->dispatch_vec_MWh[i] += stored_energy_MWh;
-                    dispatch_MWh += stored_energy_MWh;
+                    dispatchable_MWh += stored_energy_MWh;
                     stored_energy_MWh = 0;
                 }
                 
                 else {
                     this->dispatch_vec_MWh[i] += difference_MWh;
-                    dispatch_MWh += difference_MWh;
+                    dispatchable_MWh += difference_MWh;
                     stored_energy_MWh -= difference_MWh;
                 }
             }
@@ -380,7 +380,7 @@ void WaveEnergyConverter :: __computeDispatch(void)
         
         else {
             this->dispatch_vec_MWh[i] = demand_MWh;
-            dispatch_MWh += this->dispatch_vec_MWh[i];
+            dispatchable_MWh += this->dispatch_vec_MWh[i];
             
             difference_MWh = production_MWh - demand_MWh;
             
@@ -401,10 +401,10 @@ void WaveEnergyConverter :: __computeDispatch(void)
         }
     }
     
-    this->dispatchable_MWh = round(dispatch_MWh);
+    this->dispatchable_MWh = round(dispatchable_MWh);
     
     if (this->dispatch_MWh > this->dispatchable_MWh) {
-        this->dispatch_MWh = this->dispatch_MWh;
+        this->dispatch_MWh = this->dispatchable_MWh;
     }
     
     return;
@@ -771,8 +771,8 @@ TileImprovement(
     this->tile_improvement_string = "WAVE ENERGY";
     
     this->__setUpTileImprovementSpriteAnimated();
+    this->__computeCapacityFactors();
     this->update();
-    this->just_updated = false;
     
     std::cout << "WaveEnergyConverter constructed at " << this << std::endl;
     
@@ -825,7 +825,17 @@ std::string WaveEnergyConverter :: getTileOptionsSubstring(void)
     options_substring                           += "                                \n";
     options_substring                           += " **** WAVE ENERGY OPTIONS ****  \n";
     options_substring                           += "                                \n";
-    options_substring                           += "     [E]:  OPEN PRODUCTION MENU \n";
+    
+    options_substring                           += "     [E]:  ";
+    
+    if (this->is_broken) {
+        options_substring                       += "*** BROKEN! ***\n";
+    }
+    
+    else {
+        options_substring                       += "OPEN PRODUCTION MENU\n";
+    }
+    
     options_substring                           += "     [U]:  OPEN UPGRADE MENU    \n";
     options_substring                           += "HOLD [P]:  SCRAP (";
     options_substring                           += std::to_string(SCRAP_COST);
@@ -874,7 +884,7 @@ void WaveEnergyConverter :: setIsSelected(bool is_selected)
 void WaveEnergyConverter :: advanceTurn(void)
 {
     //  1. update
-    this->just_updated = false;
+    this->__computeCapacityFactors();
     this->update();
     
     //  2. send improvement state message
@@ -898,6 +908,11 @@ void WaveEnergyConverter :: advanceTurn(void)
         }
     }
     
+    //  5. send tile state request (if selected)
+    if (this->is_selected) {
+        this->__sendTileStateRequest();
+    }
+    
     return;
 }   /* advanceTurn() */
 
@@ -915,16 +930,13 @@ void WaveEnergyConverter :: advanceTurn(void)
 
 void WaveEnergyConverter :: update(void)
 {
-    if (this->just_updated) {
-        return;
-    }
-    
-    this->__computeCapacityFactors();
     this->__computeProduction();
     this->__computeProductionCosts();
     this->__computeDispatch();
     
-    this->just_updated = true;
+    if (this->is_selected) {
+        this->__sendTileStateRequest();
+    }
     
     return;
 }   /* update() */
@@ -1078,7 +1090,14 @@ void WaveEnergyConverter :: draw(void)
     }
     
     
-    //  6. draw production menu
+    //  6. handle dispatch illustration
+    if (this->dispatch_MWh > 0) {
+        this->dispatch_text.setString(std::to_string(this->dispatch_MWh));
+        this->__drawDispatch();
+    }
+    
+    
+    //  7. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);
@@ -1087,12 +1106,27 @@ void WaveEnergyConverter :: draw(void)
     }
     
     
-    //  7. draw upgrade menu
+    //  8. draw upgrade menu
     if (this->upgrade_menu_open) {
         this->render_window_ptr->draw(this->upgrade_menu_backing);
         this->render_window_ptr->draw(this->upgrade_menu_backing_text);
         
         this->__drawUpgradeOptions();
+    }
+    
+    
+    //  9. handle broken effects
+    if (this->is_broken) {
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setColor(
+                sf::Color(
+                    255,
+                    255 * pow(cos((M_PI * this->frame) / FRAMES_PER_SECOND), 2),
+                    255 * pow(cos((M_PI * this->frame) / FRAMES_PER_SECOND), 2),
+                    255
+                )
+            );
+        }
     }
     
     this->frame++;

@@ -766,6 +766,7 @@ void HexTile :: __setIsSelected(bool is_selected)
     
     if (this->tile_improvement_ptr != NULL) {
         this->tile_improvement_ptr->setIsSelected(is_selected);
+        this->tile_improvement_ptr->update();
     }
     
     if ((not is_selected) and this->build_menu_open) {

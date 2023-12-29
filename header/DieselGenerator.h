@@ -76,10 +76,18 @@ class DieselGenerator: public TileImprovement {
         //  2. methods
         void __setUpTileImprovementSpriteAnimated(void);
         
+        void __drawProductionMenu(void);
+        
         void __upgrade(void);
+        
+        void __computeProductionCosts(void);
+        
+        void __breakdown(void);
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
+        
+        void __sendImprovementStateMessage(void);
     
     
     public:
@@ -94,7 +102,10 @@ class DieselGenerator: public TileImprovement {
         double smoke_dy; ///< The per frame delta in smoke particle y position.
         double smoke_prob; ///< The probability of spawning a new smoke prob in any given frame.
         
-        std::list<sf::Sprite> smoke_sprite_list; ///< A list of smoke sprite (for chimney animation).
+        std::list<sf::Sprite> smoke_sprite_list; ///< A list of smoke sprite (for exhaust animation).
+        
+        int fuel_cost; ///< The fuel costs for this turn.
+        int emissions_tonnes_CO2e; ///< The emissions for this turn.
         
         //  2. methods
         DieselGenerator(
@@ -108,6 +119,8 @@ class DieselGenerator: public TileImprovement {
         );
         
         std::string getTileOptionsSubstring(void);
+        
+        void setIsSelected(bool);
         
         void advanceTurn(void);
         

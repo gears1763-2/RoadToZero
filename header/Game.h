@@ -100,11 +100,14 @@ class Game {
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         
+        void __handleImprovementStateMessage(Message);
+        
         void __processEvent(void);
         void __processMessage(void);
         
         void __sendGameStateMessage(void);
         void __sendTurnAdvanceMessage(void);
+        void __sendCreditsEarnedMessage(void);
         
         void __insufficientCreditsAlarm(void);
         
@@ -120,6 +123,8 @@ class Game {
         bool quit_game; ///< Boolean indicating whether to quit (true) or create a new Game instance (false).
         bool game_loop_broken; ///< Boolean indicating whether or not the game loop is broken.
         bool show_frame_clock_overlay; ///< Boolean indicating whether or not to show frame and clock overlay.
+        bool check_terminating_conditions; ///< Boolean indicating whether or not to check terminating conditions.
+        bool message_deadlock; ///< A boolean indicating whether a message deadlock has been detected.
         
         unsigned long long int frame; ///< The current frame of the game.
         double time_since_start_s; ///< The time elapsed [s] since the start of the game.
@@ -129,7 +134,10 @@ class Game {
         int population; ///< Current population.
         int credits; ///< Current balance of credits.
         int demand_MWh; ///< Current energy demand [MWh].
+        int demand_remaining_MWh; ///< The current remaining energy demand [MWh].
         int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
+        
+        int message_deadlock_frame; ///< A frame counter for detecting message deadlock.
         
         int turn = 0; ///< The current game turn.
         

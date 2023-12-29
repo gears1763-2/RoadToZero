@@ -105,6 +105,73 @@ void WaveEnergyConverter :: __setUpTileImprovementSpriteAnimated(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void WaveEnergyConverter :: __drawProductionMenu(void)
+///
+/// \brief Helper method to draw production menu assets.
+///
+
+void WaveEnergyConverter :: __drawProductionMenu(void)
+{
+    //  1. draw static sprite
+    for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+        sf::Vector2f initial_position = this->tile_improvement_sprite_animated[i].getPosition();
+        this->tile_improvement_sprite_animated[i].setPosition(400 - 138, 400 + 16);
+        
+        sf::Color initial_colour = this->tile_improvement_sprite_animated[i].getColor();
+        this->tile_improvement_sprite_animated[i].setColor(sf::Color(255, 255, 255, 255));
+        
+        sf::Vector2f initial_scale = this->tile_improvement_sprite_animated[i].getScale();
+        this->tile_improvement_sprite_animated[i].setScale(sf::Vector2f(1, 1));
+        
+        double initial_rotation = this->tile_improvement_sprite_animated[i].getRotation();
+        this->tile_improvement_sprite_animated[i].setRotation(0);
+        
+        this->render_window_ptr->draw(this->tile_improvement_sprite_animated[i]);
+        
+        this->tile_improvement_sprite_animated[i].setPosition(initial_position);
+        this->tile_improvement_sprite_animated[i].setColor(initial_colour);
+        this->tile_improvement_sprite_animated[i].setScale(initial_scale);
+        this->tile_improvement_sprite_animated[i].setRotation(initial_rotation);
+    }
+    
+    //  2. draw production text
+    std::string production_string = "[W]:  INCREASE DISPATCH\n";
+    production_string            += "[S]:  DECREASE DISPATCH\n";
+    production_string            += "                         \n";
+    
+    production_string            += "DISPATCH:  ";
+    production_string            += std::to_string(this->dispatch_MWh);
+    production_string            += " MWh (MAX ";
+    production_string            += std::to_string(this->dispatchable_MWh);
+    production_string            += ")\n";
+    
+    production_string            += "O&M COST:  ";
+    production_string            += std::to_string(this->operation_maintenance_cost);
+    production_string            += " K\n";
+    
+    sf::Text production_text(
+        production_string,
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        16
+    );
+    
+    production_text.setOrigin(production_text.getLocalBounds().width / 2,0);
+    production_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    production_text.setPosition(400 + 30, 400 - 45);
+    
+    this->render_window_ptr->draw(production_text);
+    
+    return;
+}   /* __drawProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void WaveEnergyConverter :: __upgradePowerCapacity(void)
 ///
 /// \brief Helper method to upgrade power capacity.
@@ -152,6 +219,52 @@ void WaveEnergyConverter :: __upgradePowerCapacity(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void WaveEnergyConverter :: __computeProductionCosts(void)
+///
+/// \brief Helper method to compute production costs (O&M) based on current production
+///     level.
+///
+
+void WaveEnergyConverter :: __computeProductionCosts(void)
+{
+    double operation_maintenance_cost =
+        (this->production_MWh * WAVE_OP_MAINT_COST_PER_MWH_PRODUCTION) / 1000;
+    this->operation_maintenance_cost = round(operation_maintenance_cost);
+    
+    return;
+}   /* __computeProductionCosts() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void WaveEnergyConverter :: __breakdown(void)
+///
+/// \brief Helper method to trigger an equipment breakdown.
+///
+
+void WaveEnergyConverter :: __breakdown(void)
+{
+    TileImprovement :: __breakdown();
+    
+    this->production_MWh = 0;
+    this->dispatch_MWh = 0;
+    this->dispatchable_MWh = 0;
+    this->operation_maintenance_cost = 0;
+    
+    return;
+}   /* __breakdown() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void WaveEnergyConverter :: __computeCapacityFactors(void)
 ///
 /// \brief Helper method to compute capacity factors
@@ -173,8 +286,16 @@ void WaveEnergyConverter :: __computeCapacityFactors(void)
 
     std::normal_distribution<double> normal_dist(mean, stdev);
     
+    double capacity_factor = 0;
+    
     for (int i = 0; i < 30; i++) {
-        this->capacity_factor_vec[i] = normal_dist(generator);
+        capacity_factor = normal_dist(generator);
+        
+        if (capacity_factor < 0) {
+            capacity_factor = 0;
+        }
+        
+        this->capacity_factor_vec[i] = capacity_factor;
     }
 
     return;
@@ -282,6 +403,10 @@ void WaveEnergyConverter :: __computeDispatch(void)
     
     this->dispatchable_MWh = round(dispatch_MWh);
     
+    if (this->dispatch_MWh > this->dispatchable_MWh) {
+        this->dispatch_MWh = this->dispatch_MWh;
+    }
+    
     return;
 }   /* __computeDispatch() */
 
@@ -313,7 +438,14 @@ void WaveEnergyConverter :: __handleKeyPressEvents(void)
         
         case (sf::Keyboard::W): {
             if (this->production_menu_open) {
-                //...
+                this->dispatch_MWh++;
+                
+                if (this->dispatch_MWh > this->dispatchable_MWh) {
+                    this->dispatch_MWh = 0;
+                }
+                
+                this->__computeProductionCosts();
+                this->assets_manager_ptr->getSound("interface click")->play();
             }
             
             else if (this->upgrade_menu_open) {
@@ -325,7 +457,16 @@ void WaveEnergyConverter :: __handleKeyPressEvents(void)
         
         
         case (sf::Keyboard::S): {
-            //...
+            if (this->production_menu_open) {
+                this->dispatch_MWh--;
+                
+                if (this->dispatch_MWh < 0) {
+                    this->dispatch_MWh = this->dispatchable_MWh;
+                }
+                
+                this->__computeProductionCosts();
+                this->assets_manager_ptr->getSound("interface click")->play();
+            }
             
             break;
         }
@@ -510,6 +651,36 @@ void WaveEnergyConverter :: __drawUpgradeOptions(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void WaveEnergyConverter :: __sendImprovementStateMessage(void)
+///
+/// \brief Helper method to format and sent improvement state message.
+///
+
+void WaveEnergyConverter :: __sendImprovementStateMessage(void)
+{
+    Message improvement_state_message;
+    
+    improvement_state_message.channel = GAME_CHANNEL;
+    improvement_state_message.subject = "improvement state";
+    
+    improvement_state_message.int_payload["dispatch_MWh"] = this->dispatch_MWh;
+    improvement_state_message.int_payload["operation_maintenance_cost"] =
+        this->operation_maintenance_cost;
+    
+    this->message_hub_ptr->sendMessage(improvement_state_message);
+    
+    std::cout << "Improvement state message sent by " << this << std::endl;
+    
+    return;
+}   /* __sendImprovementStateMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -586,6 +757,7 @@ TileImprovement(
     this->storage_level = 0;
     
     this->production_MWh = 0;
+    this->dispatch_MWh = 0;
     this->dispatchable_MWh = 0;
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
@@ -635,9 +807,17 @@ std::string WaveEnergyConverter :: getTileOptionsSubstring(void)
     options_substring                           += std::to_string(this->dispatchable_MWh);
     options_substring                           += " MWh\n";
     
-    options_substring                           += "HEALTH:        ";
+    options_substring                           += "HEALTH:      ";
     options_substring                           += std::to_string(this->health);
-    options_substring                           += "/100\n";
+    options_substring                           += "/100";
+    
+    if (this->health <= 0) {
+        options_substring                       += " ** BROKEN! **\n";
+    }
+    
+    else {
+        options_substring                       += "\n";
+    }
     
     options_substring                           += "                                \n";
     options_substring                           += " **** WAVE ENERGY OPTIONS ****  \n";
@@ -658,6 +838,31 @@ std::string WaveEnergyConverter :: getTileOptionsSubstring(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void WaveEnergyConverter :: setIsSelected(bool is_selected)
+///
+/// \brief Method to set the is selected attribute.
+///
+/// \param is_selected The value to set the is selected attribute to.
+///
+
+void WaveEnergyConverter :: setIsSelected(bool is_selected)
+{
+    TileImprovement :: setIsSelected(is_selected);
+    
+    if (this->is_running and this->is_selected) {
+        this->assets_manager_ptr->getSound("ocean waves")->play();
+    }
+    
+    return;
+}   /* setIsSelected() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void WaveEnergyConverter :: advanceTurn(void)
 ///
 /// \brief Method to handle turn advance.
@@ -668,10 +873,27 @@ void WaveEnergyConverter :: advanceTurn(void)
     //  1. update
     this->update();
     
-    //...
+    //  2. send improvement state message
+    this->__sendImprovementStateMessage();
     
-    std::cout << "Turn advance message received by " << this << std::endl;
-    this->__sendGameStateRequest();
+    //  3. handle start/stop
+    if ((not this->is_running) and (this->dispatch_MWh > 0)) {
+        this->is_running = true;
+    }
+    
+    else if (this->is_running and (this->dispatch_MWh <= 0)) {
+        this->is_running = false;
+    }
+    
+    //  4. handle equipment health
+    if (this->is_running) {
+        this->health--;
+        
+        if (this->health <= 0) {
+            this->__breakdown();
+        }
+    }
+    
     return;
 }   /* advanceTurn() */
 
@@ -691,6 +913,7 @@ void WaveEnergyConverter :: update(void)
 {
     this->__computeCapacityFactors();
     this->__computeProduction();
+    this->__computeProductionCosts();
     this->__computeDispatch();
     
     return;
@@ -831,7 +1054,7 @@ void WaveEnergyConverter :: draw(void)
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);
         
-        //...
+        this->__drawProductionMenu();
     }
     
     

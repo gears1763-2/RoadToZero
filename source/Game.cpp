@@ -92,6 +92,8 @@ void Game :: __toggleFrameClockOverlay(void)
 
 void Game :: __checkTerminatingConditions(void)
 {
+    std::cout << "Game :: __checkTerminatingConditions()" << std::endl;
+    
     //...
     
     return;
@@ -170,6 +172,7 @@ void Game :: __computeCurrentDemand(void)
     }
     
     this->demand_MWh = round(demand_MWh);
+    this->demand_remaining_MWh = this->demand_MWh;
 
     return;
 }   /* __computeCurrentDemand() */
@@ -191,10 +194,7 @@ void Game :: __handleKeyPressEvents(void)
     switch (this->event.key.code) {
         case (sf::Keyboard::Enter): {
             if (this->game_phase == GamePhase :: SYSTEM_MANAGEMENT) {
-                this->__checkTerminatingConditions();
-                if (this->game_phase == GamePhase :: SYSTEM_MANAGEMENT) {
-                    this->__advanceTurn();
-                }
+                this->__advanceTurn();
             }
             
             break;
@@ -266,6 +266,46 @@ void Game :: __handleMouseButtonEvents(void)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __handleImprovementStateMessage(Message improvement_state_message)
+///
+/// \brief Helper method to handle improvement state messages.
+///
+
+void Game :: __handleImprovementStateMessage(Message improvement_state_message)
+{
+    //  1. unpack message and update game attributes
+    if (improvement_state_message.int_payload.count("dispatch_MWh") > 0) {
+        this->demand_remaining_MWh -= improvement_state_message.int_payload["dispatch_MWh"];
+
+        this->credits +=
+            round(CREDITS_PER_MWH_SERVED * improvement_state_message.int_payload["dispatch_MWh"]);
+        
+        this->__sendCreditsEarnedMessage();
+    }
+    
+    if (improvement_state_message.int_payload.count("fuel_cost") > 0) {
+        this->credits -= improvement_state_message.int_payload["fuel_cost"];
+    }
+    
+    if (improvement_state_message.int_payload.count("operation_maintenance_cost") > 0) {
+        this->credits -=
+            improvement_state_message.int_payload["operation_maintenance_cost"];
+    }
+    
+    if (improvement_state_message.int_payload.count("emissions_tonnes_CO2e") > 0) {
+        this->cumulative_emissions_tonnes +=
+            improvement_state_message.int_payload["emissions_tonnes_CO2e"];
+    }
+    
+    return;
+}   /* __handleImprovementStateMessage() */
+
+// ---------------------------------------------------------------------------------- //
 
 
 
@@ -412,6 +452,31 @@ void Game :: __sendTurnAdvanceMessage(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __sendCreditsEarnedMessage(void)
+///
+/// \brief Helper method to format and send a credits earned message.
+///
+
+void Game :: __sendCreditsEarnedMessage(void)
+{
+    Message credits_earned_message;
+    
+    credits_earned_message.channel = SETTLEMENT_CHANNEL;
+    credits_earned_message.subject = "credits earned";
+    
+    this->message_hub.sendMessage(credits_earned_message);
+    
+    std::cout << "Credits earned message sent by " << this << std::endl;
+    return;
+}   /* __sendCreditsEarnedMessage() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __processMessage(void)
 ///
 /// \brief Helper method to process Game. To be called once per message.
@@ -500,6 +565,14 @@ void Game :: __processMessage(void)
                 this->game_phase = GamePhase :: VICTORY;
             }
             
+            this->message_hub.popMessage(GAME_CHANNEL);
+        }
+        
+        if (game_channel_message.subject == "improvement state") {
+            std::cout << "Improvement state message received by " << this << std::endl;
+            
+            this->__handleImprovementStateMessage(game_channel_message);
+                
             this->message_hub.popMessage(GAME_CHANNEL);
         }
     }
@@ -858,9 +931,13 @@ Game :: Game(
     this->quit_game = false;
     this->game_loop_broken = false;
     this->show_frame_clock_overlay = false;
+    this->check_terminating_conditions = false;
     
     this->frame = 0;
     this->time_since_start_s = 0;
+    
+    this->message_deadlock = false;
+    this->message_deadlock_frame = 0;
     
     double seconds_since_epoch = time(NULL);
     double years_since_epoch = seconds_since_epoch / SECONDS_PER_YEAR;
@@ -874,6 +951,7 @@ Game :: Game(
     this->population = 0;
     this->credits = STARTING_CREDITS;
     this->demand_MWh = 0;
+    this->demand_remaining_MWh = 0;
     this->cumulative_emissions_tonnes = 0;
     
     this->demand_vec_MWh.resize(30, 0);
@@ -943,10 +1021,30 @@ bool Game :: run(void)
                 this->hex_map_ptr->processMessage();
                 this->context_menu_ptr->processMessage();
                 this->__processMessage();
+                
+                this->check_terminating_conditions = true;
+                
+                if (not this->message_deadlock) {
+                    this->message_deadlock_frame++;
+                    
+                    if (this->message_deadlock_frame > 5 * FRAMES_PER_SECOND) {
+                        this->message_hub.printState();
+                        this->message_deadlock = true;
+                    }
+                }
+            }
+            this->message_deadlock = false;
+            this->message_deadlock_frame = 0;
+            
+            
+            //  6.3. check terminating conditions
+            if (this->check_terminating_conditions) {
+                this->__checkTerminatingConditions();
+                this->check_terminating_conditions = false;
             }
             
             
-            //  6.3. draw frame
+            //  6.4. draw frame
             this->render_window_ptr->clear();
             
             this->hex_map_ptr->draw();
@@ -956,7 +1054,7 @@ bool Game :: run(void)
             this->render_window_ptr->display();
             
             
-            //  6.4. increment frame
+            //  6.5. increment frame
             this->frame++;
         }
         

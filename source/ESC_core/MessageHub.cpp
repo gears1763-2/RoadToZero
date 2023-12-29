@@ -193,6 +193,57 @@ void MessageHub :: removeChannel(std::string channel)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void MessageHub :: printState(void)
+///
+/// \brief Method for printing message hub state information (mostly for troubleshooting
+///     message deadlocks).
+///
+
+void MessageHub :: printState(void)
+{
+    std::cout << "\n\n    **** MESSAGE HUB STATE ****    \n" << std::endl;
+    
+    std::map<std::string, std::list<Message>>::iterator channel_iterator;
+    
+    for (
+        channel_iterator = this->message_map.begin();
+        channel_iterator != this->message_map.end();
+        channel_iterator++
+    ) {
+        std::string channel = channel_iterator->first;
+        std::list<Message> message_queue = channel_iterator->second;
+        
+        std::cout << "--------------------------------" <<std::endl;
+        std::cout << "\tCHANNEL: " << channel << std::endl;
+        std::cout << "\tMESSAGE QUEUE LENGTH: " << message_queue.size() << std::endl;
+        std::cout << std::endl;
+        
+        std::list<Message>::iterator message_queue_iterator;
+        
+        for (
+            message_queue_iterator = message_queue.begin();
+            message_queue_iterator != message_queue.end();
+            message_queue_iterator++
+        ) {
+            std::cout << "\tSUBJECT: " << (*message_queue_iterator).subject <<
+                std::endl;
+        }
+        
+        std::cout << std::endl;
+    }
+    
+    std::cout << std::endl;
+    
+    return;
+}   /* printState() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void MessageHub :: sendMessage(Message message)
 ///
 /// \brief Method to send a message to the message map. Channels are implemented

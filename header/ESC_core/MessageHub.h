@@ -102,6 +102,8 @@ class MessageHub {
         void addChannel(std::string);
         void removeChannel(std::string);
         
+        void printState(void);
+        
         void sendMessage(Message);
         
         bool isEmpty(std::string);

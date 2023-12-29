@@ -108,6 +108,8 @@ const std::string TILE_STATE_CHANNEL = "TILE STATE CHANNEL"; ///< A message chan
 
 const std::string HEX_MAP_CHANNEL = "HEX MAP CHANNEL"; ///< A message channel for hex map messages.
 
+const std::string SETTLEMENT_CHANNEL = "SETTLEMENT CHANNEL"; ///< A message channel for the settlement.
+
 const int CLEAR_FOREST_COST = 40; ///< The cost of clearing a forest tile.
 const int CLEAR_MOUNTAINS_COST = 250; ///< The cost of clearing a mountains tile.
 const int CLEAR_PLAINS_COST = 20; ///< The cost of clearing a plains tile.
@@ -147,7 +149,7 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 // ======== GAME CONSTANTS ========================================================== //
 
 const int STARTING_CREDITS = 999999; //750; ///< The starting balance of credits.
-const double CREDITS_PER_MWH_SERVED = 1.25; ///< The number of credits earned
+const double CREDITS_PER_MWH_SERVED = 1; ///< The number of credits (x1000) earned
 
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 1500; ///< The CO2-equivalent mass of emissions that would result from burning 1,000,000 L of diesel fuel.
 
@@ -158,7 +160,15 @@ const int BUILD_SETTLEMENT_COST = 250; ///< The cost of building a settlement.
 const int STARTING_POPULATION = 100; ///< The starting population of a settlement.
 const double POPULATION_MONTHLY_GROWTH_RATE = 1.005; ///< The monthly population growth rate.
 
-const double CO2E_KG_PER_LITRE_DIESEL = 3.1596; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
+const double LITRES_DIESEL_PER_MWH_PRODUCTION = 373.175; ///< The litres of diesel consumed in producing 1 MWh (assumes higher heating value and constant thermal efficiency of 0.25).
+const double COST_PER_LITRE_DIESEL = 1.70; ///< The cost of a litre of diesel.
+const double KG_CO2E_PER_LITRE_DIESEL = 3.1596; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
+const double DIESEL_OP_MAINT_COST_PER_MWH_PRODUCTION = 50; ///< The operation and maintenace cost of running a diesel generator (assumed 0.05 credits per kWh produced).
+
+const double SOLAR_OP_MAINT_COST_PER_MWH_PRODUCTION = 10; ///< The operation and maintenance cost of running a solar PV array (assumed 0.01 credits per kWh produced).
+const double TIDAL_OP_MAINT_COST_PER_MWH_PRODUCTION = 50; ///< The operation and maintenance cost of running a tidal turbine (assumed 0.05 credits per kWh produced).
+const double WAVE_OP_MAINT_COST_PER_MWH_PRODUCTION = 50; ///< The operation and maintenance cost of running a wave energy converter (assumed 0.05 credits per kWh produced).
+const double WIND_OP_MAINT_COST_PER_MWH_PRODUCTION = 50; ///< The operation and maintenance cost of running a wind turbine (assumed 0.05 credits per kWh produced).
 
 const std::vector<double> MEAN_DAILY_DEMAND_RATIOS = {
     0.702, 0.704, 0.652,

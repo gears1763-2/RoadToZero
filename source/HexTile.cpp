@@ -2747,10 +2747,7 @@ void HexTile :: processEvent(void)
 void HexTile :: processMessage(void)
 {
     //  1. process TileImprovement messages
-    if (
-        this->is_selected and 
-        this->tile_improvement_ptr != NULL
-    ) {
+    if (this->tile_improvement_ptr != NULL) {
         this->tile_improvement_ptr->processMessage();
     }
     
@@ -2784,13 +2781,6 @@ void HexTile :: processMessage(void)
                 std::cout << "Game state message received by " << this << std::endl;
                 this->__sendTileStateMessage();
                 this->message_hub_ptr->popMessage(GAME_STATE_CHANNEL);
-            }
-            
-            else if (
-                this->has_improvement and
-                game_state_message.subject == "turn advance"
-            ) {
-                this->tile_improvement_ptr->advanceTurn();
             }
         }
         

@@ -105,6 +105,8 @@ class TileImprovement {
         void __openProductionMenu(void);
         void __closeProductionMenu(void);
         
+        void __breakdown(void);
+        
         void __openUpgradeMenu(void);
         void __closeUpgradeMenu(void);
         
@@ -125,6 +127,7 @@ class TileImprovement {
         bool just_upgraded; ///< A boolean which indicates that the improvement was just upgraded.
         bool production_menu_open; ///< A boolean which indicates whether or not the production menu is open.
         bool upgrade_menu_open; ///< A boolean which indicates whether or not the build menu is open.
+        bool is_broken; ///< A boolean which indicated whether or not improvement is broken.
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.
@@ -136,6 +139,8 @@ class TileImprovement {
         
         int storage_kWh; ///< The rated energy capacity [kWh] of the storage.
         int storage_level; ///< The level of storage installed alongside the tile improvement.
+        
+        int operation_maintenance_cost; ///< The operation and maintenance costs for this turn.
         
         int tile_resource; ///< The renewable resource quality of the tile.
         double tile_resource_scalar; ///< A scalar associated with the renewable resource quality.

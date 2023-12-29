@@ -75,6 +75,7 @@ class Settlement: public TileImprovement {
         
         //  2. methods
         void __setUpTileImprovementSpriteStatic(void);
+        void __setUpCoinSprite(void);
         
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
@@ -82,12 +83,16 @@ class Settlement: public TileImprovement {
     
     public:
         //  1. attributes
+        bool draw_coin; ///< Boolean indicating whether or not to draw credits earned coin.
+        
         double smoke_da; ///< The per frame delta in smoke particle alpha value.
         double smoke_dx; ///< The per frame delta in smoke particle x position.
         double smoke_dy; ///< The per frame delta in smoke particle y position.
         double smoke_prob; ///< The probability of spawning a new smoke prob in any given frame.
         
         std::list<sf::Sprite> smoke_sprite_list; ///< A list of smoke sprite (for chimney animation).
+        
+        sf::Sprite coin_sprite; ///< A coin sprite (for credits earned animation).
         
         //  2. methods
         Settlement(

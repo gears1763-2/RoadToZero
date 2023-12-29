@@ -188,8 +188,6 @@ void TileImprovement :: __upgradeStorageCapacity(void)
         return;
     }
     
-    this->health = 100;
-    
     this->storage_level++;
     this->storage_kWh += 200;
     
@@ -320,6 +318,11 @@ void TileImprovement :: __handleMouseButtonEvents(void)
 
 void TileImprovement :: __openProductionMenu(void)
 {
+    if (this->is_broken) {
+        this->assets_manager_ptr->getSound("breakdown")->play();
+        return;
+    }
+    
     if (this->production_menu_open) {
         return;
     }
@@ -357,6 +360,27 @@ void TileImprovement :: __closeProductionMenu(void)
     
     return;
 }   /* __closeProductionMenu() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void TileImprovement :: __breakdown(void)
+///
+/// \brief Helper method to trigger an equipment breakdown.
+///
+
+void TileImprovement :: __breakdown(void)
+{
+    this->is_broken = true;
+    this->is_running = false;
+    this->assets_manager_ptr->getSound("breakdown")->play();
+    
+    return;
+}   /* __breakdown() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -581,6 +605,7 @@ TileImprovement :: TileImprovement(
     this->just_built = true;
     this->production_menu_open = false;
     this->upgrade_menu_open = false;
+    this->is_broken = false;
     
     this->just_upgraded = false;
     this->upgrade_frame = 0;
@@ -592,18 +617,20 @@ TileImprovement :: TileImprovement(
     
     this->demand_vec_MWh.resize(30, 0);
     
+    this->operation_maintenance_cost = 0;
+    
     this->tile_resource = tile_resource;
     
     switch (this->tile_resource) {
         case (0): {
-            this->tile_resource_scalar = 0.8;
+            this->tile_resource_scalar = 0.7;
             
             break;
         }
         
         
         case (1): {
-            this->tile_resource_scalar = 0.9;
+            this->tile_resource_scalar = 0.85;
             
             break;
         }
@@ -617,14 +644,14 @@ TileImprovement :: TileImprovement(
         
         
         case (3): {
-            this->tile_resource_scalar = 1.1;
+            this->tile_resource_scalar = 1.15;
             
             break;
         }
         
         
         case (4): {
-            this->tile_resource_scalar = 1.2;
+            this->tile_resource_scalar = 1.3;
             
             break;
         }
@@ -716,7 +743,17 @@ void TileImprovement :: processEvent(void)
 
 void TileImprovement :: processMessage(void)
 {
-    //...
+    if (not this->message_hub_ptr->isEmpty(GAME_STATE_CHANNEL)) {
+        Message game_state_message = this->message_hub_ptr->receiveMessage(
+            GAME_STATE_CHANNEL
+        );
+        
+        if (game_state_message.subject == "turn advance") {
+            this->advanceTurn();
+            
+            std::cout << "Turn advance message read and passed by " << this << std::endl;
+        }
+    }
     
     return;
 }   /* processMessage() */

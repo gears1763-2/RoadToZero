@@ -94,6 +94,34 @@ void Settlement :: __setUpTileImprovementSpriteStatic(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Settlement :: __setUpCoinSprite(void)
+///
+/// \brief Helper method to set up and place coin sprite.
+///
+
+void Settlement :: __setUpCoinSprite(void)
+{
+    this->coin_sprite.setTexture(
+        *(this->assets_manager_ptr->getTexture("coin"))
+    );
+    
+    this->coin_sprite.setOrigin(
+        this->coin_sprite.getLocalBounds().width / 2,
+        this->coin_sprite.getLocalBounds().height / 2
+    );
+    
+    this->coin_sprite.setPosition(this->position_x, this->position_y);
+    
+    return;
+}   /* __setUpCoinSprite() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Settlement :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -229,6 +257,8 @@ TileImprovement(
     //  1.2. public
     this->tile_improvement_type = TileImprovementType :: SETTLEMENT;
     
+    this->draw_coin = false;
+    
     this->smoke_da = SECONDS_PER_FRAME / 4;
     this->smoke_dx = 5 * SECONDS_PER_FRAME;
     this->smoke_dy = -10 * SECONDS_PER_FRAME;
@@ -239,6 +269,9 @@ TileImprovement(
     this->tile_improvement_string = "SETTLEMENT";
     
     this->__setUpTileImprovementSpriteStatic();
+    this->__setUpCoinSprite();
+    
+    this->message_hub_ptr->addChannel(SETTLEMENT_CHANNEL);
     
     std::cout << "Settlement constructed at " << this << std::endl;
     
@@ -342,7 +375,19 @@ void Settlement :: processMessage(void)
 {
     TileImprovement :: processMessage();
     
-    //...
+    if (not this->message_hub_ptr->isEmpty(SETTLEMENT_CHANNEL)) {
+        Message settlement_message = this->message_hub_ptr->receiveMessage(
+            SETTLEMENT_CHANNEL
+        );
+        
+        if (settlement_message.subject == "credits earned") {
+            this->draw_coin = true;
+            this->assets_manager_ptr->getSound("coin ring")->play();
+            
+            std::cout << "Credits earned message received by " << this << std::endl;
+            this->message_hub_ptr->popMessage(SETTLEMENT_CHANNEL);
+        }
+    }
     
     return;
 }   /* processMessage() */
@@ -417,12 +462,24 @@ void Settlement :: draw(void)
         );
     }
     
-    //  3. draw production menu
-    if (this->production_menu_open) {
-        this->render_window_ptr->draw(this->production_menu_backing);
-        this->render_window_ptr->draw(this->production_menu_backing_text);
+    
+    
+    //  4. draw coin
+    if (this->draw_coin) {
+        double alpha = this->coin_sprite.getColor().a;
         
-        //...
+        alpha -= this->smoke_da;
+        
+        if (alpha <= 0) {
+            this->coin_sprite.setColor(sf::Color(255, 255, 255, 255));
+            this->coin_sprite.setPosition(this->position_x, this->position_y);
+            this->draw_coin = false;
+        }
+        
+        this->coin_sprite.move(0, this->smoke_dy);
+        this->coin_sprite.setColor(sf::Color(255, 255, 255, alpha));
+        
+        this->render_window_ptr->draw(this->coin_sprite);
     }
     
     this->frame++;

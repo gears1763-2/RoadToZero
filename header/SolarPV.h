@@ -76,7 +76,13 @@ class SolarPV: public TileImprovement {
         //  2. methods
         void __setUpTileImprovementSpriteStatic(void);
         
+        void __drawProductionMenu(void);
+        
         void __upgradePowerCapacity(void);
+        
+        void __computeProductionCosts(void);
+        
+        void __breakdown(void);
         
         void __computeCapacityFactors(void);
         void __computeProduction(void);
@@ -86,6 +92,8 @@ class SolarPV: public TileImprovement {
         void __handleMouseButtonEvents(void);
         
         void __drawUpgradeOptions(void);
+        
+        void __sendImprovementStateMessage(void);
     
     
     public:
@@ -93,6 +101,7 @@ class SolarPV: public TileImprovement {
         int capacity_kW; ///< The rated production capacity [kW] of the solar PV array.
         
         int production_MWh; ///< The current production [MWh] of the solar PV array.
+        int dispatch_MWh; ///< The current dispatch [MWh] of the solar PV array.
         int dispatchable_MWh; ///< The amount of production that is directly dispatchable to the grid (i.e. production correlated with demand).
         
         double max_daily_production_MWh; ///< The maximum daily production [MWh] of the solar PV array.
@@ -113,6 +122,8 @@ class SolarPV: public TileImprovement {
         );
         
         std::string getTileOptionsSubstring(void);
+        
+        void setIsSelected(bool);
         
         void advanceTurn(void);
         

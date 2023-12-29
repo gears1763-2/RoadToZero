@@ -540,11 +540,15 @@ void TidalTurbine :: __drawUpgradeOptions(void)
         sf::Vector2f initial_scale = this->tile_improvement_sprite_animated[i].getScale();
         this->tile_improvement_sprite_animated[i].setScale(sf::Vector2f(1, 1));
         
+        double initial_rotation = this->tile_improvement_sprite_animated[i].getRotation();
+        this->tile_improvement_sprite_animated[i].setRotation(0);
+        
         this->render_window_ptr->draw(this->tile_improvement_sprite_animated[i]);
         
         this->tile_improvement_sprite_animated[i].setPosition(initial_position);
         this->tile_improvement_sprite_animated[i].setColor(initial_colour);
         this->tile_improvement_sprite_animated[i].setScale(initial_scale);
+        this->tile_improvement_sprite_animated[i].setRotation(initial_rotation);
     }
     
     this->render_window_ptr->draw(this->upgrade_arrow_sprite);
@@ -742,6 +746,9 @@ TileImprovement(
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
     
+    this->rotor_drotation = 64 * SECONDS_PER_FRAME;
+    this->bobbing_y = 4;
+    
     this->capacity_factor_vec.resize(30, 0);
     this->production_vec_MWh.resize(30, 0);
     this->dispatch_vec_MWh.resize(30, 0);
@@ -750,6 +757,7 @@ TileImprovement(
     
     this->__setUpTileImprovementSpriteAnimated();
     this->update();
+    this->just_updated = false;
     
     std::cout << "TidalTurbine constructed at " << this << std::endl;
     
@@ -852,6 +860,7 @@ void TidalTurbine :: setIsSelected(bool is_selected)
 void TidalTurbine :: advanceTurn(void)
 {
     //  1. update
+    this->just_updated = false;
     this->update();
     
     //  2. send improvement state message
@@ -892,10 +901,16 @@ void TidalTurbine :: advanceTurn(void)
 
 void TidalTurbine :: update(void)
 {
+    if (this->just_updated) {
+        return;
+    }
+    
     this->__computeCapacityFactors();
     this->__computeProduction();
     this->__computeProductionCosts();
     this->__computeDispatch();
+    
+    this->just_updated = true;
     
     return;
 }   /* update() */
@@ -1008,25 +1023,36 @@ void TidalTurbine :: draw(void)
     }
     
     
-    //  3. draw first element of animated sprite
+    //  3. handle bobbing
+    for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+        this->tile_improvement_sprite_animated[i].setPosition(
+            this->position_x,
+            this->position_y + this->bobbing_y * cos(
+                (double)(0.4 * M_PI * this->frame) / FRAMES_PER_SECOND
+            )
+        );
+    }
+    
+    
+    //  4. draw first element of animated sprite
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[0]);
     
     
-    //  4. draw second element of animated sprite
+    //  5. draw second element of animated sprite
     if (this->is_running) {
-        //...
+        this->tile_improvement_sprite_animated[1].rotate(this->rotor_drotation);
     }
     
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);
     
     
-    //  5. draw storage upgrades
+    //  6. draw storage upgrades
     for (size_t i = 0; i < this->storage_upgrade_sprite_vec.size(); i++) {
         this->render_window_ptr->draw(this->storage_upgrade_sprite_vec[i]);
     }
     
     
-    //  6. draw production menu
+    //  7. draw production menu
     if (this->production_menu_open) {
         this->render_window_ptr->draw(this->production_menu_backing);
         this->render_window_ptr->draw(this->production_menu_backing_text);
@@ -1035,7 +1061,7 @@ void TidalTurbine :: draw(void)
     }
     
     
-    //  7. draw upgrade menu
+    //  8. draw upgrade menu
     if (this->upgrade_menu_open) {
         this->render_window_ptr->draw(this->upgrade_menu_backing);
         this->render_window_ptr->draw(this->upgrade_menu_backing_text);

@@ -561,11 +561,15 @@ void WindTurbine :: __drawUpgradeOptions(void)
         sf::Vector2f initial_scale = this->tile_improvement_sprite_animated[i].getScale();
         this->tile_improvement_sprite_animated[i].setScale(sf::Vector2f(1, 1));
         
+        double initial_rotation = this->tile_improvement_sprite_animated[i].getRotation();
+        this->tile_improvement_sprite_animated[i].setRotation(0);
+        
         this->render_window_ptr->draw(this->tile_improvement_sprite_animated[i]);
         
         this->tile_improvement_sprite_animated[i].setPosition(initial_position);
         this->tile_improvement_sprite_animated[i].setColor(initial_colour);
         this->tile_improvement_sprite_animated[i].setScale(initial_scale);
+        this->tile_improvement_sprite_animated[i].setRotation(initial_rotation);
     }
     
     this->render_window_ptr->draw(this->upgrade_arrow_sprite);
@@ -763,6 +767,8 @@ TileImprovement(
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
     
+    this->rotor_drotation = 256 * SECONDS_PER_FRAME;
+    
     this->capacity_factor_vec.resize(30, 0);
     this->production_vec_MWh.resize(30, 0);
     this->dispatch_vec_MWh.resize(30, 0);
@@ -771,6 +777,7 @@ TileImprovement(
     
     this->__setUpTileImprovementSpriteAnimated();
     this->update();
+    this->just_updated = false;
     
     std::cout << "WindTurbine constructed at " << this << std::endl;
     
@@ -872,6 +879,7 @@ void WindTurbine :: setIsSelected(bool is_selected)
 void WindTurbine :: advanceTurn(void)
 {
     //  1. update
+    this->just_updated = false;
     this->update();
     
     //  2. send improvement state message
@@ -912,10 +920,16 @@ void WindTurbine :: advanceTurn(void)
 
 void WindTurbine :: update(void)
 {
+    if (this->just_updated) {
+        return;
+    }
+    
     this->__computeCapacityFactors();
     this->__computeProduction();
     this->__computeProductionCosts();
     this->__computeDispatch();
+    
+    this->just_updated = true;
     
     return;
 }   /* update() */
@@ -1034,11 +1048,7 @@ void WindTurbine :: draw(void)
     
     //  4. draw second element of animated sprite
     if (this->is_running) {
-        //...
-    }
-    
-    else {
-        //...
+        this->tile_improvement_sprite_animated[1].rotate(this->rotor_drotation);
     }
     
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);

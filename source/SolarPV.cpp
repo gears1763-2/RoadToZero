@@ -752,6 +752,7 @@ TileImprovement(
     
     this->__setUpTileImprovementSpriteStatic();
     this->update();
+    this->just_updated = false;
     
     std::cout << "SolarPV constructed at " << this << std::endl;
     
@@ -853,6 +854,7 @@ void SolarPV :: setIsSelected(bool is_selected)
 void SolarPV :: advanceTurn(void)
 {
     //  1. update
+    this->just_updated = false;
     this->update();
     
     //  2. send improvement state message
@@ -893,10 +895,16 @@ void SolarPV :: advanceTurn(void)
 
 void SolarPV :: update(void)
 {
+    if (this->just_updated) {
+        return;
+    }
+    
     this->__computeCapacityFactors();
     this->__computeProduction();
     this->__computeProductionCosts();
     this->__computeDispatch();
+    
+    this->just_updated = true;
     
     return;
 }   /* update() */

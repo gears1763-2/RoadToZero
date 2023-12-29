@@ -762,6 +762,8 @@ TileImprovement(
     
     this->max_daily_production_MWh = (double)(24 * this->capacity_kW) / 1000;
     
+    this->bobbing_y = 4;
+    
     this->capacity_factor_vec.resize(30, 0);
     this->production_vec_MWh.resize(30, 0);
     this->dispatch_vec_MWh.resize(30, 0);
@@ -770,6 +772,7 @@ TileImprovement(
     
     this->__setUpTileImprovementSpriteAnimated();
     this->update();
+    this->just_updated = false;
     
     std::cout << "WaveEnergyConverter constructed at " << this << std::endl;
     
@@ -871,6 +874,7 @@ void WaveEnergyConverter :: setIsSelected(bool is_selected)
 void WaveEnergyConverter :: advanceTurn(void)
 {
     //  1. update
+    this->just_updated = false;
     this->update();
     
     //  2. send improvement state message
@@ -911,10 +915,16 @@ void WaveEnergyConverter :: advanceTurn(void)
 
 void WaveEnergyConverter :: update(void)
 {
+    if (this->just_updated) {
+        return;
+    }
+    
     this->__computeCapacityFactors();
     this->__computeProduction();
     this->__computeProductionCosts();
     this->__computeDispatch();
+    
+    this->just_updated = true;
     
     return;
 }   /* update() */
@@ -1033,11 +1043,30 @@ void WaveEnergyConverter :: draw(void)
     
     //  4. draw second element of animated sprite
     if (this->is_running) {
-        //...
+        this->tile_improvement_sprite_animated[0].setPosition(
+            this->position_x,
+            this->position_y + this->bobbing_y * cos(
+                (double)(0.4 * M_PI * this->frame) / FRAMES_PER_SECOND
+            )
+        );
+        
+        this->tile_improvement_sprite_animated[1].setPosition(
+            this->position_x,
+            this->position_y + 1.25 * this->bobbing_y * sin(
+                (double)(0.4 * M_PI * this->frame) / FRAMES_PER_SECOND
+            )
+        );
     }
     
     else {
-        //...
+        for (size_t i = 0; i < this->tile_improvement_sprite_animated.size(); i++) {
+            this->tile_improvement_sprite_animated[i].setPosition(
+                this->position_x,
+                this->position_y + this->bobbing_y * cos(
+                    (double)(0.4 * M_PI * this->frame) / FRAMES_PER_SECOND
+                )
+            );
+        }
     }
     
     this->render_window_ptr->draw(this->tile_improvement_sprite_animated[1]);

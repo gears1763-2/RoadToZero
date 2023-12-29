@@ -128,6 +128,7 @@ class TileImprovement {
         bool production_menu_open; ///< A boolean which indicates whether or not the production menu is open.
         bool upgrade_menu_open; ///< A boolean which indicates whether or not the build menu is open.
         bool is_broken; ///< A boolean which indicated whether or not improvement is broken.
+        bool just_updated; ///< A boolean which indicates that the improvement was just updated.
         
         unsigned long long int frame; ///< The current frame of this object.
         int credits; ///< The current balance of credits.

@@ -606,6 +606,7 @@ TileImprovement :: TileImprovement(
     this->production_menu_open = false;
     this->upgrade_menu_open = false;
     this->is_broken = false;
+    this->just_updated = false;
     
     this->just_upgraded = false;
     this->upgrade_frame = 0;

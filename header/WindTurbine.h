@@ -106,6 +106,8 @@ class WindTurbine: public TileImprovement {
         
         double max_daily_production_MWh; ///< The maximum daily production [MWh] of the solar PV array.
         
+        double rotor_drotation; ///< The rotation rate of the rotor.
+        
         std::vector<double> capacity_factor_vec; ///< A vector of daily capacity factors for the current month.
         std::vector<double> production_vec_MWh; ///< A vector of daily production [MWh] for the current month.
         std::vector<double> dispatch_vec_MWh; ///< A vector of daily dispatch [MWh] for the current month.

@@ -766,7 +766,6 @@ void HexTile :: __setIsSelected(bool is_selected)
     
     if (this->tile_improvement_ptr != NULL) {
         this->tile_improvement_ptr->setIsSelected(is_selected);
-        this->tile_improvement_ptr->update();
     }
     
     if ((not is_selected) and this->build_menu_open) {
@@ -1271,7 +1270,6 @@ void HexTile :: __handleMouseButtonEvents(void)
                 
                 this->__sendTileSelectedMessage();
                 this->__sendTileStateMessage();
-                this->__sendGameStateRequest();
             }
             
             else {
@@ -2797,7 +2795,9 @@ void HexTile :: processMessage(void)
             }
             
             this->message_hub_ptr->incrementMessageRead(GAME_STATE_CHANNEL);
-            std::cout << "Game state message read and passed by " << this << std::endl;
+            
+            std::cout << "Game state message read and passed by " << this <<
+                " (credits: " << this->credits << " K)" << std::endl;
             
             if (this->is_selected) {
                 this->__sendTileStateMessage();

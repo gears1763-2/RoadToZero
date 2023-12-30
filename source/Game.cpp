@@ -113,13 +113,48 @@ void Game :: __checkTerminatingConditions(void)
     }
     
     //  4. victory
-    else if (this->consecutive_zero_emissions_months >= 12) {
+    else if (
+        (this->population >= 1000) and
+        (this->consecutive_zero_emissions_months >= 12)
+    ) {
         this->assets_manager_ptr->getSound("victory")->play();
         this->game_phase = GamePhase :: VICTORY;
     }
     
+    //  5. send game state message
+    //this->__sendGameStateMessage();
+    
     return;
 }   /* __checkTerminatingConditions() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __updatePopulation(void)
+///
+/// \brief Helper method to update (i.e. grow) population.
+///
+
+void Game :: __updatePopulation(void)
+{
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generator(seed);
+    
+    std::normal_distribution<double> normal_dist(
+        MEAN_POPULATION_GROWTH_RATE,
+        STDEV_POPULATION_GROWTH_RATE
+    );
+    
+    double growth_rate = normal_dist(generator);
+    
+    this->population = ceil((1 + growth_rate) * this->population);
+    
+    return;
+}   /* __updatePopulation() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -164,7 +199,7 @@ void Game :: __advanceTurn(void)
     }
     
     else {
-        this->population = ceil(this->population * POPULATION_MONTHLY_GROWTH_RATE);
+        this->__updatePopulation();
     }
     
     //  5. update demand
@@ -870,6 +905,9 @@ void Game :: __summarizeTurn(void)
     else {
         this->consecutive_zero_emissions_months = 0;
     }
+    
+    //  5. send game state message
+    this->__sendGameStateMessage();
     
     return;
 }   /* _summarizeTurn() */

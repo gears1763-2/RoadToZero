@@ -376,6 +376,8 @@ void WindTurbine :: __computeProduction(void)
 
 void WindTurbine :: __computeDispatch(void)
 {
+    std::cout << "WindTurbine :: __computeDispatch()" << std::endl;
+    
     double stored_energy_MWh = 0;
     double storage_capacity_MWh = (double)(this->storage_kWh) / 1000;
     
@@ -968,6 +970,8 @@ void WindTurbine :: advanceTurn(void)
 
 void WindTurbine :: update(void)
 {
+    std::cout << "WindTurbine :: update()" << std::endl;
+    
     this->__computeProduction();
     this->__computeProductionCosts();
     this->__computeDispatch();

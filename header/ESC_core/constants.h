@@ -151,18 +151,20 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 const int STARTING_CREDITS = 800; ///< The starting balance of credits.
 const double CREDITS_PER_MWH_SERVED = 1; ///< The number of credits (x1000) earned
 
-const int EMISSIONS_LIFETIME_LIMIT_TONNES = 1500; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
+const int EMISSIONS_LIFETIME_LIMIT_TONNES = 2000; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
 
 const int RESOURCE_ASSESSMENT_COST = 20; ///< The cost of doing a resource assessment.
 
 const int BUILD_SETTLEMENT_COST = 250; ///< The cost of building a settlement.
 
 const int STARTING_POPULATION = 100; ///< The starting population of a settlement.
-const double POPULATION_MONTHLY_GROWTH_RATE = 1.02; ///< The monthly population growth rate.
+
+const double MEAN_POPULATION_GROWTH_RATE = 0.0195; ///< The mean monthly population growth rate.
+const double STDEV_POPULATION_GROWTH_RATE = 0.0020; ///< The standard deviation in monthly population growth rate.
 
 const double LITRES_DIESEL_PER_MWH_PRODUCTION = 375; ///< The litres of diesel consumed in producing 1 MWh (assumes higher heating value and constant thermal efficiency of ~0.25).
 const double COST_PER_LITRE_DIESEL = 1.75; ///< The cost of a litre of diesel.
-const double KG_CO2E_PER_LITRE_DIESEL = 3.1596; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
+const double KG_CO2E_PER_LITRE_DIESEL = 3.16; ///< The CO2-equivalent mass of emissions that result from burning one litre of diesel fuel.
 const double DIESEL_OP_MAINT_COST_PER_MWH_PRODUCTION = 50; ///< The operation and maintenace cost of running a diesel generator (assumed 0.05 credits per kWh produced).
 
 const double SOLAR_OP_MAINT_COST_PER_MWH_PRODUCTION = 10; ///< The operation and maintenance cost of running a solar PV array (assumed 0.01 credits per kWh produced).

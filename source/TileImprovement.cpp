@@ -756,14 +756,14 @@ TileImprovement :: TileImprovement(
     
     switch (this->tile_resource) {
         case (0): {
-            this->tile_resource_scalar = 0.7;
+            this->tile_resource_scalar = 0.85;
             
             break;
         }
         
         
         case (1): {
-            this->tile_resource_scalar = 0.85;
+            this->tile_resource_scalar = 0.925;
             
             break;
         }
@@ -777,14 +777,14 @@ TileImprovement :: TileImprovement(
         
         
         case (3): {
-            this->tile_resource_scalar = 1.15;
+            this->tile_resource_scalar = 1.075;
             
             break;
         }
         
         
         case (4): {
-            this->tile_resource_scalar = 1.3;
+            this->tile_resource_scalar = 1.15;
             
             break;
         }

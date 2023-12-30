@@ -93,6 +93,7 @@ class Game {
         void __toggleFrameClockOverlay(void);
         
         void __checkTerminatingConditions(void);
+        void __updatePopulation(void);
         void __advanceTurn(void);
         
         void __computeCurrentDemand(void);

@@ -1430,6 +1430,10 @@ void HexTile :: __buildDieselGenerator(void)
     this->has_improvement = true;
     this->__closeBuildMenu();
     
+    if (not this->resource_assessed) {
+        this->assess();
+    }
+    
     this->__sendCreditsSpentMessage(build_cost);
     this->__sendTileStateMessage();
     this->__sendGameStateRequest();
@@ -1477,6 +1481,10 @@ void HexTile :: __buildSolarPV(void)
     
     this->has_improvement = true;
     this->__closeBuildMenu();
+    
+    if (not this->resource_assessed) {
+        this->assess();
+    }
     
     if (this->tile_type == TileType :: LAKE) {
         this->decoration_cleared = true;
@@ -1534,6 +1542,10 @@ void HexTile :: __buildWindTurbine(void)
     this->has_improvement = true;
     this->__closeBuildMenu();
     
+    if (not this->resource_assessed) {
+        this->assess();
+    }
+    
     if (
         (this->tile_type == TileType :: LAKE) or
         (this->tile_type == TileType :: OCEAN)
@@ -1588,6 +1600,10 @@ void HexTile :: __buildTidalTurbine(void)
     this->assets_manager_ptr->getSound("splash")->play();
     this->__closeBuildMenu();
     
+    if (not this->resource_assessed) {
+        this->assess();
+    }
+    
     this->__sendCreditsSpentMessage(build_cost);
     this->__sendTileStateMessage();
     this->__sendGameStateRequest();
@@ -1634,6 +1650,10 @@ void HexTile :: __buildWaveEnergyConverter(void)
     this->assets_manager_ptr->getSound("splash")->play();
     this->__closeBuildMenu();
     
+    if (not this->resource_assessed) {
+        this->assess();
+    }
+    
     this->__sendCreditsSpentMessage(build_cost);
     this->__sendTileStateMessage();
     this->__sendGameStateRequest();
@@ -1650,7 +1670,7 @@ void HexTile :: __buildWaveEnergyConverter(void)
 ///
 /// \fn void HexTile :: __buildEnergyStorage(void)
 ///
-/// \brief Helper method to build an energy storage system on this tile.
+/// \brief Helper method to build an energy storage system on this tile. DEPRECATED.
 ///
 
 void HexTile :: __buildEnergyStorage(void)
@@ -1677,6 +1697,10 @@ void HexTile :: __buildEnergyStorage(void)
     
     this->has_improvement = true;
     this->__closeBuildMenu();
+
+    if (not this->resource_assessed) {
+        this->assess();
+    }
     
     this->__sendCreditsSpentMessage(build_cost);
     this->__sendTileStateMessage();

@@ -119,6 +119,7 @@ class Game {
         void __drawLossEmissions(void);
         void __drawVictory(void);
         
+        void __drawTurnAdvanceBanner(void);
         void __drawTurnSummary(void);
         void __drawFrameClockOverlay(void);
         void __drawHUD(void);
@@ -136,6 +137,8 @@ class Game {
         bool message_deadlock; ///< A boolean indicating whether a message deadlock has been detected.
         bool show_tutorial; ///< A boolean indicating whether or not to show the tutorial.
         bool turn_end; ///< A boolean indicating a turn end.
+        bool draw_turn_advance_banner; ///< A boolean indicating whether or not to draw the turn advance banner.
+        bool increase_turn_advance_alpha; ///< A boolean which indicates whether the turn advance alpha is increasing or decreasing.
         
         unsigned long long int frame; ///< The current frame of the game.
         double time_since_start_s; ///< The time elapsed [s] since the start of the game.
@@ -148,6 +151,7 @@ class Game {
         int cumulative_emissions_tonnes; ///< Cumulative emissions [tonnes] (1 tonne = 1000 kg).
         
         int past_demand_MWh; ///< The demand in the previous turn.
+        double turn_advance_alpha; ///< The alpha value for the turn advance banner.
         
         int demand_served_MWh; ///< The demand served at the end of a turn.
         int demand_remaining_MWh; ///< The demand remaining at the end of a turn.

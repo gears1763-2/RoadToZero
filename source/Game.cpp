@@ -92,8 +92,6 @@ void Game :: __toggleFrameClockOverlay(void)
 
 void Game :: __checkTerminatingConditions(void)
 {
-    std::cout << "Game :: __checkTerminatingConditions()" << std::endl;
-    
     //  1. loss emissions
     if (this->cumulative_emissions_tonnes >= EMISSIONS_LIFETIME_LIMIT_TONNES) {
         this->assets_manager_ptr->getSound("loss")->play();
@@ -944,7 +942,7 @@ void Game :: __drawLossDemand(void)
     
     sf::RectangleShape backing_rectangle(
         sf::Vector2f(
-            1.1 * loss_demand_text.getLocalBounds().width,
+            800,
             1.5 * loss_demand_text.getLocalBounds().height
         )
     );
@@ -1006,7 +1004,7 @@ void Game :: __drawLossCredits(void)
     
     sf::RectangleShape backing_rectangle(
         sf::Vector2f(
-            1.1 * loss_credits_text.getLocalBounds().width,
+            800,
             1.5 * loss_credits_text.getLocalBounds().height
         )
     );
@@ -1068,7 +1066,7 @@ void Game :: __drawLossEmissions(void)
     
     sf::RectangleShape backing_rectangle(
         sf::Vector2f(
-            1.1 * loss_emissions_text.getLocalBounds().width,
+            800,
             1.5 * loss_emissions_text.getLocalBounds().height
         )
     );
@@ -1130,7 +1128,7 @@ void Game :: __drawVictory(void)
     
     sf::RectangleShape backing_rectangle(
         sf::Vector2f(
-            1.1 * victory_text.getLocalBounds().width,
+            800,
             1.5 * victory_text.getLocalBounds().height
         )
     );
@@ -1158,6 +1156,91 @@ void Game :: __drawVictory(void)
     
     return;
 }   /* __drawVictory() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __drawTurnAdvanceBanner(void)
+///
+/// \brief Helper method to draw turn advance banner.
+///
+
+void Game :: __drawTurnAdvanceBanner(void)
+{
+    //  1. construct advance banner text
+    std::string turn_advance_banner_string  = "      Turn: ";
+    turn_advance_banner_string             += std::to_string(this->turn);
+    turn_advance_banner_string             += "\n";
+    turn_advance_banner_string             += "Year: ";
+    turn_advance_banner_string             += std::to_string(this->year);
+    turn_advance_banner_string             += "    Month: ";
+    turn_advance_banner_string             += std::to_string(this->month);
+    
+    sf::Text turn_advance_banner_text(
+        turn_advance_banner_string,
+        *(this->assets_manager_ptr->getFont("DroidSansMono")),
+        24
+    );
+    
+    turn_advance_banner_text.setOrigin(
+        turn_advance_banner_text.getLocalBounds().width / 2,
+        turn_advance_banner_text.getLocalBounds().height / 2
+    );
+    
+    turn_advance_banner_text.setPosition(400, GAME_HEIGHT / 2);
+    
+    turn_advance_banner_text.setFillColor(sf::Color(0, 0, 0, this->turn_advance_alpha));
+    
+    
+    //  2. construct advance banner backing
+    sf::RectangleShape backing_rectangle(
+        sf::Vector2f(
+            800,
+            1.5 * turn_advance_banner_text.getLocalBounds().height
+        )
+    );
+    
+    sf::Color backing_colour = RESOURCE_CHIP_GREY;
+    backing_colour.a = this->turn_advance_alpha;
+    
+    backing_rectangle.setFillColor(backing_colour);
+    
+    backing_rectangle.setOrigin(
+        backing_rectangle.getLocalBounds().width / 2,
+        backing_rectangle.getLocalBounds().height / 2
+    );
+    
+    backing_rectangle.setPosition(400, (GAME_HEIGHT / 2) + 8);
+    
+    
+    //  3. draw
+    this->render_window_ptr->draw(backing_rectangle);
+    this->render_window_ptr->draw(turn_advance_banner_text);
+    
+    //  4. adjust alpha, check terminating conditions
+    if (this->increase_turn_advance_alpha) {
+        this->turn_advance_alpha += 180 * SECONDS_PER_FRAME;
+        
+        if (this->turn_advance_alpha >= 255) {
+            this->turn_advance_alpha = 255;
+            this->increase_turn_advance_alpha = false;
+        }
+    }
+    
+    else {
+        this->turn_advance_alpha -= 180 * SECONDS_PER_FRAME;
+        
+        if (this->turn_advance_alpha <= 0) {
+            this->draw_turn_advance_banner = false;
+        }
+    }
+    
+    return;
+}   /* __drawTurnAdvanceBanner() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -1394,12 +1477,15 @@ void Game :: __drawHUD(void)
 
 void Game :: __draw(void)
 {
+    //  1. HUD
     this->__drawHUD();
     
+    //  2. frame / clock overlay
     if (this->show_frame_clock_overlay) {
         this->__drawFrameClockOverlay();
     }
     
+    //  3. tutorial or turn summary
     if (this->show_tutorial) {
         
     }
@@ -1408,6 +1494,12 @@ void Game :: __draw(void)
         this->__drawTurnSummary();
     }
     
+    //  4. turn advance banner
+    if (this->draw_turn_advance_banner) {
+        this->__drawTurnAdvanceBanner();
+    }
+    
+    //  5. terminating conditions
     switch (this->game_phase) {
         case (GamePhase :: LOSS_DEMAND): {
             this->__drawLossDemand();
@@ -1487,6 +1579,8 @@ Game :: Game(
     this->check_terminating_conditions = false;
     this->show_tutorial = false;
     this->turn_end = false;
+    this->draw_turn_advance_banner = false;
+    this->increase_turn_advance_alpha = true;
     
     this->frame = 0;
     this->time_since_start_s = 0;
@@ -1509,6 +1603,7 @@ Game :: Game(
     this->cumulative_emissions_tonnes = 0;
     
     this->past_demand_MWh = 0;
+    this->turn_advance_alpha = 0;
     
     this->demand_vec_MWh.resize(30, 0);
     
@@ -1637,6 +1732,10 @@ bool Game :: run(void)
                 this->__summarizeTurn();
                 
                 this->turn_end = false;
+                
+                this->draw_turn_advance_banner = true;
+                this->turn_advance_alpha = 0;
+                this->increase_turn_advance_alpha = true;
             }
             
             

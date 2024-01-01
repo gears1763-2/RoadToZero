@@ -950,6 +950,62 @@ HexTile* HexMap :: __getSelectedTile(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexMap :: __logSettlementPosition(void)
+///
+/// \brief Helper method to log settlement position (if not already done).
+///
+
+void HexMap :: __logSettlementPosition(void)
+{
+    bool break_flag = false;
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            if (
+                (hex_map_iter_y->second->has_improvement) and
+                (hex_map_iter_y->second->tile_improvement_ptr->tile_improvement_type ==
+                    TileImprovementType :: SETTLEMENT)
+            ) {
+                this->settlement_position_x = hex_map_iter_y->second->position_x;
+                this->settlement_position_y = hex_map_iter_y->second->position_y;
+                
+                this->settlement_position_logged = true;
+                
+                std::cout << "Settlement position logged, (" <<
+                    this->settlement_position_x << ", " <<
+                    this->settlement_position_y << ")" << std::endl;
+                
+                break_flag = true;
+                break;
+            }
+        }
+        
+        if (break_flag) {
+            break;
+        }
+    }
+    
+    return;
+}   /* __logSettlementPosition() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void HexMap :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -1076,6 +1132,151 @@ void HexMap :: __assessNeighbours(HexTile* hex_ptr)
 
 // ---------------------------------------------------------------------------------- //
 
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __drawTotalDispatch(void)
+///
+/// \brief Helper method to compute and draw current total production / dispatch from
+///     all production assets.
+///
+
+void HexMap :: __drawTotalDispatch(void)
+{
+    //  1. compute total production / dispatch
+    int total_production_dispatch_MWh = 0;
+    
+    std::map<double, std::map<double, HexTile*>>::iterator hex_map_iter_x;
+    std::map<double, HexTile*>::iterator hex_map_iter_y;
+    
+    TileImprovement* tile_improvement_ptr;
+    
+    for (
+        hex_map_iter_x = this->hex_map.begin();
+        hex_map_iter_x != this->hex_map.end();
+        hex_map_iter_x++
+    ) {
+        for (
+            hex_map_iter_y = hex_map_iter_x->second.begin();
+            hex_map_iter_y != hex_map_iter_x->second.end();
+            hex_map_iter_y++
+        ) {
+            if (
+                (hex_map_iter_y->second->has_improvement) and
+                (hex_map_iter_y->second->tile_improvement_ptr->tile_improvement_type !=
+                    TileImprovementType :: SETTLEMENT)
+            ) {
+                tile_improvement_ptr = hex_map_iter_y->second->tile_improvement_ptr;
+                
+                switch (tile_improvement_ptr->tile_improvement_type) {
+                    case (TileImprovementType :: DIESEL_GENERATOR): {
+                        total_production_dispatch_MWh +=
+                            ((DieselGenerator*)tile_improvement_ptr)->production_MWh;
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileImprovementType :: SOLAR_PV): {
+                        total_production_dispatch_MWh +=
+                            ((SolarPV*)tile_improvement_ptr)->dispatch_MWh;
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileImprovementType :: TIDAL_TURBINE): {
+                        total_production_dispatch_MWh +=
+                            ((TidalTurbine*)tile_improvement_ptr)->dispatch_MWh;
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileImprovementType :: WAVE_ENERGY_CONVERTER): {
+                        total_production_dispatch_MWh +=
+                            ((WaveEnergyConverter*)tile_improvement_ptr)->dispatch_MWh;
+                        
+                        break;
+                    }
+                    
+                    
+                    case (TileImprovementType :: WIND_TURBINE): {
+                        total_production_dispatch_MWh +=
+                            ((WindTurbine*)tile_improvement_ptr)->dispatch_MWh;
+                        
+                        break;
+                    }
+                    
+                    
+                    default: {
+                        // do nothing!
+                        
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    //  2. construct total text
+    sf::Text total_production_dispatch_text(
+        std::to_string(total_production_dispatch_MWh),
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        16
+    );
+    
+    total_production_dispatch_text.setOrigin(
+        total_production_dispatch_text.getLocalBounds().width / 2,
+        total_production_dispatch_text.getLocalBounds().height / 2
+    );
+    
+    total_production_dispatch_text.setPosition(800 - 20, 20 - 4);
+    
+    sf::Color text_colour;
+    
+    if (total_production_dispatch_MWh < this->demand_MWh) {
+        text_colour = MONOCHROME_TEXT_RED;
+    }
+    
+    else if (total_production_dispatch_MWh > this->demand_MWh) {
+        text_colour = MONOCHROME_TEXT_AMBER;
+    }
+    
+    else {
+        text_colour = MONOCHROME_TEXT_GREEN;
+    }
+    
+    total_production_dispatch_text.setFillColor(text_colour);
+    
+    //  4. construct total backing
+    sf::RectangleShape total_production_dispatch_backing(sf::Vector2f(32, 32));
+    
+    total_production_dispatch_backing.setOrigin(
+        total_production_dispatch_backing.getLocalBounds().width / 2,
+        total_production_dispatch_backing.getLocalBounds().height / 2
+    );
+    
+    total_production_dispatch_backing.setPosition(800 - 20, 20);
+    
+    total_production_dispatch_backing.setFillColor(MONOCHROME_SCREEN_BACKGROUND);
+    
+    total_production_dispatch_backing.setOutlineColor(MENU_FRAME_GREY);
+    total_production_dispatch_backing.setOutlineThickness(2);
+    
+    //  4. draw
+    if (total_production_dispatch_MWh > 0) {
+        this->render_window_ptr->draw(total_production_dispatch_backing);
+        this->render_window_ptr->draw(total_production_dispatch_text);
+    }
+    
+    return;
+}   /* __drawTotalDispatch() */
+
+// ---------------------------------------------------------------------------------- //
+
 // ======== END PRIVATE ============================================================= //
 
 
@@ -1126,6 +1327,7 @@ HexMap :: HexMap(
     //  1.2. public
     this->show_resource = false;
     this->tile_selected = false;
+    this->settlement_position_logged = false;
     
     this->frame = 0;
     
@@ -1134,8 +1336,13 @@ HexMap :: HexMap(
         this->n_layers = 0;
     }
     
+    this->demand_MWh = 0;
+    
     this->position_x = 400;
     this->position_y = 400;
+    
+    this->settlement_position_x = 0;
+    this->settlement_position_y = 0;
     
     //  2. assemble n layer hex map
     this->__assembleHexMap();
@@ -1328,6 +1535,26 @@ void HexMap :: processMessage(void)
         }
     }
     
+    if (not this->message_hub_ptr->isEmpty(GAME_STATE_CHANNEL)) {
+        Message game_state_message = this->message_hub_ptr->receiveMessage(
+            GAME_STATE_CHANNEL
+        );
+        
+        if (game_state_message.subject == "game state") {
+            this->demand_MWh = game_state_message.int_payload["demand_MWh"];
+            
+            this->message_hub_ptr->incrementMessageRead(GAME_STATE_CHANNEL);
+            
+            std::cout << "Game state message read and passed by " << this <<
+                " (demand: " << this->demand_MWh << " MWh)" << std::endl;
+        }
+    }
+    
+    //  3. log settlement position (if applicable)
+    if (not this->settlement_position_logged) {
+        this->__logSettlementPosition();
+    }
+    
     return;
 }   /* processMessage() */
 
@@ -1360,13 +1587,26 @@ void HexMap :: draw(void)
         }
     }
     
-    //  3. draw selected tile
+    //  3. draw total production / dispatch overlay
+    if (this->settlement_position_logged) {
+        this->__drawTotalDispatch();
+    }
+    
+    //  4. draw selected tile
     HexTile* selected_tile_ptr = this->__getSelectedTile();
     if (selected_tile_ptr != NULL) {
         selected_tile_ptr->draw();
+        
+        if (
+            (selected_tile_ptr->has_improvement) and 
+            (selected_tile_ptr->tile_improvement_ptr->tile_improvement_type ==
+                TileImprovementType :: SETTLEMENT)
+        ) {
+            this->__drawTotalDispatch();
+        }
     }
     
-    //  4. draw resource overlay text indication
+    //  5. draw resource overlay text indication
     if (this->show_resource) {
         sf::Text resource_overlay_text(
             "**** RENEWABLE RESOURCE OVERLAY ****",
@@ -1384,7 +1624,7 @@ void HexMap :: draw(void)
         this->render_window_ptr->draw(resource_overlay_text);
     }
     
-    //  5. draw glass screen
+    //  6. draw glass screen
     glass_screen_colour = this->glass_screen.getFillColor();
     glass_screen_colour.a = 40;
     this->glass_screen.setFillColor(glass_screen_colour);

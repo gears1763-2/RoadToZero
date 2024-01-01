@@ -72,9 +72,9 @@ enum TileImprovementType {
     WIND_TURBINE, ///< A wind turbine.
     TIDAL_TURBINE, ///< A tidal turbine.
     WAVE_ENERGY_CONVERTER, ///< A wave energy converter.
-    ENERGY_STORAGE_SYSTEM, ///< An energy storage system.
     N_TILE_IMPROVEMENT_TYPES ///< A simple hack to get the number of elements in TileImprovementType.
 };  /* TileImprovementType */
+//    ENERGY_STORAGE_SYSTEM, ///< An energy storage system.
 
 
 ///

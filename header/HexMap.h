@@ -94,25 +94,35 @@ class HexMap {
         
         HexTile* __getSelectedTile(void);
         
+        void __logSettlementPosition(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         
         void __sendNoTileSelectedMessage(void);
         
         void __assessNeighbours(HexTile*);
+        
+        void __drawTotalDispatch(void);
     
     
     public:
         //  1. attributes
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool tile_selected; ///< A boolean which indicates if a tile is currently selected.
+        bool settlement_position_logged; ///< A boolean which indicates if the settlement position has been logged.
         
         int n_layers; ///< The number of layers in the hex map.
         int n_tiles; ///< The number of tiles in the hex map.
         unsigned long long int frame; ///< The current frame of this object.
         
+        int demand_MWh; ///< Current energy demand [MWh].
+        
         double position_x; ///< The x position of the hex map's origin (i.e. central) tile.
         double position_y; ///< The y position of the hex map's origin (i.e. central) tile.
+        
+        double settlement_position_x; ///< The x position of the settlement.
+        double settlement_position_y; ///< The y position of the settlement.
         
         sf::RectangleShape glass_screen; ///< To give the effect of an old glass screen over the hex map.
         

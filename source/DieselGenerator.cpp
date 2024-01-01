@@ -679,16 +679,7 @@ void DieselGenerator :: advanceTurn(void)
         }
     }
     
-    //  4. close menus
-    if (this->production_menu_open) {
-        this->__closeProductionMenu();
-    }
-    
-    if (this->upgrade_menu_open) {
-        this->__closeUpgradeMenu();
-    }
-    
-    //  5. send tile state request (if selected)
+    //  4. send tile state request (if selected)
     if (this->is_selected) {
         this->__sendTileStateRequest();
     }

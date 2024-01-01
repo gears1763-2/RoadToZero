@@ -189,14 +189,14 @@ void TileImprovement :: __setUpDispatchIllustration(void)
         this->position_y
     );
     
-    this->dispatch_backing.setFillColor(RESOURCE_CHIP_GREY);
-    this->dispatch_backing.setOutlineThickness(1);
+    this->dispatch_backing.setFillColor(MONOCHROME_SCREEN_BACKGROUND);
+    this->dispatch_backing.setOutlineThickness(2);
     this->dispatch_backing.setOutlineColor(sf::Color(0, 0, 0, 255));
     
     
     //  2. set up text
-    this->dispatch_text.setFont(*(assets_manager_ptr->getFont("DroidSansMono")));
-    this->dispatch_text.setFillColor(sf::Color(0, 0, 0, 255));
+    this->dispatch_text.setFont(*(assets_manager_ptr->getFont("Glass_TTY_VT220")));
+    this->dispatch_text.setFillColor(MONOCHROME_TEXT_GREEN);
     this->dispatch_text.setCharacterSize(16);
     this->dispatch_text.setPosition(
         this->position_x,
@@ -650,7 +650,6 @@ void TileImprovement :: __drawDispatch(void)
     
     //  1. dispatch backing
     sf::Color backing_colour = this->dispatch_backing.getFillColor();
-    
     backing_colour.a = alpha;
     
     this->dispatch_backing.setFillColor(backing_colour);
@@ -665,9 +664,10 @@ void TileImprovement :: __drawDispatch(void)
         this->dispatch_text.getLocalBounds().height / 2
     );
     
-    this->dispatch_text.setFillColor(
-        sf::Color(0, 0, 0, alpha)
-    );
+    sf::Color text_colour = this->dispatch_text.getFillColor();
+    text_colour.a = alpha;
+    
+    this->dispatch_text.setFillColor(text_colour);
     
     this->render_window_ptr->draw(this->dispatch_text);
     

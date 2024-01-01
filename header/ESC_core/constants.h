@@ -110,17 +110,17 @@ const std::string HEX_MAP_CHANNEL = "HEX MAP CHANNEL"; ///< A message channel fo
 
 const std::string SETTLEMENT_CHANNEL = "SETTLEMENT CHANNEL"; ///< A message channel for the settlement.
 
-const int CLEAR_FOREST_COST = 40; ///< The cost of clearing a forest tile.
-const int CLEAR_MOUNTAINS_COST = 250; ///< The cost of clearing a mountains tile.
-const int CLEAR_PLAINS_COST = 20; ///< The cost of clearing a plains tile.
+const int CLEAR_FOREST_COST = 160; ///< The cost of clearing a forest tile.
+const int CLEAR_MOUNTAINS_COST = 500; ///< The cost of clearing a mountains tile.
+const int CLEAR_PLAINS_COST = 80; ///< The cost of clearing a plains tile.
 
 const int DIESEL_GENERATOR_BUILD_COST = 100; ///< The cost of building (or ugrading) a diesel generator in 100 kW increments.
-const int WIND_TURBINE_BUILD_COST = 400; ///< The cost of building (or upgrading) a wind turbine in 100 kW increments.
-const double WIND_TURBINE_WATER_BUILD_MULTIPLIER = 1.25; ///< The additional cost of building on water.
-const int SOLAR_PV_BUILD_COST = 300; ///< The cost of building (or upgrading) a solar PV array in 100 kW increments.
-const double SOLAR_PV_WATER_BUILD_MULTIPLIER = 1.5; ///< The additional cost of building on water.
-const int TIDAL_TURBINE_BUILD_COST = 600; ///< The cost of building (or upgrading) a tidal turbine in 100 kW increments.
-const int WAVE_ENERGY_CONVERTER_BUILD_COST = 800; ///< The cost of building (or upgrading) a wave energy converter in 100 kW increments.
+const int WIND_TURBINE_BUILD_COST = 450; ///< The cost of building (or upgrading) a wind turbine in 100 kW increments.
+const double WIND_TURBINE_WATER_BUILD_MULTIPLIER = 1.222222; ///< The additional cost of building on water.
+const int SOLAR_PV_BUILD_COST = 350; ///< The cost of building (or upgrading) a solar PV array in 100 kW increments.
+const double SOLAR_PV_WATER_BUILD_MULTIPLIER = 1.285714; ///< The additional cost of building on water.
+const int TIDAL_TURBINE_BUILD_COST = 550; ///< The cost of building (or upgrading) a tidal turbine in 100 kW increments.
+const int WAVE_ENERGY_CONVERTER_BUILD_COST = 850; ///< The cost of building (or upgrading) a wave energy converter in 100 kW increments.
 
 const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 160; ///< The cost of adding energy storage in 200 kWh increments
 
@@ -149,7 +149,7 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 // ======== GAME CONSTANTS ========================================================== //
 
 const int STARTING_CREDITS = 800; ///< The starting balance of credits.
-const double CREDITS_PER_MWH_SERVED = 1; ///< The number of credits (x1000) earned
+const double CREDITS_PER_MWH_SERVED = 1.125; ///< The number of credits (x1000) earned
 
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 2000; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
 
@@ -159,8 +159,8 @@ const int BUILD_SETTLEMENT_COST = 250; ///< The cost of building a settlement.
 
 const int STARTING_POPULATION = 100; ///< The starting population of a settlement.
 
-const double MEAN_POPULATION_GROWTH_RATE = 0.0195; ///< The mean monthly population growth rate.
-const double STDEV_POPULATION_GROWTH_RATE = 0.0020; ///< The standard deviation in monthly population growth rate.
+const double MEAN_POPULATION_GROWTH_RATE = 0.020; ///< The mean monthly population growth rate.
+const double STDEV_POPULATION_GROWTH_RATE = 0.005; ///< The standard deviation in monthly population growth rate.
 
 const double LITRES_DIESEL_PER_MWH_PRODUCTION = 375; ///< The litres of diesel consumed in producing 1 MWh (assumes higher heating value and constant thermal efficiency of ~0.25).
 const double COST_PER_LITRE_DIESEL = 1.75; ///< The cost of a litre of diesel.

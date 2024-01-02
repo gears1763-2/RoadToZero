@@ -45,7 +45,7 @@
 ///
 /// \file EnergyStorageSystem.h
 ///
-/// \brief Header file for the EnergyStorageSystem class.
+/// \brief Header file for the EnergyStorageSystem class. DEPRECATED / NOT USED.
 ///
 
 

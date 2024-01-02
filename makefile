@@ -5,18 +5,16 @@
 #
 #   Makefile for RoadToZero.
 #
-#   Remember, Linux only supports the DYNAMIC build option; the STATIC build option is
-#   for Windows.
+#   Linux build is made using dynamic linking, whereas the Windows build is made using
+#   static linking.
 #
 
 
 ## ======== COMPILER FLAGS ========================================================== ##
 
-CXX = g++ -O3 -std=c++17
+CXX = g++
 
-
-#CXXFLAGS =  -Wall -g -p -fPIC
-CXXFLAGS = -Wall -fPIC
+CXXFLAGS = -O3 -std=c++17 -Wall -fPIC
 
 ifeq ($(OS),Windows_NT)
     CXXFLAGS += -I../SFML-2.5.1/include -L../SFML-2.5.1/lib
@@ -181,18 +179,6 @@ $(OBJ_WAVEENERGYCONVERTER): $(SRC_WAVEENERGYCONVERTER)
 
 
 
-#### ==== EnergyStorageSystem ==== ####
-
-#SRC_ENERGYSTORAGESYSTEM = source/EnergyStorageSystem.cpp
-#OBJ_ENERGYSTORAGESYSTEM = object/EnergyStorageSystem.o
-
-#$(OBJ_ENERGYSTORAGESYSTEM): $(SRC_ENERGYSTORAGESYSTEM)
-#	$(CXX) $(CXXFLAGS) -c $(SRC_ENERGYSTORAGESYSTEM) -o $(OBJ_ENERGYSTORAGESYSTEM)
-
-#### ==== END EnergyStorageSystem ==== ####
-
-
-
 #### ==== HexTile ==== ####
 
 SRC_HEXTILE = source/HexTile.cpp
@@ -258,6 +244,8 @@ SRC_ALL = $(SRC_GAME) \
           $(SRC_MESSAGEHUB) \
           $(SRC_TESTING_UTILS)
 
+SRC_MAIN = source/main.cpp
+
 OBJ_ALL = $(OBJ_GAME) \
           $(OBJ_CONTEXTMENU) \
           $(OBJ_HEXMAP) \
@@ -274,7 +262,6 @@ OBJ_ALL = $(OBJ_GAME) \
           $(OBJ_TESTING_UTILS)
 
 
-SRC_MAIN = source/main.cpp
 OUT_MAIN = RoadToZero.out
 
 .PHONY: main_Linux
@@ -300,6 +287,7 @@ main_Win32: $(SRC_MAIN) $(SRC_ALL)
 all:
 ifeq ($(OS),Windows_NT)
 	make main_Win32
+	./$(EXE_MAIN)
 else
 	make dirs
 	make main_Linux

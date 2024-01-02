@@ -45,7 +45,7 @@
 ///
 /// \file EnergyStorageSystem.cpp
 ///
-/// \brief Implementation file for the EnergyStorageSystem class.
+/// \brief Implementation file for the EnergyStorageSystem class. DEPRECATED / NOT USED.
 ///
 /// A base class for the tile improvement hierarchy.
 ///

@@ -56,6 +56,10 @@
 
 
 //  1. standard includes
+#ifdef _WIN32
+    #define _USE_MATH_DEFINES
+#endif  /* _WIN32 */
+
 #include <chrono>
 #include <cmath>
 #include <cstdlib>

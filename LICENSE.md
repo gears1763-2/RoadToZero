@@ -2,8 +2,8 @@
 
     (C) 2023 - [ESC] Interactive
     
-    Anthony Truelove MASc, P.Eng.
-    github:  gears1763-2
+    Anthony Truelove MASc, P.Eng. 
+    github:  gears1763-2 
 
 --------
 
@@ -38,7 +38,7 @@ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PRO
 OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 
 --------
 
@@ -48,4 +48,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 With respect to the assets (i.e., textures, sounds, music, etc.) associated with this
 software, each sub-directory of `assets/` has its own `0_*_refs_licenses.md` file which
 provides the license details for each individual asset. Refer to those files for further
-information.
+information. 

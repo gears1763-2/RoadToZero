@@ -10,11 +10,10 @@ This is a 3X (i.e. eXplore, eXpand, eXploit) game that aims to teach players abo
 integrating renewable energy production and storage assets into an isolated microgrid
 (in this case, a remote island settlement), and then managing their operations over
 the long term. The goal is to grow your settlement while also achieving and maintaining
-zero emissions energy dispatch. That said, the only way to win is to grow your settlement
-to a population of at least 1,000 **and** achieve at least 12 *consecutive* months of
-zero emissions. But take care! If you fail to meet energy demand at any time **or** you
-run out of credits **or** you generate too many emissions, you immediately lose. Good
-luck!
+zero emissions energy dispatch. That said, the only way to win is to achieve a population
+of at least 1,000 **and** achieve at least 12 *consecutive* months of zero emissions.
+But take care! If you fail to meet energy demand at any time **or** you run out of
+credits **or** you generate too many emissions, you immediately lose. Good luck!
 
 --------
 
@@ -30,18 +29,23 @@ luck!
 
 ## Contents
 
-[...]
+In the directory for this project, you should find this `README.md`, a `LICENSE.md`, 
+a `makefile` and the following sub-directories  
+
+    assets.7z   For holding the various game assets (textures, sounds, music), compressed
+    docs/       For holding documentation (including a `config.doxygen` and a `refs.bib`)
+    extlibs/    For holding external .dll dependencies (specifically for Windows build)
+    header/     For holding the various header files (`.h`)
+    source/     For holding the various source files (`.cpp`)
 
 --------
 
 
 ## Key Features
 
-  * [...]
+  * A procedurally generated, hex tile world with varying tile types (plains, forest, mountains, lakes, and ocean) and renewable resource qualities. No two playthroughs the same!
   
-  * [...]
-  
-  * [...]
+  * Modelling and simulation of various renewable energy production assets (solar, tidal, wave, and wind), both with and without paired energy storage.
 
 --------
 
@@ -75,13 +79,16 @@ Having done all that, it should suffice to
 
     make all
 
-from the command prompt (`cmd`).
+from the command prompt (`cmd`).  
+
+If you do run into any missing .dll issues when trying to execute `RoadToZero.exe`, you
+may be able to find the missing files at <https://github.com/SFML/SFML/tree/master/extlibs>.
 
 
 ### Linux (Debian/Ubuntu)
 
 Road to Zero was developed on Linux, so building it yourself should be pretty
-straightforward. Fist, if you don't already have the development package installed, you
+straightforward. First, if you don't already have the development package installed, you
 can do so by way of
 
     sudo apt-get install build-essential

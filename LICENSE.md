@@ -49,3 +49,13 @@ With respect to the assets (i.e., textures, sounds, music, etc.) associated with
 software, each sub-directory of `assets/` has its own `0_*_refs_licenses.md` file which
 provides the license details for each individual asset. Refer to those files for further
 information. 
+
+--------
+
+
+## Open AL
+
+Road to Zero makes use of OpenAL, which is licensed under the GNU Library General Public
+License (LGPL), version 2+. For license details, refer to
+<https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html>. For OpenAL source, see
+<https://github.com/kcat/openal-soft>.

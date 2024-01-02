@@ -52,34 +52,6 @@
 #include "../../header/ESC_core/testing_utils.h"
 
 
-#ifdef _WIN32
-
-// ---------------------------------------------------------------------------------- //
-
-///
-/// \fn void activateVirtualTerminal(void)
-///
-/// \brief A function which activates virtual terminal functionality on Windows. The
-///     whole point of this function is make printGreen(), printGold(), and printRed()
-///     work as intended on Windows.
-///
-
-void activateVirtualTerminal(void)
-{
-    HANDLE handleOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD consoleMode;
-    GetConsoleMode(handleOut , &consoleMode);
-    consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    consoleMode |= DISABLE_NEWLINE_AUTO_RETURN;
-    SetConsoleMode(handleOut , consoleMode);
-}   /* activateVirtualTerminal() */
-
-// ---------------------------------------------------------------------------------- //
-
-#endif  /* _WIN32 */
-
-
-
 // ---------------------------------------------------------------------------------- //
 
 ///

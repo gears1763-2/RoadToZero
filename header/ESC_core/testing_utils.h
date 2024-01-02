@@ -57,10 +57,6 @@
 #include "includes.h"
 
 
-#ifdef _WIN32
-    void activateVirtualTerminal(void);
-#endif  /* _WIN32 */
-
 
 void printGreen(std::string);
 void printGold(std::string);

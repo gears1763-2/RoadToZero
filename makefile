@@ -48,7 +48,6 @@ SFML_STATIC = -DSFML_STATIC\
               -lvorbis\
               -logg\
               -lws2_32\
-              -ljpeg\
               -lpthread\
               $(STATIC)
 
@@ -239,6 +238,21 @@ $(OBJ_GAME): $(SRC_GAME)
 
 
 #### ==== main ==== ####
+
+SRC_ALL = $(SRC_GAME) \
+          $(SRC_CONTEXTMENU) \
+          $(SRC_HEXMAP) \
+          $(SRC_HEXTILE) \
+          $(SRC_DIESELGENERATOR) \
+          $(SRC_SOLARPV) \
+          $(SRC_WINDTURBINE) \
+          $(SRC_TIDALTURBINE) \
+          $(SRC_WAVEENERGYCONVERTER) \
+          $(SRC_SETTLEMENT) \
+          $(SRC_TILEIMPROVEMENT) \
+          $(SRC_ASSETSMANAGER) \
+          $(SRC_MESSAGEHUB) \
+          $(SRC_TESTING_UTILS)
 
 OBJ_ALL = $(OBJ_GAME) \
           $(OBJ_CONTEXTMENU) \

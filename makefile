@@ -18,6 +18,10 @@ CXX = g++ -O3 -std=c++17
 #CXXFLAGS =  -Wall -g -p -fPIC
 CXXFLAGS = -Wall -fPIC
 
+ifeq ($(OS),Windows_NT)
+    CXXFLAGS += -I../SFML-2.5.1/include -L../SFML-2.5.1/lib
+endif
+
 
 SFML = -lsfml-graphics\
        -lsfml-audio\
@@ -273,9 +277,16 @@ OBJ_ALL = $(OBJ_GAME) \
 SRC_MAIN = source/main.cpp
 OUT_MAIN = RoadToZero.out
 
-.PHONY: main
-main: $(SRC_MAIN) $(OBJ_ALL)
+.PHONY: main_Linux
+main_Linux: $(SRC_MAIN) $(OBJ_ALL)
 	$(CXX) $(CXXFLAGS) $(SRC_MAIN) $(OBJ_ALL) -o $(OUT_MAIN) $(SFML)
+
+
+EXE_MAIN = RoadToZero.exe
+
+.PHONY: main_Win32
+main_Win32: $(SRC_MAIN) $(SRC_ALL)
+	$(CXX) $(CXXFLAGS) $(SRC_MAIN) $(SRC_ALL) -o $(EXE_MAIN) $(SFML_STATIC)
 
 #### ==== END main ==== ####
 
@@ -287,9 +298,13 @@ main: $(SRC_MAIN) $(OBJ_ALL)
 
 .PHONY: all
 all:
+ifeq ($(OS),Windows_NT)
+	make main_Win32
+else
 	make dirs
-	make main
+	make main_Linux
 	./$(OUT_MAIN)
+endif
 
 
 .PHONY: clean

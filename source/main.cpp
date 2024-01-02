@@ -339,16 +339,332 @@ void loadAssets(AssetsManager* assets_manager_ptr)
 /// \brief Helper function to construct render window.
 ///
 /// \return Pointer to the render window.
+///
 
 sf::RenderWindow* constructRenderWindow(void)
 {
+    //  1. get desktop resolution
+    sf::VideoMode video_mode = sf::VideoMode::getDesktopMode();
+    int desktop_width = video_mode.width;
+    int desktop_height = video_mode.height;
+    
+    //  2. adjust render window dimensions as necessary (maintain 3:2 aspect ratio)
+    int window_width = GAME_WIDTH;
+    int window_height = GAME_HEIGHT;
+    
+    if (
+        (window_width > desktop_width) or
+        (window_height > desktop_height)
+    ) {
+        int width_diff = window_width - desktop_width;
+        int height_diff = window_height - desktop_height;
+        
+        if (width_diff > height_diff) {
+            window_width = desktop_width;
+            window_height = (2.0 / 3.0) * desktop_width;
+        }
+        
+        else {
+            window_height = desktop_height;
+            window_width = (3.0 / 2.0) * desktop_height;
+        }
+    }
+    
+    //  3. construct render window
     sf::RenderWindow* render_window_ptr = new sf::RenderWindow(
-        sf::VideoMode(GAME_WIDTH, GAME_HEIGHT),
+        sf::VideoMode(window_width, window_height),
         "Road To Zero"
     );
     
+    //  4. reset render window view as necessary
+    if (
+        (window_width != GAME_WIDTH) or
+        (window_height != GAME_HEIGHT)
+    ) {
+        sf::View view;
+        view.reset(sf::FloatRect(0, 0, GAME_WIDTH, GAME_HEIGHT));
+        render_window_ptr->setView(view);
+    }
+    
     return render_window_ptr;
 }   /* constructRenderWindow() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void playBrandAnimation(void)
+///
+/// \brief Helper function to play brand animation.
+///
+/// \param render_window_ptr Pointer to the render window.
+///
+
+void playBrandAnimation(sf::RenderWindow* render_window_ptr)
+{
+    //  1. load assets
+    AssetsManager brand_assets_manager;
+    
+    brand_assets_manager.loadFont(
+        "assets/ESC_brand/OpenSans-Bold.ttf",
+        "OpenSansBold"
+    );
+    
+    brand_assets_manager.loadTexture(
+        "assets/ESC_brand/ESC_key_109x90.png",
+        "[ESC] large"
+    );
+    
+    brand_assets_manager.loadTexture(
+        "assets/ESC_brand/ESC_key_98x81.png",
+        "[ESC] small"
+    );
+    
+    brand_assets_manager.loadTexture(
+        "assets/ESC_brand/SFML_256x128.png",
+        "SFML"
+    );
+    
+    brand_assets_manager.loadSound(
+        "assets/ESC_brand/mixkit-single-key-type-2533_MixkitFree.ogg",
+        "key press"
+    );
+    
+    
+    //  2. set up and position assets
+    std::string brand_string = "INTERACTIVE";
+    
+    sf::Text brand_text(
+        brand_string,
+        *(brand_assets_manager.getFont("OpenSansBold")),
+        64
+    );
+    
+    brand_text.setOrigin(
+        brand_text.getLocalBounds().width / 2,
+        brand_text.getLocalBounds().height / 2
+    );
+    
+    brand_text.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    
+    double key_position_x =
+        (GAME_WIDTH / 2) - (brand_text.getLocalBounds().width / 2) - 64;
+        
+    double key_position_y =
+        (GAME_HEIGHT / 2) - (brand_text.getLocalBounds().height / 2) - 32;
+    
+    sf::Sprite ESC_large(
+        *(brand_assets_manager.getTexture("[ESC] large"))
+    );
+    
+    ESC_large.setOrigin(
+        ESC_large.getLocalBounds().width / 2,
+        ESC_large.getLocalBounds().height / 2
+    );
+    
+    ESC_large.setPosition(key_position_x, key_position_y);
+    
+    ESC_large.setColor(sf::Color(255, 255, 255, 0));
+    
+    sf::Sprite ESC_small(
+        *(brand_assets_manager.getTexture("[ESC] small"))
+    );
+    
+    ESC_small.setOrigin(
+        ESC_small.getLocalBounds().width / 2,
+        ESC_small.getLocalBounds().height / 2
+    );
+    
+    ESC_small.setPosition(key_position_x, key_position_y);
+    
+    ESC_small.setColor(sf::Color(255, 255, 255, 255));
+    
+    sf::Sprite SFML(
+        *(brand_assets_manager.getTexture("SFML"))
+    );
+    
+    SFML.setOrigin(
+        SFML.getLocalBounds().width / 2,
+        SFML.getLocalBounds().height / 2
+    );
+    
+    SFML.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    
+    SFML.setColor(sf::Color(255, 255, 255, 0));
+    
+    
+    //  3. draw loop
+    bool sound_played = false;
+    
+    int brand_frame = 0;
+    int click_frame = 0;
+    int brand_state = 0;
+    size_t substring_idx = 1;
+    
+    double alpha = 0;
+    double dalpha = FRAMES_PER_SECOND / 18;
+    double time_since_start_s = 0;
+    
+    sf::Clock brand_clock;
+    
+    while (brand_state < 6) {
+        time_since_start_s = brand_clock.getElapsedTime().asSeconds();
+        
+        if (time_since_start_s >= (brand_frame + 1) * SECONDS_PER_FRAME) {
+            render_window_ptr->clear();
+            
+            //  3.1. brand state switch
+            switch (brand_state) {
+                case (0): {
+                    // fade in key
+                    render_window_ptr->draw(ESC_large);
+                    
+                    if (alpha < 255) {
+                        
+                        alpha += dalpha;
+                        
+                        if (alpha > 255) {
+                            alpha = 255;
+                        }
+                        
+                        ESC_large.setColor(sf::Color(255, 255, 255, alpha));
+                    }
+                    
+                    else {
+                        brand_state++;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (1): {
+                    // key press
+                    render_window_ptr->draw(ESC_small);
+                    
+                    if (click_frame < FRAMES_PER_SECOND / 8) {
+                        if (not sound_played) {
+                            brand_assets_manager.getSound("key press")->play();
+                            sound_played = true;
+                        }
+                        
+                        click_frame++;
+                    }
+                    
+                    else {
+                        brand_state++;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (2): {
+                    // text wave
+                    brand_text.setString(brand_string.substr(0, substring_idx));
+                    
+                    render_window_ptr->draw(brand_text);
+                    render_window_ptr->draw(ESC_large);
+                    
+                    if (substring_idx <= brand_string.size()) {
+                        if (brand_frame % (FRAMES_PER_SECOND / 20) == 0) {
+                            substring_idx++;
+                        }
+                    }
+                    
+                    else {
+                        brand_state++;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (3): {
+                    // fade out brand
+                    render_window_ptr->draw(brand_text);
+                    render_window_ptr->draw(ESC_large);
+                        
+                    if (alpha > 0) {
+                        alpha -= dalpha;
+                        
+                        if (alpha < 0) {
+                            alpha = 0;
+                        }
+                        
+                        brand_text.setFillColor(sf::Color(255, 255, 255, alpha));
+                        ESC_large.setColor(sf::Color(255, 255, 255, alpha));
+                    }
+                    
+                    else {
+                        brand_state++;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (4): {
+                    // fade in SFML
+                    render_window_ptr->draw(SFML);
+                    
+                    if (alpha < 255) {
+                        alpha += dalpha;
+                        
+                        if (alpha > 255) {
+                            alpha = 255;
+                        }
+                        
+                        SFML.setColor(sf::Color(255, 255, 255, alpha));
+                    }
+                    
+                    else {
+                        brand_state++;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (5): {
+                    // fade out SFML
+                    render_window_ptr->draw(SFML);
+                    
+                    if (alpha > 0) {
+                        alpha -= dalpha;
+                        
+                        if (alpha < 0) {
+                            alpha = 0;
+                        }
+                        
+                        SFML.setColor(sf::Color(255, 255, 255, alpha));
+                    }
+                    
+                    else {
+                        brand_state++;
+                    }
+                    
+                    break;
+                }
+                
+                
+                default: {
+                    // do nothing!
+                    
+                    break;
+                }
+            }
+            
+            render_window_ptr->display();
+            brand_frame++;
+        }
+    }
+    
+    return;
+}   /* playBrandAnimation() */
 
 // ---------------------------------------------------------------------------------- //
 
@@ -366,7 +682,7 @@ int main(int argc, char** argv)
     sf::RenderWindow* render_window_ptr = constructRenderWindow();
     
     //  3. show brand animation and splash screen
-    //...
+    playBrandAnimation(render_window_ptr);
     
     //  4. show game title
     //...

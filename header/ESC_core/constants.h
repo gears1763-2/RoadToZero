@@ -149,7 +149,7 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 // ======== GAME CONSTANTS ========================================================== //
 
 const int STARTING_CREDITS = 800; ///< The starting balance of credits.
-const double CREDITS_PER_MWH_SERVED = 1.125; ///< The number of credits (x1000) earned
+const double CREDITS_PER_MWH_SERVED = 1.15; ///< The number of credits (x1000) earned
 
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 2000; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
 
@@ -236,6 +236,14 @@ const std::string GAME_CHANNEL = "GAME CHANNEL"; ///< A message channel for game
 const std::string GAME_STATE_CHANNEL = "GAME STATE CHANNEL"; ///< A message channel for game state messages.
 
 // ======== END GAME CONSTANTS ====================================================== //
+
+
+
+// ======== TUTORIAL STRINGS ======================================================== //
+
+//...
+
+// ======== END TUTORIAL STRINGS ==================================================== //
 
 
 #endif  /* CONSTANTS_H */

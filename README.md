@@ -88,12 +88,12 @@ may be able to find the missing files at <https://github.com/SFML/SFML/tree/mast
 ### Linux (Debian/Ubuntu)
 
 Road to Zero was developed on Linux, so building it yourself should be pretty
-straightforward. First, if you don't already have the development package installed, you
-can do so by way of
+straightforward. First, if you don't already have a C/C++ development package installed,
+you can do so by way of
 
     sudo apt-get install build-essential
 
-Then, SFML can be installed by way of
+Then, the SFML development package can be installed by way of
 
     sudo apt-get install libsfml-dev
 

@@ -332,6 +332,97 @@ void HexMap :: __buildDrawOrderVector(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void HexMap :: __setUpInitialDraw(void)
+///
+/// \brief Helper method to set up initial map draw (scale all tiles to zero, to support
+///     tile wave animation).
+///
+
+void HexMap :: __setUpInitialDraw(void)
+{
+    double alpha = 0;
+    sf::Color tile_colour(255, 255, 255, 255);
+    
+    for (size_t i = 0; i < this->hex_draw_order_vec.size(); i++) {
+        tile_colour = this->hex_draw_order_vec[i]->tile_sprite.getFillColor();
+        tile_colour.a = alpha;
+        
+        this->hex_draw_order_vec[i]->tile_sprite.setFillColor(tile_colour);
+        
+        this->hex_draw_order_vec[i]->tile_decoration_sprite.setColor(
+            sf::Color(255, 255, 255, 0)
+        );
+    }
+    
+    return;
+}   /* __setUpInitialDraw() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void HexMap :: __handleInitialDraw(void)
+///
+/// \brief Helper method to handle initial map draw (tile wave animation).
+///
+
+void HexMap :: __handleInitialDraw(void)
+{
+    double alpha = 0;
+    sf::Color tile_colour(255, 255, 255, 255);
+    
+    for (size_t i = 0; i < this->initial_draw_tile_idx; i++) {
+        tile_colour = this->hex_draw_order_vec[i]->tile_sprite.getFillColor();
+        alpha = tile_colour.a;
+        
+        alpha += this->dalpha;
+        
+        if (alpha >= 255) {
+            alpha = 255;
+        }
+        
+        tile_colour.a = alpha;
+        
+        this->hex_draw_order_vec[i]->tile_sprite.setFillColor(tile_colour);
+        this->hex_draw_order_vec[i]->tile_decoration_sprite.setColor(
+            sf::Color(255, 255, 255, alpha)
+        );
+        
+        if (i < this->hex_draw_order_vec.size() - 1) {
+            if (i == this->initial_draw_tile_idx - 1) {
+                if (alpha >= 128) {
+                    this->initial_draw_tile_idx++;
+                    
+                    if (
+                        this->assets_manager_ptr->getSound("card flick")->getStatus() !=
+                        sf::SoundSource::Playing
+                    ) {
+                        this->assets_manager_ptr->getSound("card flick")->play();
+                    }
+                }
+            }
+        }
+        
+        else {
+            if (alpha >= 255) {
+                this->just_constructed = false;
+            }
+        }
+    }
+    
+    return;
+}   /* __handleInitialDraw() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn std::vector<double> HexMap :: __getNoise(int n_elements, int n_components)
 ///
 /// \brief Helper method to generate a vector of noise, with values mapped to the closed
@@ -890,6 +981,9 @@ void HexMap :: __assembleHexMap(void)
     //  4. procedurally generate resources
     this->__procedurallyGenerateTileResources();
     
+    //  5. set up initial draw
+    this->__setUpInitialDraw();
+    
     return;
 }   /* __assembleHexMap() */
 
@@ -1328,8 +1422,10 @@ HexMap :: HexMap(
     this->show_resource = false;
     this->tile_selected = false;
     this->settlement_position_logged = false;
+    this->just_constructed = true;
     
     this->frame = 0;
+    this->initial_draw_tile_idx = 1;
     
     this->n_layers = n_layers;
     if (this->n_layers < 0) {
@@ -1337,6 +1433,8 @@ HexMap :: HexMap(
     }
     
     this->demand_MWh = 0;
+    
+    this->dalpha = 1.6 * FRAMES_PER_SECOND;
     
     this->position_x = 400;
     this->position_y = 400;
@@ -1630,6 +1728,12 @@ void HexMap :: draw(void)
     this->glass_screen.setFillColor(glass_screen_colour);
     
     this->render_window_ptr->draw(this->glass_screen);
+    
+    //  7. handle initial draw (tile wave animation)
+    if (this->just_constructed) {
+        std::cout << "HexMap :: __handleInitialDraw()" << std::endl;
+        this->__handleInitialDraw();
+    }
     
     this->frame++;
     return;

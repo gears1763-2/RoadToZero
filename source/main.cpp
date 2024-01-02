@@ -302,6 +302,11 @@ void loadAssets(AssetsManager* assets_manager_ptr)
         "loss"
     );
     
+    assets_manager_ptr->loadSound(
+        "assets/audio/samples/mixkit-poker-card-flick-2002_MixkitFree.ogg",
+        "card flick"
+    );
+    
     
     //  4. load tracks
     assets_manager_ptr->loadTrack(

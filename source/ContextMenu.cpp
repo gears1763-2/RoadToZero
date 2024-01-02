@@ -530,7 +530,7 @@ void ContextMenu :: __setConsoleString(void)
             this->console_string                += "[R]:  RESTART                   \n";
             this->console_string                += "                                \n";
             this->console_string                += "[TAB]:  TOGGLE RESOURCE OVERLAY \n";
-            this->console_string                += "[T]:  TUTORIAL                  \n";
+            this->console_string                += "[T]:    TOGGLE TUTORIAL         \n";
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";
             this->console_string                += "                                \n";

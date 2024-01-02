@@ -77,6 +77,8 @@ class HexMap {
         
         void __layTiles(void);
         void __buildDrawOrderVector(void);
+        void __setUpInitialDraw(void);
+        void __handleInitialDraw(void);
         
         std::vector<double> __getNoise(int, int=128);
         
@@ -111,12 +113,16 @@ class HexMap {
         bool show_resource; ///< A boolean which indicates whether or not to show resource value.
         bool tile_selected; ///< A boolean which indicates if a tile is currently selected.
         bool settlement_position_logged; ///< A boolean which indicates if the settlement position has been logged.
+        bool just_constructed; ///< A boolean which indicates if the HexMap has just been constructed.
         
         int n_layers; ///< The number of layers in the hex map.
         int n_tiles; ///< The number of tiles in the hex map.
         unsigned long long int frame; ///< The current frame of this object.
+        size_t initial_draw_tile_idx; ///< The current tile idx (for the initial draw tile wave animation).
         
         int demand_MWh; ///< Current energy demand [MWh].
+        
+        double dalpha; ///< The change in tile alpha (for the tile wave animation).
         
         double position_x; ///< The x position of the hex map's origin (i.e. central) tile.
         double position_y; ///< The y position of the hex map's origin (i.e. central) tile.

@@ -254,6 +254,98 @@ void Game :: __computeCurrentDemand(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __toggleTutorial(void)
+///
+/// \brief Helper method to handle toggling the tutorial on and off.
+///
+
+void Game :: __toggleTutorial(void)
+{
+    if (this->show_tutorial) {
+        this->show_tutorial = false;
+    }
+    
+    else {
+        this->tutorial_page = 0;
+        this->tutorial_string = TUTORIAL_PAGES[this->tutorial_page];
+    
+        this->show_tutorial = true;
+    }
+    
+    this->substring_idx = 0;
+    
+    this->assets_manager_ptr->getSound("interface click")->play();
+    
+    return;
+}   /* __toggleTutorial() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __incrementTutorial(void)
+///
+/// \brief Helper method to increment tutorial page (with wrap around).
+///
+
+void Game :: __incrementTutorial(void)
+{
+    if (this->tutorial_page == TUTORIAL_PAGES.size() - 1) {
+        this->tutorial_page = 0;
+    }
+    
+    else {
+        this->tutorial_page++;
+    }
+    
+    this->tutorial_string = TUTORIAL_PAGES[this->tutorial_page];
+    this->substring_idx = 0;
+    
+    this->assets_manager_ptr->getSound("interface click")->play();
+    
+    return;
+}   /* __incrementTutorial() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
+/// \fn void Game :: __decrementTutorial(void)
+///
+/// \brief Helper method to decrement tutorial page (with wrap around).
+///
+
+void Game :: __decrementTutorial(void)
+{
+    if (this->tutorial_page == 0) {
+        this->tutorial_page = TUTORIAL_PAGES.size() - 1;
+    }
+    
+    else {
+        this->tutorial_page--;
+    }
+    
+    this->tutorial_string = TUTORIAL_PAGES[this->tutorial_page];
+    this->substring_idx = 0;
+    
+    this->assets_manager_ptr->getSound("interface click")->play();
+    
+    return;
+}   /* __decrementTutorial() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __handleKeyPressEvents(void)
 ///
 /// \brief Helper method to handle key press events.
@@ -280,6 +372,31 @@ void Game :: __handleKeyPressEvents(void)
         
         case (sf::Keyboard::Tab): {
             this->hex_map_ptr->toggleResourceOverlay();
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::T): {
+            this->__toggleTutorial();
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::Left): {
+            if (this->show_tutorial) {
+                this->__decrementTutorial();
+            }
+            
+            break;
+        }
+        
+        
+        case (sf::Keyboard::Right): {
+            if (this->show_tutorial) {
+                this->__incrementTutorial();
+            }
             
             break;
         }
@@ -1249,6 +1366,50 @@ void Game :: __drawTurnAdvanceBanner(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn void Game :: __drawTutorial(void)
+///
+/// \brief Helper method to draw tutorial text.
+///
+
+void Game :: __drawTutorial(void)
+{
+    if (this->substring_idx < this->tutorial_string.size()) {
+        this->assets_manager_ptr->getSound("console string print")->play();
+        
+        this->tutorial_text.setString(
+            this->tutorial_string.substr(0, this->substring_idx)
+        );
+        
+        while (
+            (this->tutorial_string.substr(0, this->substring_idx).back() == ' ') or
+            (this->tutorial_string.substr(0, this->substring_idx).back() == '\n')
+        ) {
+            this->substring_idx++;
+            
+            if (this->substring_idx == this->tutorial_string.size() - 1) {
+                this->tutorial_text.setString(
+                    this->tutorial_string.substr(0, this->substring_idx)
+                );
+                
+                break;
+            }
+        }
+        
+        this->substring_idx++;
+    }
+    
+    this->render_window_ptr->draw(this->tutorial_text);
+    
+    return;
+}   /* __drawTutorial() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void Game :: __drawTurnSummary(void)
 ///
 /// \brief Helper method to draw turn summary.
@@ -1487,7 +1648,7 @@ void Game :: __draw(void)
     
     //  3. tutorial or turn summary
     if (this->show_tutorial) {
-        
+        this->__drawTutorial();
     }
     
     else if (not this->turn_summary_string.empty()) {
@@ -1577,10 +1738,20 @@ Game :: Game(
     this->game_loop_broken = false;
     this->show_frame_clock_overlay = false;
     this->check_terminating_conditions = false;
-    this->show_tutorial = false;
+    this->show_tutorial = true;
     this->turn_end = false;
     this->draw_turn_advance_banner = false;
     this->increase_turn_advance_alpha = true;
+    
+    this->tutorial_page = 0;
+    this->tutorial_string = TUTORIAL_PAGES[this->tutorial_page];
+    
+    this->tutorial_text.setFont(
+        *(this->assets_manager_ptr->getFont("Glass_TTY_VT220"))
+    );
+    this->tutorial_text.setCharacterSize(16);
+    this->tutorial_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    this->tutorial_text.setPosition(GAME_WIDTH - 400 + 64, 64);
     
     this->frame = 0;
     this->time_since_start_s = 0;
@@ -1673,18 +1844,12 @@ Game :: Game(
 
 bool Game :: run(void)
 {
-    //  1. play brand animation
-    //...
-    
-    //  2. show splash screen
-    //...
-    
-    //  3. start game loop
+    // start game loop
     while (not this->game_loop_broken) {
         this->time_since_start_s = this->clock.getElapsedTime().asSeconds();
         
         if (this->time_since_start_s >= (this->frame + 1) * SECONDS_PER_FRAME) {
-            //  6.1. process events
+            //  process events
             while (this->render_window_ptr->pollEvent(this->event)) {
                 if (
                     (this->game_phase == GamePhase :: BUILD_SETTLEMENT) or
@@ -1703,7 +1868,7 @@ bool Game :: run(void)
             }
             
             
-            //  6.2. process messages
+            //  process messages
             while (this->message_hub.hasTraffic()) {
                 this->hex_map_ptr->processMessage();
                 this->context_menu_ptr->processMessage();
@@ -1724,7 +1889,7 @@ bool Game :: run(void)
             this->message_deadlock_frame = 0;
             
             
-            //  6.3. handle turn end summary
+            //  handle turn end summary
             if (this->turn_end) {
                 std::cout << "**** END OF TURN " << std::to_string(this->turn - 1) <<
                     " ****" << std::endl;
@@ -1739,14 +1904,14 @@ bool Game :: run(void)
             }
             
             
-            //  6.4. check terminating conditions
+            //  check terminating conditions
             if (this->check_terminating_conditions) {
                 this->__checkTerminatingConditions();
                 this->check_terminating_conditions = false;
             }
             
             
-            //  6.5. draw frame
+            //  draw frame
             this->render_window_ptr->clear();
             
             this->hex_map_ptr->draw();
@@ -1756,7 +1921,7 @@ bool Game :: run(void)
             this->render_window_ptr->display();
             
             
-            //  6.6. increment frame
+            //  increment frame
             this->frame++;
         }
         

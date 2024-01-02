@@ -241,7 +241,45 @@ const std::string GAME_STATE_CHANNEL = "GAME STATE CHANNEL"; ///< A message chan
 
 // ======== TUTORIAL STRINGS ======================================================== //
 
-//...
+const std::vector<std::string> TUTORIAL_PAGES = {
+    //          32 char x 16 line console 
+    //          "                                \n"
+
+    std::string("    **** TUTORIAL (1/N) ****    \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("    **** TUTORIAL (2/N) ****    \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n")
+};
 
 // ======== END TUTORIAL STRINGS ==================================================== //
 

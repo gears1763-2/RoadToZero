@@ -365,7 +365,13 @@ int main(int argc, char** argv)
     //  2. construct render window
     sf::RenderWindow* render_window_ptr = constructRenderWindow();
     
-    //  3. start game loop
+    //  3. show brand animation and splash screen
+    //...
+    
+    //  4. show game title
+    //...
+    
+    //  5. start game loop
     bool quit_game = false;
     assets_manager.playTrack();
     

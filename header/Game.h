@@ -98,6 +98,10 @@ class Game {
         
         void __computeCurrentDemand(void);
         
+        void __toggleTutorial(void);
+        void __incrementTutorial(void);
+        void __decrementTutorial(void);
+        
         void __handleKeyPressEvents(void);
         void __handleMouseButtonEvents(void);
         
@@ -120,6 +124,7 @@ class Game {
         void __drawVictory(void);
         
         void __drawTurnAdvanceBanner(void);
+        void __drawTutorial(void);
         void __drawTurnSummary(void);
         void __drawFrameClockOverlay(void);
         void __drawHUD(void);
@@ -139,6 +144,10 @@ class Game {
         bool turn_end; ///< A boolean indicating a turn end.
         bool draw_turn_advance_banner; ///< A boolean indicating whether or not to draw the turn advance banner.
         bool increase_turn_advance_alpha; ///< A boolean which indicates whether the turn advance alpha is increasing or decreasing.
+        
+        size_t tutorial_page; ///< Index for which page of the tutorial to show.
+        std::string tutorial_string; ///< A string representation of the current tutorial page.
+        sf::Text tutorial_text; ///< A text representation (drawable) of the tutorial page.
         
         unsigned long long int frame; ///< The current frame of the game.
         double time_since_start_s; ///< The time elapsed [s] since the start of the game.
@@ -166,7 +175,7 @@ class Game {
         
         int consecutive_zero_emissions_months; ///< The number of recent, consecutive zero emission months.
         
-        size_t substring_idx; ///< The index of the turn summary substring 
+        size_t substring_idx; ///< The index of the turn summary or tutorial substring 
         std::string turn_summary_string; ///< A string representation of the end of turn summary.
         sf::Text turn_summary_text; ///< A text representation (drawable) of the end of turn summary.
         

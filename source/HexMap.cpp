@@ -1731,7 +1731,6 @@ void HexMap :: draw(void)
     
     //  7. handle initial draw (tile wave animation)
     if (this->just_constructed) {
-        std::cout << "HexMap :: __handleInitialDraw()" << std::endl;
         this->__handleInitialDraw();
     }
     

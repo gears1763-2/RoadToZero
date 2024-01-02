@@ -3,7 +3,6 @@
     (C) 2023 - [ESC] Interactive
     
     Anthony Truelove MASc, P.Eng.
-    email:   gears1763@tutanota.com, gears1763@gmail.com
     github:  gears1763-2
 
 --------

@@ -438,7 +438,7 @@ void HexTile :: __setUpDieselGeneratorBuildOption(void)
     //                                    "----------------\n"
     std::string diesel_generator_string = "DIESEL GENERATOR\n";
     diesel_generator_string            += "                \n";
-    diesel_generator_string            += "CAPACITY: 100 kW\n";
+    diesel_generator_string            += "CAPACITY: 200 kW\n";
     diesel_generator_string            += "COST:     ";
     diesel_generator_string            += std::to_string(DIESEL_GENERATOR_BUILD_COST);
     diesel_generator_string            += " K\n\n\n";

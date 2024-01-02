@@ -101,6 +101,11 @@ Finally, it should suffice to
 
     make all
 
+Note that, if you simply want to play, you can also just download the SFML library
+instead of the development package; to do so, just
+
+    sudo apt-get install libsfml
+
 --------
 
 

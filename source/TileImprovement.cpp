@@ -431,6 +431,7 @@ void TileImprovement :: __breakdown(void)
 {
     this->is_broken = true;
     this->is_running = false;
+    this->update();
     this->assets_manager_ptr->getSound("breakdown")->play();
     
     return;

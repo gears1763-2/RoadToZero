@@ -199,11 +199,11 @@ void DieselGenerator :: __upgrade(void)
     
     TileImprovement :: __repair();
     
-    this->capacity_kW += 100;
+    this->capacity_kW += 200;
     this->upgrade_level++;
     
     this->production_MWh = 0;
-    this->max_production_MWh += 72;
+    this->max_production_MWh += 144;
     
     this->just_upgraded = true;
     
@@ -522,11 +522,11 @@ TileImprovement(
     
     this->health = 100;
     
-    this->capacity_kW = 100;
+    this->capacity_kW = 200;
     this->upgrade_level = 1;
     
     this->production_MWh = 0;
-    this->max_production_MWh = 72;
+    this->max_production_MWh = 144;
     
     this->smoke_da = 1e-8 * SECONDS_PER_FRAME;
     this->smoke_dx = 5 * SECONDS_PER_FRAME;
@@ -605,7 +605,7 @@ std::string DieselGenerator :: getTileOptionsSubstring(void)
     }
     
     if (this->upgrade_level < MAX_UPGRADE_LEVELS) {
-        options_substring                           += "     [U]:  + 100 kW (";
+        options_substring                           += "     [U]:  + 200 kW (";
         options_substring                           += std::to_string(upgrade_cost);
         options_substring                           +=" K)\n";
     }
@@ -670,9 +670,17 @@ void DieselGenerator :: advanceTurn(void)
         this->tile_improvement_sprite_animated[1].setScale(sf::Vector2f(1, 1));
     }
     
-    //  3. handle equipment health
+    //  3. handle equipment health and breakdowns
     if (this->is_running) {
         this->health--;
+        
+        if (this->health <= 50) {
+            double breakdown_prob = (51 - this->health) * BREAKDOWN_PROBABILITY_INCREMENT;
+            
+            if ((double)rand() / RAND_MAX <= breakdown_prob) {
+                this->health = 0;
+            }
+        }
         
         if (this->health <= 0) {
             this->__breakdown();

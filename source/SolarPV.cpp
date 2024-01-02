@@ -288,6 +288,10 @@ void SolarPV :: __repair(void)
 
 void SolarPV :: __computeCapacityFactors(void)
 {
+    if (this->is_broken) {
+        return;
+    }
+    
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
 
@@ -331,6 +335,11 @@ void SolarPV :: __computeCapacityFactors(void)
 
 void SolarPV :: __computeProduction(void)
 {
+    if (this->is_broken) {
+        this->production_MWh = 0;
+        return;
+    }
+    
     double production_MWh = 0;
     
     for (int i = 0; i < 30; i++) {
@@ -359,6 +368,11 @@ void SolarPV :: __computeProduction(void)
 
 void SolarPV :: __computeDispatch(void)
 {
+    if (this->is_broken) {
+        this->dispatchable_MWh = 0;
+        return;
+    }
+    
     double stored_energy_MWh = 0;
     double storage_capacity_MWh = (double)(this->storage_kWh) / 1000;
     
@@ -912,9 +926,17 @@ void SolarPV :: advanceTurn(void)
         this->is_running = false;
     }
     
-    //  4. handle equipment health
+    //  4. handle equipment health and breakdowns
     if (this->is_running) {
         this->health--;
+        
+        if (this->health <= 50) {
+            double breakdown_prob = (51 - this->health) * BREAKDOWN_PROBABILITY_INCREMENT;
+            
+            if ((double)rand() / RAND_MAX <= breakdown_prob) {
+                this->health = 0;
+            }
+        }
         
         if (this->health <= 0) {
             this->__breakdown();

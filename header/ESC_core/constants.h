@@ -114,7 +114,7 @@ const int CLEAR_FOREST_COST = 160; ///< The cost of clearing a forest tile.
 const int CLEAR_MOUNTAINS_COST = 500; ///< The cost of clearing a mountains tile.
 const int CLEAR_PLAINS_COST = 80; ///< The cost of clearing a plains tile.
 
-const int DIESEL_GENERATOR_BUILD_COST = 100; ///< The cost of building (or ugrading) a diesel generator in 100 kW increments.
+const int DIESEL_GENERATOR_BUILD_COST = 200; ///< The cost of building (or ugrading) a diesel generator in 200 kW increments.
 const int WIND_TURBINE_BUILD_COST = 450; ///< The cost of building (or upgrading) a wind turbine in 100 kW increments.
 const double WIND_TURBINE_WATER_BUILD_MULTIPLIER = 1.222222; ///< The additional cost of building on water.
 const int SOLAR_PV_BUILD_COST = 350; ///< The cost of building (or upgrading) a solar PV array in 100 kW increments.
@@ -123,6 +123,8 @@ const int TIDAL_TURBINE_BUILD_COST = 550; ///< The cost of building (or upgradin
 const int WAVE_ENERGY_CONVERTER_BUILD_COST = 850; ///< The cost of building (or upgrading) a wave energy converter in 100 kW increments.
 
 const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 160; ///< The cost of adding energy storage in 200 kWh increments
+
+const double BREAKDOWN_PROBABILITY_INCREMENT = 0.01; ///< The amount by which equipment breakdown probability is incremented for each point of health below 50.
 
 const int SCRAP_COST = 50; ///< The cost of scrapping a tile improvement (other than settlement).
 
@@ -149,7 +151,7 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 // ======== GAME CONSTANTS ========================================================== //
 
 const int STARTING_CREDITS = 800; ///< The starting balance of credits.
-const double CREDITS_PER_MWH_SERVED = 1.15; ///< The number of credits (x1000) earned
+const double CREDITS_PER_MWH_SERVED = 1.125; ///< The number of credits (x1000) earned
 
 const int EMISSIONS_LIFETIME_LIMIT_TONNES = 2000; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
 
@@ -186,7 +188,7 @@ const std::vector<double> STDEV_DAILY_DEMAND_RATIOS = {
     0.049, 0.063, 0.053
 }; ///< The standard deviation in daily demand ratio for each month, where demand ratio is demand [MWh] divided by maximum daily demand [MWh]. Maximum daily demand is simply (24)(max load [kW]) / 1000.
 
-const double MAXIMUM_DAILY_DEMAND_PER_CAPITA = 0.0475; ///< The maximum daily demand [MWh] (at any point in the year) per capita.
+const double MAXIMUM_DAILY_DEMAND_PER_CAPITA = 0.05; ///< The maximum daily demand [MWh] (at any point in the year) per capita.
 
 const std::vector<double> MEAN_DAILY_SOLAR_CAPACITY_FACTORS = {
     0.029, 0.061, 0.117,
@@ -245,37 +247,181 @@ const std::vector<std::string> TUTORIAL_PAGES = {
     //          32 char x 16 line console 
     //          "                                \n"
 
-    std::string("    **** TUTORIAL (1/N) ****    \n") +
+    std::string("   **** TUTORIAL (1/10) ****    \n") +
     std::string("                                \n") +
+    std::string("         ROAD TO ZERO           \n") +
+    std::string(" THE MICROGRID MANAGEMENT GAME  \n") +
     std::string("                                \n") +
+    std::string("TO WIN, GROW YOUR SETTLEMENT    \n") +
+    std::string("TO A POPULATION OF AT LEAST     \n") +
+    std::string("1,000 AND ACHIEVE AT LEAST     \n") +
+    std::string("12 CONSECUTIVE MONTHS OF ZERO   \n") +
+    std::string("EMISSIONS ENERGY DISPATCH.      \n") +
     std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
-    std::string("                                \n") +
+    std::string("FAIL TO MEET DEMAND, RUN OUT    \n") +
+    std::string("OF CREDITS, OR EMIT TOO MUCH,   \n") +
+    std::string("AND YOU LOSE!                   \n") +
     std::string("                                \n") +
     std::string("[<-]       [T]: CLOSE       [->]\n"),
 
 
-    std::string("    **** TUTORIAL (2/N) ****    \n") +
+    std::string("   **** TUTORIAL (2/10) ****    \n") +
     std::string("                                \n") +
+    std::string("BEGIN BY BUILDING A SETTLEMENT. \n") +
     std::string("                                \n") +
+    std::string("LEFT CLICK SELECT A LAND TILE,  \n") +
+    std::string("AND THEN PRESS [B] TO BUILD A   \n") +
+    std::string("SETTLEMENT THERE.               \n") +
     std::string("                                \n") +
+    std::string("NOTE THAT PLACING A SETTLEMENT  \n") +
+    std::string("AUTOMATICALLY ASSESSES THE      \n") +
+    std::string("RENEWABLE RESOURCE QUALITIES    \n") +
+    std::string("OF EVERY NEIGHBOURING TILE.     \n") +
+    std::string("PRESS [TAB] TO TOGGLE THE       \n") +
+    std::string("RENEWABLE RESOURCE OVERLAY.     \n") +
     std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (3/10) ****    \n") +
     std::string("                                \n") +
+    std::string("YOUR SETTLEMENT BEGINS IN MONTH \n") +
+    std::string("1 (JANUARY) OF THE GAME YEAR,   \n") +
+    std::string("AND WITH AN INITIAL POPULATION  \n") +
+    std::string("OF 100.                         \n") +
     std::string("                                \n") +
+    std::string("THE POPULATION, CREDITS BALANCE,\n") +
+    std::string("AND CURRENT ENERGY DEMAND OF THE\n") +
+    std::string("SETTLEMENT ARE DISPLAYED IN THE \n") +
+    std::string("TOP LINE OF THE GAME HUD.       \n") +
     std::string("                                \n") +
+    std::string("REMEMBER, YOU MUST ALWAYS MEET  \n") +
+    std::string("THE DEMAND FOR EVERY TURN!      \n") +
     std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (4/10) ****    \n") +
     std::string("                                \n") +
+    std::string("IT IS IMPORTANT TO GET RELIABLE \n") +
+    std::string("BASELINE PRODUCTION SET UP      \n") +
+    std::string("IMMEDIATELY.                    \n") +
     std::string("                                \n") +
+    std::string("LEFT CLICK SELECT AN ASSESSED   \n") +
+    std::string("TILE, AND THEN PRESS [C] TO     \n") +
+    std::string("CLEAR THE TILE FOR BUILDING.    \n") +
     std::string("                                \n") +
+    std::string("THE COST OF CLEARING A TILE     \n") +
+    std::string("VARIES BY TILE TYPE. THE COST   \n") +
+    std::string("IS DISPLAYED IN THE TILE INFO   \n") +
+    std::string("SCREEN, IN THE LOWER CONSOLE.   \n") +
     std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (5/10) ****    \n") +
+    std::string("                                \n") +
+    std::string("ONCE A TILE HAS BEEN CLEARED, IT\n") +
+    std::string("CAN BE BUILT UPON. LEFT CLICK   \n") +
+    std::string("SELECT THE TILE THAT WAS CLEARED\n") +
+    std::string("AND THEN PRESS [B] TO OPEN THE  \n") +
+    std::string("BUILD MENU.                     \n") +
+    std::string("                                \n") +
+    std::string("START BY BUILDING A 200 KW      \n") +
+    std::string("DIESEL GENERATOR. THIS WILL     \n") +
+    std::string("PROVIDE A RELIABLE BASELINE     \n") +
+    std::string("PRODUCTION TO EXPAND UPON.      \n") +
+    std::string("NOTE THAT RENEWABLE RESOURCE    \n") +
+    std::string("QUALITY HAS NO IMPACT ON DIESEL.\n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (6/10) ****    \n") +
+    std::string("                                \n") +
+    std::string("ONCE A TILE HAS BEEN CLEARED    \n") +
+    std::string("AND BUILT, THE PRODUCTION       \n") +
+    std::string("ASSET CAN BE INTERACTED WITH    \n") +
+    std::string("BY WAY OF [E] FOR THE PRODUCTION\n") +
+    std::string("MENU, OR [U] FOR THE UPGRADE    \n") +
+    std::string("MENU / ACTION. THE TILE INFO    \n") +
+    std::string("SCREEN ALWAYS DETAILS WHAT      \n") +
+    std::string("ACTIONS CAN BE TAKEN.           \n") +
+    std::string("                                \n") +
+    std::string("LEFT CLICK SELECT THE DIESEL,   \n") +
+    std::string("OPEN THE PRODUCTION MENU, AND   \n") +
+    std::string("EXPERIMENT WITH THE PRODUCTION. \n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (7/10) ****    \n") +
+    std::string("                                \n") +
+    std::string("NOTE THAT AS PRODUCTION /       \n") +
+    std::string("DISPATCH IS ADJUSTED, A POP-UP  \n") +
+    std::string("APPEARS NEXT TO THE CURRENT     \n") +
+    std::string("DEMAND (TOP LINE OF HUD). THIS  \n") +
+    std::string("POP-UP DISPLAYS THE SUM TOTAL   \n") +
+    std::string("OF PRODUCTION / DISPATCH        \n") +
+    std::string("CURRENTLY MUSTERED.             \n") +
+    std::string("                                \n") +
+    std::string("NOTE THAT RED INDICATES UNDER-  \n") +
+    std::string("PRODUCTION, GREEN INDICATES     \n") +
+    std::string("BALANCED PRODUCTION, AND AMBER  \n") +
+    std::string("INDICATES OVER-PRODUCTION.      \n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (8/10) ****    \n") +
+    std::string("                                \n") +
+    std::string("ONCE YOU HAVE BALANCED DIESEL   \n") +
+    std::string("PRODUCTION WITH DEMAND, PRESS   \n") +
+    std::string("[ENTER] TO END THE CURRENT      \n") +
+    std::string("TURN / MONTH AND MOVE TO THE    \n") +
+    std::string("NEXT.                           \n") +
+    std::string("                                \n") +
+    std::string("NOTE THAT YOU EARN CREDITS BY   \n") +
+    std::string("SATISFYING DEMAND, BUT MUST ALSO\n") +
+    std::string("PAY CREDITS FOR FUEL CONSUMED,  \n") +
+    std::string("AS WELL AS FOR OPERATION AND    \n") +
+    std::string("MAINTENANCE COSTS. FINALLY, ANY \n") +
+    std::string("OVER-PRODUCTION IS PENALIZED.   \n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (9/10) ****    \n") +
+    std::string("                                \n") +
+    std::string("NOTE THAT, WHENEVER YOU END A   \n") +
+    std::string("TURN, A TURN SUMMARY SCREEN IS  \n") +
+    std::string("DISPLAYED IN THE UPPER CONSOLE. \n") +
+    std::string("THIS IS CONCEALED WHENEVER THIS \n") +
+    std::string("TUTORIAL IS OPEN, HOWEVER.      \n") +
+    std::string("                                \n") +
+    std::string("TO CLOSE THIS TUTORIAL, PRESS   \n") +
+    std::string("[T]. YOU CAN ALWAYS OPEN IT     \n") +
+    std::string("AGAIN BY PRESSING [T].          \n") +
+    std::string("                                \n") +
+    std::string("FOR ADDITIONAL OPTIONS, SUCH AS \n") +
+    std::string("RESETTING THE GAME, PRESS [ESC].\n") +
+    std::string("                                \n") +
+    std::string("[<-]       [T]: CLOSE       [->]\n"),
+
+
+    std::string("   **** TUTORIAL (10/10) ****   \n") +
+    std::string("                                \n") +
+    std::string("THAT'S IT!                      \n") +
+    std::string("                                \n") +
+    std::string("REMEMBER TO STAY AHEAD OF THE   \n") +
+    std::string("DEMAND CURVE, KEEP AN EYE ON    \n") +
+    std::string("YOUR CREDITS, EMISSIONS, AND    \n") +
+    std::string("EQUIPMENT HEALTH, AND DON'T     \n") +
+    std::string("FORGET TO EXPLORE, EXPAND, AND  \n") +
+    std::string("EXPLOIT GOOD RENEWABLE RESOURCES;\n") +
+    std::string("YOU WILL NEED TO TO WIN.        \n") +
+    std::string("                                \n") +
+    std::string("GOOD LUCK, HAVE FUN. =)         \n") +
     std::string("                                \n") +
     std::string("                                \n") +
     std::string("[<-]       [T]: CLOSE       [->]\n")

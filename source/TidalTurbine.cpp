@@ -305,6 +305,10 @@ void TidalTurbine :: __repair(void)
 
 void TidalTurbine :: __computeCapacityFactors(void)
 {
+    if (this->is_broken) {
+        return;
+    }
+    
     for (int i = 0; i < 30; i++) {
         this->capacity_factor_vec[i] =
             this->tile_resource_scalar * DAILY_TIDAL_CAPACITY_FACTOR;
@@ -327,6 +331,11 @@ void TidalTurbine :: __computeCapacityFactors(void)
 
 void TidalTurbine :: __computeProduction(void)
 {
+    if (this->is_broken) {
+        this->production_MWh = 0;
+        return;
+    }
+    
     double production_MWh = 0;
     
     for (int i = 0; i < 30; i++) {
@@ -355,6 +364,11 @@ void TidalTurbine :: __computeProduction(void)
 
 void TidalTurbine :: __computeDispatch(void)
 {
+    if (this->is_broken) {
+        this->dispatchable_MWh = 0;
+        return;
+    }
+    
     double stored_energy_MWh = 0;
     double storage_capacity_MWh = (double)(this->storage_kWh) / 1000;
     
@@ -918,9 +932,17 @@ void TidalTurbine :: advanceTurn(void)
         this->is_running = false;
     }
     
-    //  4. handle equipment health
+    //  4. handle equipment health and breakdowns
     if (this->is_running) {
         this->health--;
+        
+        if (this->health <= 50) {
+            double breakdown_prob = (51 - this->health) * BREAKDOWN_PROBABILITY_INCREMENT;
+            
+            if ((double)rand() / RAND_MAX <= breakdown_prob) {
+                this->health = 0;
+            }
+        }
         
         if (this->health <= 0) {
             this->__breakdown();

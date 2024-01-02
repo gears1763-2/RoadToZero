@@ -305,6 +305,10 @@ void WindTurbine :: __repair(void)
 
 void WindTurbine :: __computeCapacityFactors(void)
 {
+    if (this->is_broken) {
+        return;
+    }
+    
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
 
@@ -348,6 +352,11 @@ void WindTurbine :: __computeCapacityFactors(void)
 
 void WindTurbine :: __computeProduction(void)
 {
+    if (this->is_broken) {
+        this->production_MWh = 0;
+        return;
+    }
+    
     double production_MWh = 0;
     
     for (int i = 0; i < 30; i++) {
@@ -376,7 +385,10 @@ void WindTurbine :: __computeProduction(void)
 
 void WindTurbine :: __computeDispatch(void)
 {
-    std::cout << "WindTurbine :: __computeDispatch()" << std::endl;
+    if (this->is_broken) {
+        this->dispatchable_MWh = 0;
+        return;
+    }
     
     double stored_energy_MWh = 0;
     double storage_capacity_MWh = (double)(this->storage_kWh) / 1000;
@@ -939,9 +951,17 @@ void WindTurbine :: advanceTurn(void)
         this->is_running = false;
     }
     
-    //  4. handle equipment health
+    //  4. handle equipment health and breakdowns
     if (this->is_running) {
         this->health--;
+        
+        if (this->health <= 50) {
+            double breakdown_prob = (51 - this->health) * BREAKDOWN_PROBABILITY_INCREMENT;
+            
+            if ((double)rand() / RAND_MAX <= breakdown_prob) {
+                this->health = 0;
+            }
+        }
         
         if (this->health <= 0) {
             this->__breakdown();

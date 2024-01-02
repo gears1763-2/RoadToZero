@@ -266,9 +266,6 @@ void Game :: __toggleTutorial(void)
     }
     
     else {
-        this->tutorial_page = 0;
-        this->tutorial_string = TUTORIAL_PAGES[this->tutorial_page];
-    
         this->show_tutorial = true;
     }
     
@@ -1763,10 +1760,7 @@ Game :: Game(
     double years_since_epoch = seconds_since_epoch / SECONDS_PER_YEAR;
     
     this->year = 1970 + (int)years_since_epoch;
-    this->month = (years_since_epoch - (int)years_since_epoch) * 12 + 1;
-    while (this->month > 12) {
-        this->month -= 12;
-    }
+    this->month = 0;
     
     this->population = 0;
     this->credits = STARTING_CREDITS;

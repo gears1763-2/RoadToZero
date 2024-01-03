@@ -83,6 +83,8 @@ from the command prompt (`cmd`).
 
 If you do run into any missing .dll issues when trying to execute `RoadToZero.exe`, you
 may be able to find the missing files at <https://github.com/SFML/SFML/tree/master/extlibs>.
+If the problem you encounter pertains to `openal32.dll` specifically, this .dll is
+provided here in `extlibs/`.
 
 
 ### Linux (Debian/Ubuntu)
@@ -101,7 +103,7 @@ Finally, it should suffice to
 
     make all
 
-Note that, if you simply want to play, you can also just download the SFML library
+Note that, if you simply want to play, you can also just install the SFML library
 instead of the development package; to do so, just
 
     sudo apt-get install libsfml

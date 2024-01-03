@@ -123,6 +123,16 @@ assuming you are set up to do so (i.e., `doxygen` installed, etc.).
 
 --------
 
+
+## Support
+
+If you have enjoyed playing Road to Zero (or modifying the source), please
+consider making a donation! The game is available for donations on itch.io; see
+<https://gears1763.itch.io/road-to-zero-the-microgrid-management-game>.
+
+--------
+
+
 ## SFML Version
 
 Road to Zero was developed using SFML 2.5.1. See <https://www.sfml-dev.org/>.

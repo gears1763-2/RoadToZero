@@ -840,7 +840,9 @@ void HexTile :: __clearDecoration(void)
 
 bool HexTile :: __isClicked(void)
 {
-    sf::Vector2i mouse_position = sf::Mouse::getPosition(*render_window_ptr);
+    sf::Vector2f mouse_position = this->render_window_ptr->mapPixelToCoords(
+        sf::Mouse::getPosition(*(this->render_window_ptr))
+    );
         
     double mouse_x = mouse_position.x;
     double mouse_y = mouse_position.y;

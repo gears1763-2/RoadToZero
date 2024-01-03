@@ -99,14 +99,10 @@ Then, the SFML development package can be installed by way of
 
     sudo apt-get install libsfml-dev
 
-Finally, it should suffice to
+See <https://www.sfml-dev.org/tutorials/2.5/start-linux.php>. Finally, it should suffice
+to
 
     make all
-
-Note that, if you simply want to play, you can also just install the SFML library
-instead of the development package; to do so, just
-
-    sudo apt-get install libsfml
 
 --------
 

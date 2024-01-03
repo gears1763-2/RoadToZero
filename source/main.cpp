@@ -398,7 +398,8 @@ sf::RenderWindow* constructRenderWindow(void)
 ///
 /// \fn void playBrandAnimation(void)
 ///
-/// \brief Helper function to play brand animation.
+/// \brief Helper function to play brand animation. This should really be implemented
+///     in an [ESC] core class.
 ///
 /// \param render_window_ptr Pointer to the render window.
 ///
@@ -502,19 +503,28 @@ void playBrandAnimation(sf::RenderWindow* render_window_ptr)
     int brand_frame = 0;
     int click_frame = 0;
     int brand_state = 0;
-    size_t substring_idx = 1;
+    
+    size_t substring_idx = 0;
     
     double alpha = 0;
     double dalpha = FRAMES_PER_SECOND / 18;
     double time_since_start_s = 0;
     
     sf::Clock brand_clock;
+    sf::Event brand_event;
     
     while (brand_state < 6) {
         time_since_start_s = brand_clock.getElapsedTime().asSeconds();
         
         if (time_since_start_s >= (brand_frame + 1) * SECONDS_PER_FRAME) {
             render_window_ptr->clear();
+            
+            while (render_window_ptr->pollEvent(brand_event)) {
+                if (brand_event.type == sf::Event::Closed) {
+                    render_window_ptr->close();
+                    return;
+                }
+            }
             
             //  3.1. brand state switch
             switch (brand_state) {
@@ -672,6 +682,310 @@ void playBrandAnimation(sf::RenderWindow* render_window_ptr)
 
 // ---------------------------------------------------------------------------------- //
 
+///
+/// \fn void showTitleScreen(
+///         sf::RenderWindow* render_window_ptr,
+///         AssetsManager* assets_manager_ptr
+///     )
+///
+/// \brief Helper function 
+///
+/// \param render_window_ptr A pointer to the render window.
+///
+/// \param assets_manager_ptr A pointer to the assets manager.
+///
+
+void showTitleScreen(
+    sf::RenderWindow* render_window_ptr,
+    AssetsManager* assets_manager_ptr
+)
+{
+    //  1. set up and position title assets
+    int outline_thickness = 32;
+    
+    sf::RectangleShape title_console(
+        sf::Vector2f(
+            GAME_WIDTH - 2 * outline_thickness,
+            GAME_HEIGHT - 2 * outline_thickness
+        )
+    );
+    
+    title_console.setPosition(outline_thickness, outline_thickness);
+    
+    sf::Color title_fill_colour = MONOCHROME_SCREEN_BACKGROUND;
+    title_fill_colour.a = 0;
+    
+    sf::Color title_outline_colour = MENU_FRAME_GREY;
+    title_outline_colour.a = 0;
+    
+    title_console.setFillColor(title_fill_colour);
+    title_console.setOutlineColor(title_outline_colour);
+    title_console.setOutlineThickness(outline_thickness);
+    
+    std::string title_string_upper = "ROAD TO ZERO";
+    sf::Text title_text_upper(
+        title_string_upper,
+        *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        128
+    );
+    
+    title_text_upper.setOrigin(
+        title_text_upper.getLocalBounds().width / 2,
+        title_text_upper.getLocalBounds().height / 2
+    );
+    
+    title_text_upper.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 128);
+    title_text_upper.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    std::string title_string_lower = "THE MICROGRID MANAGEMENT GAME";
+    sf::Text title_text_lower(
+        title_string_lower,
+        *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        64
+    );
+    
+    title_text_lower.setOrigin(
+        title_text_lower.getLocalBounds().width / 2,
+        title_text_lower.getLocalBounds().height / 2
+    );
+    
+    title_text_lower.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    title_text_lower.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    std::string title_string_bottom = "COPYRIGHT 2023 - [ESC] INTERACTIVE";
+    sf::Text title_text_bottom(
+        title_string_bottom,
+        *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        16
+    );
+    
+    title_text_bottom.setOrigin(
+        title_text_bottom.getLocalBounds().width / 2,
+        title_text_bottom.getLocalBounds().height / 2
+    );
+    
+    title_text_bottom.setPosition(GAME_WIDTH / 2, GAME_HEIGHT - 64);
+    title_text_bottom.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    sf::Text prompt_text(
+        "PRESS ANY KEY TO CONTINUE",
+        *(assets_manager_ptr->getFont("Glass_TTY_VT220")),
+        24
+    );
+    
+    prompt_text.setOrigin(
+        prompt_text.getLocalBounds().width / 2,
+        prompt_text.getLocalBounds().height / 2
+    );
+    
+    prompt_text.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 175);
+    prompt_text.setFillColor(MONOCHROME_TEXT_GREEN);
+    
+    sf::RectangleShape fade_rectangle(sf::Vector2f(GAME_WIDTH, GAME_HEIGHT));
+    sf::Color fade_rectangle_colour(0, 0, 0, 0);
+    fade_rectangle.setFillColor(fade_rectangle_colour);
+    
+    
+    //  2. draw loop
+    bool draw_title = true;
+    bool sound_played = false;
+    
+    int title_frame = 0;
+    int title_state = 0;
+    
+    size_t upper_substring_idx = 0;
+    size_t lower_substring_idx = 0;
+    size_t bottom_substring_idx = 0;
+    
+    double alpha = 0;
+    double dalpha = FRAMES_PER_SECOND / 18;
+    double time_since_start_s = 0;
+    
+    sf::Clock title_clock;
+    sf::Event title_event;
+    
+    while (draw_title) {
+        time_since_start_s = title_clock.getElapsedTime().asSeconds();
+        
+        if (time_since_start_s >= (title_frame + 1) * SECONDS_PER_FRAME) {
+            render_window_ptr->clear();
+            
+            //  2.1. title state switch
+            switch (title_state) {
+                case (0): {
+                    while (render_window_ptr->pollEvent(title_event)) {
+                        if (title_event.type == sf::Event::Closed) {
+                            render_window_ptr->close();
+                            return;
+                        }
+                    }
+                    
+                    // fade in title console
+                    render_window_ptr->draw(title_console);
+                    
+                    if (alpha < 255) {
+                        alpha += dalpha;
+                        
+                        if (alpha > 255) {
+                            alpha = 255;
+                        }
+                        
+                        title_fill_colour.a = alpha;
+                        title_outline_colour.a = alpha;
+                        
+                        title_console.setFillColor(title_fill_colour);
+                        title_console.setOutlineColor(title_outline_colour);
+                    }
+                    
+                    else {
+                        title_state++;
+                        alpha = 0;
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (1): {
+                    while (render_window_ptr->pollEvent(title_event)) {
+                        if (title_event.type == sf::Event::Closed) {
+                            render_window_ptr->close();
+                            return;
+                        }
+                    }
+                    
+                    // fade in title text
+                    if (not sound_played) {
+                        assets_manager_ptr->getSound("game title screen")->play();
+                        sound_played = true;
+                    }
+                    
+                    if (title_string_bottom.substr(0, bottom_substring_idx) != title_string_bottom) {
+                        title_text_upper.setString(title_string_upper.substr(0, upper_substring_idx));
+                        title_text_lower.setString(title_string_lower.substr(0, lower_substring_idx));
+                        title_text_bottom.setString(title_string_bottom.substr(0, bottom_substring_idx));
+                        
+                        assets_manager_ptr->getSound("console string print")->play();
+                        
+                        upper_substring_idx++;
+                        lower_substring_idx++;
+                        bottom_substring_idx++;
+                        
+                        if (upper_substring_idx > title_string_upper.size()) {
+                            upper_substring_idx = title_string_upper.size();
+                        }
+                        
+                        if (lower_substring_idx > title_string_lower.size()) {
+                            lower_substring_idx = title_string_lower.size();
+                        }
+                    }
+                    
+                    else {
+                        title_text_upper.setString(title_string_upper.substr(0, upper_substring_idx));
+                        title_text_lower.setString(title_string_lower.substr(0, lower_substring_idx));
+                        title_text_bottom.setString(title_string_bottom.substr(0, bottom_substring_idx));
+                        title_state++;
+                    }
+                    
+                    render_window_ptr->draw(title_console);
+                    render_window_ptr->draw(title_text_upper);
+                    render_window_ptr->draw(title_text_lower);
+                    render_window_ptr->draw(title_text_bottom);
+                    
+                    break;
+                }
+                
+                
+                case (2): {
+                    while (render_window_ptr->pollEvent(title_event)) {
+                        if (title_event.type == sf::Event::KeyPressed) {
+                            title_state++;
+                        }
+                        
+                        if (title_event.type == sf::Event::Closed) {
+                            render_window_ptr->close();
+                            return;
+                        }
+                    }
+                    
+                    // flashing prompt
+                    render_window_ptr->draw(title_console);
+                    render_window_ptr->draw(title_text_upper);
+                    render_window_ptr->draw(title_text_lower);
+                    render_window_ptr->draw(title_text_bottom);
+                    
+                    if (
+                        (title_frame > 3.5 * FRAMES_PER_SECOND) and
+                        ((title_frame % FRAMES_PER_SECOND) > FRAMES_PER_SECOND / 2)
+                    ) {
+                        render_window_ptr->draw(prompt_text);
+                    }
+                    
+                    break;
+                }
+                
+                
+                case (3): {
+                    while (render_window_ptr->pollEvent(title_event)) {
+                        if (title_event.type == sf::Event::Closed) {
+                            render_window_ptr->close();
+                            return;
+                        }
+                    }
+                    
+                    // fade out
+                    render_window_ptr->draw(title_console);
+                    render_window_ptr->draw(title_text_upper);
+                    render_window_ptr->draw(title_text_lower);
+                    render_window_ptr->draw(title_text_bottom);
+                    
+                    if ((title_frame % FRAMES_PER_SECOND) > FRAMES_PER_SECOND / 2) {
+                        render_window_ptr->draw(prompt_text);
+                    }
+                    
+                    render_window_ptr->draw(fade_rectangle);
+                    
+                    if (alpha < 255) {
+                        alpha += dalpha;
+                        
+                        if (alpha > 255) {
+                            alpha = 255;
+                        }
+                        
+                        fade_rectangle_colour.a = alpha;
+                        
+                        fade_rectangle.setFillColor(fade_rectangle_colour);
+                    }
+                    
+                    else {
+                        draw_title = false;
+                    }
+                    
+                    break;
+                }
+                
+                
+                default: {
+                    // do nothing!
+                    
+                    break;
+                }
+            }
+            
+            render_window_ptr->display();
+            title_frame++;
+        }
+    }
+    
+    return;
+}   /* showTitleScreen() */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
 int main(int argc, char** argv)
 {
     //  1. load assets
@@ -684,16 +998,30 @@ int main(int argc, char** argv)
     //  3. show brand animation and splash screen
     playBrandAnimation(render_window_ptr);
     
-    //  4. show game title
-    //...
+    //  4. show title screen
+    if (render_window_ptr->isOpen()) {
+        showTitleScreen(render_window_ptr, &assets_manager);
+    }
     
     //  5. start game loop
     bool quit_game = false;
-    assets_manager.playTrack();
+    bool transition_from_title = true;
+    
+    if (render_window_ptr->isOpen()) {
+        assets_manager.playTrack();
+    }
+    
+    else {
+        quit_game = true;
+    }
     
     while (not quit_game) {
-        Game game(render_window_ptr, &assets_manager);
+        Game game(render_window_ptr, &assets_manager, transition_from_title);
         quit_game = game.run();
+        
+        if (transition_from_title and (not quit_game)) {
+            transition_from_title = false;
+        }
     }
     
     //  4. clean up

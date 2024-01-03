@@ -144,6 +144,7 @@ class Game {
         bool turn_end; ///< A boolean indicating a turn end.
         bool draw_turn_advance_banner; ///< A boolean indicating whether or not to draw the turn advance banner.
         bool increase_turn_advance_alpha; ///< A boolean which indicates whether the turn advance alpha is increasing or decreasing.
+        bool transition_from_title; ///< A boolean which indicates if construction follows a title transition.
         
         size_t tutorial_page; ///< Index for which page of the tutorial to show.
         std::string tutorial_string; ///< A string representation of the current tutorial page.
@@ -188,6 +189,8 @@ class Game {
         sf::Clock clock; ///< The game clock.
         sf::Event event; ///< The game events class.
         
+        sf::RectangleShape fade_rectangle; ///< A fading rectangle (for smooth transition from title to game).
+        
         MessageHub message_hub; ///< The message hub (for inter-object message traffic).
         
         HexMap* hex_map_ptr; ///< Pointer to the hex map (defines game world).
@@ -195,7 +198,7 @@ class Game {
         
         
         //  2. methods
-        Game(sf::RenderWindow*, AssetsManager*);
+        Game(sf::RenderWindow*, AssetsManager*, bool);
         
         bool run(void);
         

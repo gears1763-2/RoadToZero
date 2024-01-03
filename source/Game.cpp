@@ -1657,7 +1657,23 @@ void Game :: __draw(void)
         this->__drawTurnAdvanceBanner();
     }
     
-    //  5. terminating conditions
+    //  5. title transition
+    if (this->transition_from_title) {
+        this->render_window_ptr->draw(this->fade_rectangle);
+        
+        double alpha = this->fade_rectangle.getFillColor().a;
+        
+        alpha -= FRAMES_PER_SECOND / 20;
+        
+        if (alpha < 0) {
+            alpha = 0;
+            this->transition_from_title = false;
+        }
+        
+        this->fade_rectangle.setFillColor(sf::Color(0, 0, 0, alpha));
+    }
+    
+    //  6. terminating conditions
     switch (this->game_phase) {
         case (GamePhase :: LOSS_DEMAND): {
             this->__drawLossDemand();
@@ -1710,15 +1726,24 @@ void Game :: __draw(void)
 ///
 /// \fn Game :: Game(
 ///         sf::RenderWindow* render_window_ptr,
-///         AssetsManager* assets_manager_ptr
+///         AssetsManager* assets_manager_ptr,
+///         bool transition_from_title
 ///     )
 ///
 /// \brief Constructor for the Game class.
 ///
+/// \param render_window_ptr Pointer to the render window.
+///
+/// \param assets_manager_ptr Pointer to the assets manager.
+///
+/// \param transition_from_title Boolean which indicates if this construction is
+///     following the title transition.
+///
 
 Game :: Game(
     sf::RenderWindow* render_window_ptr,
-    AssetsManager* assets_manager_ptr
+    AssetsManager* assets_manager_ptr,
+    bool transition_from_title
 )
 {
     //  1. set attributes
@@ -1739,6 +1764,7 @@ Game :: Game(
     this->turn_end = false;
     this->draw_turn_advance_banner = false;
     this->increase_turn_advance_alpha = true;
+    this->transition_from_title = transition_from_title;
     
     this->tutorial_page = 0;
     this->tutorial_string = TUTORIAL_PAGES[this->tutorial_page];
@@ -1794,6 +1820,9 @@ Game :: Game(
     this->turn_summary_text.setCharacterSize(16);
     this->turn_summary_text.setFillColor(MONOCHROME_TEXT_GREEN);
     this->turn_summary_text.setPosition(GAME_WIDTH - 400 + 64, 64);
+    
+    this->fade_rectangle.setSize(sf::Vector2f(GAME_WIDTH, GAME_HEIGHT));
+    this->fade_rectangle.setFillColor(sf::Color(0, 0, 0, 255));
 
     this->hex_map_ptr = new HexMap(
         6,
@@ -1844,7 +1873,10 @@ bool Game :: run(void)
         
         if (this->time_since_start_s >= (this->frame + 1) * SECONDS_PER_FRAME) {
             //  process events
-            while (this->render_window_ptr->pollEvent(this->event)) {
+            while (
+                (not this->transition_from_title) and
+                (this->render_window_ptr->pollEvent(this->event))
+            ) {
                 if (
                     (this->game_phase == GamePhase :: BUILD_SETTLEMENT) or
                     (this->game_phase == GamePhase :: SYSTEM_MANAGEMENT)

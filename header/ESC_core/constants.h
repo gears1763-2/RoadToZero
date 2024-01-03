@@ -327,7 +327,7 @@ const std::vector<std::string> TUTORIAL_PAGES = {
     std::string("AND THEN PRESS [B] TO OPEN THE  \n") +
     std::string("BUILD MENU.                     \n") +
     std::string("                                \n") +
-    std::string("START BY BUILDING A 200 KW      \n") +
+    std::string("START BY BUILDING A 200 kW      \n") +
     std::string("DIESEL GENERATOR. THIS WILL     \n") +
     std::string("PROVIDE A RELIABLE BASELINE     \n") +
     std::string("PRODUCTION TO EXPAND UPON.      \n") +

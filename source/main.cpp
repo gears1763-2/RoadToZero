@@ -752,7 +752,9 @@ void showTitleScreen(
     title_text_lower.setPosition(GAME_WIDTH / 2, GAME_HEIGHT / 2);
     title_text_lower.setFillColor(MONOCHROME_TEXT_GREEN);
     
-    std::string title_string_bottom = "COPYRIGHT 2023 - [ESC] INTERACTIVE";
+    std::string title_string_bottom = "ROAD TO ZERO V";
+    title_string_bottom += GAME_VERSION;
+    title_string_bottom += "    COPYRIGHT 2024 - [ESC] INTERACTIVE";
     sf::Text title_text_bottom(
         title_string_bottom,
         *(assets_manager_ptr->getFont("Glass_TTY_VT220")),

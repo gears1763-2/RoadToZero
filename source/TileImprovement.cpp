@@ -422,6 +422,38 @@ void TileImprovement :: __closeProductionMenu(void)
 // ---------------------------------------------------------------------------------- //
 
 ///
+/// \fn double TileImprovement :: __getPerformanceFactor(void)
+///
+/// \brief Helper method to compute and return performance factor as a function of
+///     state of health. For renewable assets, it affects production, whereas for
+///     diesel it effects fuel consumption.
+///
+/// \return A performance factor (in the close interval[0, 1]).
+///
+
+double TileImprovement :: __getPerformanceFactor(void)
+{
+    double performance_factor =
+        PERFORMANCE_FACTOR_COEFFICIENT * pow(this->health, PERFORMANCE_FACTOR_EXPONENT);
+    
+    if (performance_factor < 0) {
+        performance_factor = 0;
+    }
+    
+    else if (performance_factor > 1) {
+        performance_factor = 1;
+    }
+    
+    return performance_factor;
+}   /* __getPerformanceFactor(void) */
+
+// ---------------------------------------------------------------------------------- //
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+///
 /// \fn void TileImprovement :: __breakdown(void)
 ///
 /// \brief Helper method to trigger an equipment breakdown.

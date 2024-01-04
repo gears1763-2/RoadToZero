@@ -233,6 +233,12 @@ void DieselGenerator :: __computeProductionCosts(void)
 {
     double litres_diesel = this->production_MWh * LITRES_DIESEL_PER_MWH_PRODUCTION;
     
+    double performance_factor = this->__getPerformanceFactor();
+    
+    if (performance_factor > 0) {
+        litres_diesel /= performance_factor;
+    }
+    
     double fuel_cost = (litres_diesel * COST_PER_LITRE_DIESEL) / 1000;
     this->fuel_cost = round(fuel_cost);
     

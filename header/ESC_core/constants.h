@@ -126,6 +126,9 @@ const int ENERGY_STORAGE_SYSTEM_BUILD_COST = 160; ///< The cost of adding energy
 
 const double BREAKDOWN_PROBABILITY_INCREMENT = 0.01; ///< The amount by which equipment breakdown probability is incremented for each point of health below 50.
 
+const double PERFORMANCE_FACTOR_COEFFICIENT = 0.33771; ///< The coefficient of the performance factor curve (power expression).
+const double PERFORMANCE_FACTOR_EXPONENT = 0.23708; ///< The exponent of the performance factor curve (power expression).
+
 const int SCRAP_COST = 50; ///< The cost of scrapping a tile improvement (other than settlement).
 
 const int MAX_UPGRADE_LEVELS = 5; ///< The maximum upgrade level of any tile improvement.

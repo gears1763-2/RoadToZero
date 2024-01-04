@@ -227,9 +227,16 @@ void WindTurbine :: __upgradePowerCapacity(void)
 
 void WindTurbine :: __computeProductionCosts(void)
 {
-    double operation_maintenance_cost =
+    if (this->is_running) {
+            double operation_maintenance_cost =
         (this->production_MWh * WIND_OP_MAINT_COST_PER_MWH_PRODUCTION) / 1000;
-    this->operation_maintenance_cost = round(operation_maintenance_cost);
+        
+        this->operation_maintenance_cost = round(operation_maintenance_cost);
+    }
+    
+    else {
+        this->operation_maintenance_cost = 0;
+    }
     
     return;
 }   /* __computeProductionCosts() */
@@ -300,7 +307,8 @@ void WindTurbine :: __repair(void)
 ///
 /// \fn void WindTurbine :: __computeCapacityFactors(void)
 ///
-/// \brief Helper method to compute capacity factors
+/// \brief Helper method to compute capacity factors (by definition in the closed 
+///     interval [0, 1]).
 ///
 
 void WindTurbine :: __computeCapacityFactors(void)
@@ -320,16 +328,22 @@ void WindTurbine :: __computeCapacityFactors(void)
     if (this->tile_resource_scalar > 1) {
         stdev /= this->tile_resource_scalar;
     }
+    
+    double performance_factor = this->__getPerformanceFactor();
 
     std::normal_distribution<double> normal_dist(mean, stdev);
     
     double capacity_factor = 0;
     
     for (int i = 0; i < 30; i++) {
-        capacity_factor = normal_dist(generator);
+        capacity_factor = performance_factor * normal_dist(generator);
         
         if (capacity_factor < 0) {
             capacity_factor = 0;
+        }
+        
+        else if (capacity_factor > 1) {
+            capacity_factor = 1;
         }
         
         this->capacity_factor_vec[i] = capacity_factor;
@@ -450,7 +464,11 @@ void WindTurbine :: __computeDispatch(void)
     
     this->dispatchable_MWh = round(dispatchable_MWh);
     
-    if (this->dispatch_MWh != this->dispatchable_MWh) {
+    if (this->dispatch_MWh <= 0) {
+        this->dispatch_MWh = 0;
+    }
+    
+    else if (this->dispatch_MWh != this->dispatchable_MWh) {
         this->dispatch_MWh = this->dispatchable_MWh;
     }
     
@@ -1072,7 +1090,6 @@ void WindTurbine :: draw(void)
         
         return;
     }
-    
     
     //  2. handle upgrade effects
     if (this->just_upgraded) {

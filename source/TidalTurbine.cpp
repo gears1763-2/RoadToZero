@@ -227,9 +227,16 @@ void TidalTurbine :: __upgradePowerCapacity(void)
 
 void TidalTurbine :: __computeProductionCosts(void)
 {
-    double operation_maintenance_cost =
-        (this->production_MWh * TIDAL_OP_MAINT_COST_PER_MWH_PRODUCTION) / 1000;
-    this->operation_maintenance_cost = round(operation_maintenance_cost);
+    if (this->is_running) {
+        double operation_maintenance_cost =
+            (this->production_MWh * TIDAL_OP_MAINT_COST_PER_MWH_PRODUCTION) / 1000;
+        
+        this->operation_maintenance_cost = round(operation_maintenance_cost);
+    }
+    
+    else {
+        this->operation_maintenance_cost = 0;
+    }
     
     return;
 }   /* __computeProductionCosts() */
@@ -300,7 +307,8 @@ void TidalTurbine :: __repair(void)
 ///
 /// \fn void TidalTurbine :: __computeCapacityFactors(void)
 ///
-/// \brief Helper method to compute capacity factors
+/// \brief Helper method to compute capacity factors (by definition in the closed 
+///     interval [0, 1]).
 ///
 
 void TidalTurbine :: __computeCapacityFactors(void)
@@ -309,9 +317,11 @@ void TidalTurbine :: __computeCapacityFactors(void)
         return;
     }
     
+    double performance_factor = this->__getPerformanceFactor();
+    
     for (int i = 0; i < 30; i++) {
         this->capacity_factor_vec[i] =
-            this->tile_resource_scalar * DAILY_TIDAL_CAPACITY_FACTOR;
+            performance_factor * this->tile_resource_scalar * DAILY_TIDAL_CAPACITY_FACTOR;
     }
 
     return;
@@ -429,7 +439,11 @@ void TidalTurbine :: __computeDispatch(void)
     
     this->dispatchable_MWh = round(dispatchable_MWh);
     
-    if (this->dispatch_MWh != this->dispatchable_MWh) {
+    if (this->dispatch_MWh <= 0) {
+        this->dispatch_MWh = 0;
+    }
+    
+    else if (this->dispatch_MWh != this->dispatchable_MWh) {
         this->dispatch_MWh = this->dispatchable_MWh;
     }
     

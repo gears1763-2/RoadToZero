@@ -106,6 +106,7 @@ class TileImprovement {
         void __openProductionMenu(void);
         void __closeProductionMenu(void);
         
+        double __getPerformanceFactor(void);
         void __breakdown(void);
         virtual void __repair(void);
         

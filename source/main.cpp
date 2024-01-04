@@ -386,6 +386,16 @@ sf::RenderWindow* constructRenderWindow(void)
         render_window_ptr->setView(view);
     }
     
+    //  5. change render window icon
+    sf::Image icon;
+    icon.loadFromFile("assets/images/RoadToZero_favicon_CC-BY.png");
+    
+    render_window_ptr->setIcon(
+        icon.getSize().x,
+        icon.getSize().y,
+        icon.getPixelsPtr()
+    );
+    
     return render_window_ptr;
 }   /* constructRenderWindow() */
 
@@ -754,7 +764,7 @@ void showTitleScreen(
     
     std::string title_string_bottom = "ROAD TO ZERO V";
     title_string_bottom += GAME_VERSION;
-    title_string_bottom += "    COPYRIGHT 2024 - [ESC] INTERACTIVE";
+    title_string_bottom += "    COPYRIGHT 2023 - [ESC] INTERACTIVE";
     sf::Text title_text_bottom(
         title_string_bottom,
         *(assets_manager_ptr->getFont("Glass_TTY_VT220")),

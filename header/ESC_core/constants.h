@@ -153,10 +153,10 @@ const sf::Color MONOCHROME_TEXT_RED(255, 44, 0); ///< The base colour of old mon
 
 // ======== GAME CONSTANTS ========================================================== //
 
-const int STARTING_CREDITS = 800; ///< The starting balance of credits.
-const double CREDITS_PER_MWH_SERVED = 1.125; ///< The number of credits (x1000) earned
+const int STARTING_CREDITS = 1000; ///< The starting balance of credits.
+const double CREDITS_PER_MWH_SERVED = 1.15; ///< The number of credits (x1000) earned
 
-const int EMISSIONS_LIFETIME_LIMIT_TONNES = 2000; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
+const int EMISSIONS_LIFETIME_LIMIT_TONNES = 3200; ///< The lifetime limit on CO2-equivalent emissions (1 tonne CO2e ~= 667 L diesel).
 
 const int RESOURCE_ASSESSMENT_COST = 20; ///< The cost of doing a resource assessment.
 
@@ -194,47 +194,47 @@ const std::vector<double> STDEV_DAILY_DEMAND_RATIOS = {
 const double MAXIMUM_DAILY_DEMAND_PER_CAPITA = 0.05; ///< The maximum daily demand [MWh] (at any point in the year) per capita.
 
 const std::vector<double> MEAN_DAILY_SOLAR_CAPACITY_FACTORS = {
-    0.029, 0.061, 0.117,
-    0.183, 0.228, 0.233,
-    0.219, 0.185, 0.139,
-    0.081, 0.040, 0.021
+    0.040, 0.083, 0.160,
+    0.250, 0.312, 0.319,
+    0.300, 0.253, 0.190,
+    0.111, 0.055, 0.027
 }; ///< The mean daily solar capacity factors for each month, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000.
 
 const std::vector<double> STDEV_DAILY_SOLAR_CAPACITY_FACTORS = {
-    0.013, 0.024, 0.043,
-    0.049, 0.072, 0.072,
-    0.076, 0.065, 0.048,
-    0.026, 0.018, 0.009
+    0.018, 0.033, 0.059,
+    0.067, 0.099, 0.099,
+    0.104, 0.089, 0.066,
+    0.036, 0.025, 0.012
 }; ///< The standard deviation in daily solar capacity factors for each month, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000.
 
-const double DAILY_TIDAL_CAPACITY_FACTOR = 0.225; ///< The daily tidal capacity factor, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000. The tides are not a random process (usually semi-diurnal, mostly driven by orbits of moon and sun).
+const double DAILY_TIDAL_CAPACITY_FACTOR = 0.275; ///< The daily tidal capacity factor, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000. The tides are not a random process (usually semi-diurnal, mostly driven by orbits of moon and sun).
 
 const std::vector<double> MEAN_DAILY_WAVE_CAPACITY_FACTORS = {
-    0.742, 0.694, 0.618,
-    0.467, 0.366, 0.292,
-    0.280, 0.293, 0.374,
-    0.424, 0.662, 0.600
+    0.483, 0.451, 0.402,
+    0.304, 0.238, 0.190,
+    0.182, 0.191, 0.243,
+    0.276, 0.431, 0.390
 }; ///< The mean daily wave capacity factors for each month, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000.
 
 const std::vector<double> STDEV_DAILY_WAVE_CAPACITY_FACTORS = {
-    0.146, 0.135, 0.163,
-    0.145, 0.158, 0.106,
-    0.086, 0.058, 0.145,
-    0.171, 0.184, 0.309
+    0.095, 0.088, 0.106,
+    0.094, 0.103, 0.069,
+    0.055, 0.038, 0.094,
+    0.111, 0.120, 0.201
 }; ///< The standard deviation in daily wave capacity factors for each month, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000.
 
 const std::vector<double> MEAN_DAILY_WIND_CAPACITY_FACTORS = {
-    0.591, 0.594, 0.627,
-    0.629, 0.579, 0.537,
-    0.442, 0.507, 0.587,
-    0.618, 0.611, 0.580
+    0.360, 0.361, 0.382,
+    0.383, 0.352, 0.327,
+    0.269, 0.308, 0.357,
+    0.376, 0.372, 0.353
 }; ///< The mean daily wind capacity factors for each month, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000.
 
 const std::vector<double> STDEV_DAILY_WIND_CAPACITY_FACTORS = {
-    0.147, 0.142, 0.198,
-    0.154, 0.162, 0.202,
-    0.180, 0.217, 0.198,
-    0.168, 0.141, 0.168
+    0.089, 0.086, 0.120,
+    0.094, 0.099, 0.123,
+    0.109, 0.132, 0.120,
+    0.103, 0.085, 0.103
 }; ///< The standard deviation in daily wind capacity factors for each month, where capacity factor is daily production [MWh] divided by maximum daily production [MWh]. Maximum daily production is simply (24)(power capacity [kW]) / 1000.
 
 const std::string GAME_CHANNEL = "GAME CHANNEL"; ///< A message channel for game messages.
